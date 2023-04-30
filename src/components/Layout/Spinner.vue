@@ -7,16 +7,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: 'LayoutSpinner',
-  props: {
-    className: {
-      type: String,
-      required: true
-    }
-  }
-}
+<script setup>
+defineProps({
+  className: String
+})
 </script>
 
 <style scoped>
