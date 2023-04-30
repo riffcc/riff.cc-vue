@@ -4,7 +4,6 @@ import { Web3Modal } from '@web3modal/html'
 import { configureChains, createClient } from '@wagmi/core'
 import { mainnet } from '@wagmi/core/chains'
 import { computed, ref } from 'vue'
-import formatAddress from '../utils/formatAddress'
 
 const chains = [mainnet]
 const projectId = "e06631aa2696fd934c15258e8cfe82d7"
