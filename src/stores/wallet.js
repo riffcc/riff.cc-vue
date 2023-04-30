@@ -13,7 +13,7 @@ export const useWalletStore = defineStore('walletStore', () => {
   
   const { provider } = configureChains(chains, [w3mProvider({ projectId })])
   const wagmiClient = createClient({
-    autoConnect: true,
+    autoConnect: false,
     connectors: w3mConnectors({ 
       projectId, 
       version: 1, 
@@ -25,6 +25,8 @@ export const useWalletStore = defineStore('walletStore', () => {
   const web3modal = new Web3Modal({ projectId }, ethereumClient)
 
   const address = ref(null)
+  const accountId = ref(null)
+  const isAdmin = ref(false)
 
   ethereumClient.watchAccount((account) => {
     if (!account.address && !address.value) {
@@ -50,6 +52,8 @@ export const useWalletStore = defineStore('walletStore', () => {
     address,
     formattedAddress,
     connectWallet,
-    showAccount
+    showAccount,
+    accountId,
+    isAdmin
   }
 })
