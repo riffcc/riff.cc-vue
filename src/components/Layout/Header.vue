@@ -23,9 +23,7 @@
         @click="walletStore.showAccount">
         {{ walletStore.formattedAddress }}
       </p>
-      <button v-else @click="walletStore.connectWallet">
-        Connect
-      </button>
+      <Connect v-else />
     </div>
   </header>
 </template>
@@ -37,6 +35,8 @@ import { useApolloClient } from '@vue/apollo-composable'
 import { useWalletStore } from "../../stores/wallet"
 import auth3IDConnect from '../../utils/auth3IDConnect'
 import { checkAddressInAdmins, checkAccount} from '../../utils/checkAccount'
+import createCeramicClient from "../../utils/createCeramicClient"
+import Connect from "../Layout/Connect.vue"
 
 const id = import.meta.env.VITE_WEBSITE_ID
 
@@ -151,6 +151,10 @@ const updateApolloClient = inject("updateApolloClient");
 
 watch(() => walletStore.address, async (address) => {
   if (!address) {
+    walletStore.accountId = null
+    walletStore.isAdmin = false
+    const clientDesauth = createCeramicClient()
+    updateApolloClient(clientDesauth)
     return;
   }
   const { ceramic} = await auth3IDConnect(address, initialCeramicClient);
