@@ -27,7 +27,7 @@ export const useWalletStore = defineStore('walletStore', () => {
   const address = ref(null)
   const accountId = ref(null)
   const isAdmin = ref(false)
-
+  
   ethereumClient.watchAccount((account) => {
     if (!account.address && !address.value) {
       return
@@ -38,15 +38,17 @@ export const useWalletStore = defineStore('walletStore', () => {
     }
     address.value = account.address
   })
-
-  const connectWallet = () => web3modal.openModal({ route: 'ConnectWallet' })
+  
+  const connectWallet =  async () => {
+    await web3modal.openModal({ route: 'ConnectWallet' })
+  }
   const showAccount = () => web3modal.openModal({ route: 'Account' })
 
   const formattedAddress = computed(() => {
     if(!address.value) {
       return null
     }
-    return formatAddress(address.value)
+    return `${address.value.substring(0, 4)}...${address.value.substring(address.value.length - 4)}`
   })
   return {
     address,
