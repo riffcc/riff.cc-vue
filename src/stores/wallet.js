@@ -38,9 +38,7 @@ export const useWalletStore = defineStore('walletStore', () => {
     address.value = account.address
   })
   
-  const connectWallet =  async () => {
-    await web3modal.openModal({ route: 'ConnectWallet' })
-  }
+  const connectWallet = () => web3modal.openModal({ route: 'ConnectWallet' })
   const showAccount = () => web3modal.openModal({ route: 'Account' })
 
   const formattedAddress = computed(() => {
