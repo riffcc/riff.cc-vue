@@ -17,10 +17,16 @@ function checkAddressInUsers(address, edges) {
 function checkAddressInAdmins(address, edges) {
   for (const edge of edges) {
     if (edge.node.admin.address === address) {
-      return true
+      return {
+        exist: true,
+        id: edge.node.id
+      }
     }
   }
-  return false
+  return {
+    exist: false,
+    id: null
+  }
 }
 
 async function checkAccount(getUsers, address, users) {
