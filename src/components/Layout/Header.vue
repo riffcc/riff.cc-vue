@@ -41,11 +41,11 @@ import Connect from "../Layout/Connect.vue"
 const id = import.meta.env.VITE_WEBSITE_ID
 
 const GET_USERS = gql`
-  query GetUsers($id: ID!, $pageSizeMedium: Int!, $cursor: String) {
+  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
       ... on Website {
         id
-        users(first: $pageSizeMedium, after: $cursor) {
+        users(first: $pageSize, after: $cursor) {
           pageInfo {
             startCursor
             endCursor
@@ -55,7 +55,7 @@ const GET_USERS = gql`
               id
               address
               ensName
-              pins(first: $pageSizeMedium) {
+              pins(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -63,7 +63,7 @@ const GET_USERS = gql`
                 }
               }
               pinsCount
-              pinLikes(first: $pageSizeMedium) {
+              pinLikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -77,7 +77,7 @@ const GET_USERS = gql`
                 }
               }
               pinLikesCount
-              pinDislikes(first: $pageSizeMedium) {
+              pinDislikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -189,7 +189,7 @@ watch(() => walletStore.address, async (address) => {
 
     const resultGetUsers = await getUsers({
       id,
-      pageSizeMedium: 1
+      pageSize: 1
     })
 
     const accountId = await checkAccount(getUsers, address, resultGetUsers.data.node.users)
@@ -197,7 +197,11 @@ watch(() => walletStore.address, async (address) => {
     if (accountId) {
       walletStore.accountId = accountId;
       const resultGetAdmins = await getAdmins()
-      walletStore.isAdmin = checkAddressInAdmins(address, resultGetAdmins.data.node.admins.edges)
+      const resultCheckAdmin = checkAddressInAdmins(address, resultGetAdmins.data.node.admins.edges)
+      if (resultCheckAdmin.exist) {
+        walletStore.isAdmin = true
+        walletStore.adminId = resultCheckAdmin.id
+      }
     } else {
       const resultCreateEthAccount = await client.mutate({
         mutation: CREATE_ETH_ACCOUNT,

@@ -26,6 +26,8 @@ export const useWalletStore = defineStore('walletStore', () => {
   const address = ref(null)
   const accountId = ref(null)
   const isAdmin = ref(false)
+  const adminId = ref(null)
+
   
   ethereumClient.watchAccount((account) => {
     if (!account.address && !address.value) {
@@ -53,6 +55,7 @@ export const useWalletStore = defineStore('walletStore', () => {
     connectWallet,
     showAccount,
     accountId,
-    isAdmin
+    isAdmin,
+    adminId
   }
 })
