@@ -46,7 +46,7 @@ const {
   fetchMore: fetchMorePins
 } = useQuery(GET_PINS, {
   id: websiteId,
-  pageSizeMedium: websiteDataQueryParams.pageSizeMedium
+  pageSize: websiteDataQueryParams.pageSizeMedium
 });
 
 const { 
@@ -55,7 +55,7 @@ const {
   error: subscriptionEdgesError 
 } = useQuery(GET_SUBSCRIPTIONS, {
   id: websiteId,
-  pageSizeMedium: websiteDataQueryParams.pageSizeMedium
+  pageSize: websiteDataQueryParams.pageSizeMedium
 });
 
 const {
@@ -64,7 +64,7 @@ const {
   error: featuredEdgesError
 } = useQuery(GET_FEATURED, {
   id: websiteId,
-  pageSizeMedium: websiteDataQueryParams.pageSizeMedium
+  pageSize: websiteDataQueryParams.pageSizeMedium
 });
 
 

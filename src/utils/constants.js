@@ -11,11 +11,11 @@ export const websiteDataQueryParams = {
 }
 
 export const GET_WEBSITE_DATA = gql`
-  query WebsiteData($id: ID!, $pageSizeMedium: Int!) {
+  query WebsiteData($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        admins(first: $pageSizeMedium) {
+        admins(first: $pageSize) {
           edges {
             node {
               id
@@ -34,7 +34,7 @@ export const GET_WEBSITE_DATA = gql`
           }
         }
         adminsCount
-        pins(first: $pageSizeMedium) {
+        pins(first: $pageSize) {
           edges {
             node {
               id
@@ -80,7 +80,7 @@ export const GET_WEBSITE_DATA = gql`
               rejectionReason
               deleted
               likesCount
-              likes(first: $pageSizeMedium) {
+              likes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -94,7 +94,7 @@ export const GET_WEBSITE_DATA = gql`
                 }
               }
               dislikesCount
-              dislikes(first: $pageSizeMedium) {
+              dislikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -111,7 +111,7 @@ export const GET_WEBSITE_DATA = gql`
           }
         }
         pinsCount
-        subscriptions(first: $pageSizeMedium) {
+        subscriptions(first: $pageSize) {
           edges {
             node {
               id
@@ -121,7 +121,7 @@ export const GET_WEBSITE_DATA = gql`
                 websiteName
                 description
                 image
-                pins(first: $pageSizeMedium) {
+                pins(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -167,7 +167,7 @@ export const GET_WEBSITE_DATA = gql`
                       rejectionReason
                       deleted
                       likesCount
-                      likes(first: $pageSizeMedium) {
+                      likes(first: $pageSize) {
                         edges {
                           node {
                             id
@@ -181,7 +181,7 @@ export const GET_WEBSITE_DATA = gql`
                         }
                       }
                       dislikesCount
-                      dislikes(first: $pageSizeMedium) {
+                      dislikes(first: $pageSize) {
                         edges {
                           node {
                             id
@@ -208,13 +208,13 @@ export const GET_WEBSITE_DATA = gql`
           }
         }
         subscriptionsCount
-        users(first: $pageSizeMedium) {
+        users(first: $pageSize) {
           edges {
             node {
               id
               address
               ensName
-              pins(first: $pageSizeMedium) {
+              pins(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -222,7 +222,7 @@ export const GET_WEBSITE_DATA = gql`
                 }
               }
               pinsCount
-              pinLikes(first: $pageSizeMedium) {
+              pinLikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -236,7 +236,7 @@ export const GET_WEBSITE_DATA = gql`
                 }
               }
               pinLikesCount
-              pinDislikes(first: $pageSizeMedium) {
+              pinDislikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -258,7 +258,7 @@ export const GET_WEBSITE_DATA = gql`
           }
         }
         usersCount
-        featured(first: $pageSizeMedium) {
+        featured(first: $pageSize) {
           edges {
             node {
               id
@@ -306,7 +306,7 @@ export const GET_WEBSITE_DATA = gql`
                 rejectionReason
                 deleted
                 likesCount
-                likes(first: $pageSizeMedium) {
+                likes(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -320,7 +320,7 @@ export const GET_WEBSITE_DATA = gql`
                   }
                 }
                 dislikesCount
-                dislikes(first: $pageSizeMedium) {
+                dislikes(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -340,12 +340,12 @@ export const GET_WEBSITE_DATA = gql`
           }
         }
         featuredCount
-        categories(first: $pageSizeMedium) {
+        categories(first: $pageSize) {
           edges {
             node {
               id
               name
-              pins(first: $pageSizeMedium) {
+              pins(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -391,7 +391,7 @@ export const GET_WEBSITE_DATA = gql`
                     rejectionReason
                     deleted
                     likesCount
-                    likes(first: $pageSizeMedium) {
+                    likes(first: $pageSize) {
                       edges {
                         node {
                           id
@@ -405,7 +405,7 @@ export const GET_WEBSITE_DATA = gql`
                       }
                     }
                     dislikesCount
-                    dislikes(first: $pageSizeMedium) {
+                    dislikes(first: $pageSize) {
                       edges {
                         node {
                           id
@@ -423,7 +423,7 @@ export const GET_WEBSITE_DATA = gql`
               }
               pinsCount
               likesCount
-              likes(first: $pageSizeMedium) {
+              likes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -437,7 +437,7 @@ export const GET_WEBSITE_DATA = gql`
                 }
               }
               dislikesCount
-              dislikes(first: $pageSizeMedium) {
+              dislikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -479,7 +479,7 @@ export const UserFragment = gql`
     id
     address
     ensName
-    pins(first: $pageSizeMedium) {
+    pins(first: $pageSize) {
       edges {
         node {
           id
@@ -487,7 +487,7 @@ export const UserFragment = gql`
       }
     }
     pinsCount
-    pinLikes(first: $pageSizeMedium) {
+    pinLikes(first: $pageSize) {
       edges {
         node {
           id
@@ -501,7 +501,7 @@ export const UserFragment = gql`
       }
     }
     pinLikesCount
-    pinDislikes(first: $pageSizeMedium) {
+    pinDislikes(first: $pageSize) {
       edges {
         node {
           id
@@ -557,11 +557,11 @@ export const GET_ADMINS = gql`
 `;
 
 export const GET_PINS = gql`
-  query GetPins($id: ID!, $pageSizeMedium: Int!, $cursor: String) {
+  query GetPins($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
       ... on Website {
         id
-        pins(first: $pageSizeMedium, after: $cursor) {
+        pins(first: $pageSize, after: $cursor) {
           pageInfo {
             startCursor
             endCursor
@@ -622,11 +622,11 @@ export const GET_PINS = gql`
 `;
 
 export const GET_SUBSCRIPTIONS = gql`
-  query GetSubscriptions($id: ID!, $pageSizeMedium: Int!) {
+  query GetSubscriptions($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        subscriptions(first: $pageSizeMedium) {
+        subscriptions(first: $pageSize) {
           edges {
             node {
               id
@@ -636,7 +636,7 @@ export const GET_SUBSCRIPTIONS = gql`
                 websiteName
                 description
                 image
-                pins(first: $pageSizeMedium) {
+                pins(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -703,11 +703,11 @@ export const GET_SUBSCRIPTIONS = gql`
 `;
 
 export const GET_USERS = gql`
-  query GetUsers($id: ID!, $pageSizeMedium: Int!, $cursor: String) {
+  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
       ... on Website {
         id
-        users(first: $pageSizeMedium, after: $cursor) {
+        users(first: $pageSize, after: $cursor) {
           pageInfo {
             startCursor
             endCursor
@@ -717,7 +717,7 @@ export const GET_USERS = gql`
               id
               address
               ensName
-              pins(first: $pageSizeMedium) {
+              pins(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -725,7 +725,7 @@ export const GET_USERS = gql`
                 }
               }
               pinsCount
-              pinLikes(first: $pageSizeMedium) {
+              pinLikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -739,7 +739,7 @@ export const GET_USERS = gql`
                 }
               }
               pinLikesCount
-              pinDislikes(first: $pageSizeMedium) {
+              pinDislikes(first: $pageSize) {
                 edges {
                   node {
                     id
@@ -767,11 +767,11 @@ export const GET_USERS = gql`
 `;
 
 export const GET_FEATURED = gql`
-  query GetFeatured($id: ID!, $pageSizeMedium: Int!) {
+  query GetFeatured($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        featured(first: $pageSizeMedium) {
+        featured(first: $pageSize) {
           edges {
             node {
               id
@@ -819,7 +819,7 @@ export const GET_FEATURED = gql`
                 rejectionReason
                 deleted
                 likesCount
-                likes(first: $pageSizeMedium) {
+                likes(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -833,7 +833,7 @@ export const GET_FEATURED = gql`
                   }
                 }
                 dislikesCount
-                dislikes(first: $pageSizeMedium) {
+                dislikes(first: $pageSize) {
                   edges {
                     node {
                       id
@@ -875,6 +875,85 @@ export const GET_CATEGORIES = gql`
     }
   }
 `;
+
+export const GET_PIN = gql(`
+  query Pin($id: ID!, $pageSize: Int!) {
+    node(id: $id) {
+      ... on Pin {
+        id
+        website {
+          id
+        }
+        owner {
+          id
+          address
+        }
+        category {
+          id
+          name
+        }
+        piece {
+          id
+          CID
+          name
+          details {
+            tags
+            type
+            media
+            IMDBID
+            TMDBID
+            format
+            poster
+            bitrate
+            albumTitle
+            artistNames
+            releaseType
+            musicBrainzID
+            imageThumbnailCID
+            initialReleaseYear
+            releaseDescription
+          }
+          metadata {
+            createdAt
+            updatedAt
+          }
+        }
+        approved
+        rejected
+        rejectionReason
+        deleted
+        likesCount
+        likes(first: $pageSize) {
+          edges {
+            node {
+              id
+              pin {
+                id
+              }
+              owner {
+                address
+              }
+            }
+          }
+        }
+        dislikesCount
+        dislikes(first: $pageSize) {
+          edges {
+            node {
+              id
+              pin {
+                id
+              }
+              owner {
+                address
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`)
 
 export const CREATE_PIECE = gql(`
   mutation CreatePiece($input: CreatePieceInput!) {
