@@ -1,19 +1,19 @@
 <template>
-  <table class="table-auto w-full mx-auto">
+  <table class="w-full">
     <tbody>
-      <tr v-for="pin in pins" :key="pin.node.id">
-        <td class="px-8">
-          <div class="h-16 w-16 mx-auto relative my-1">
+      <tr v-for="pin in pins" :key="pin.node.id" class="flex items-center justify-between px-10 h-20">
+        <td class="w-1/6 flex">
+          <div class="w-20 m-auto">
             <img :src="`https://ipfs.io/ipfs/${pin.node.piece.CID}`" alt="" />
           </div>
         </td>
-        <td class="px-8">
+        <td class="w-2/6">
           <p class="text-center">{{ pin.node.piece.name }}</p>
         </td>
-        <td class="px-8">
+        <td class="w-1/6">
           <p class="text-center">{{ pin.node.category.name }}</p>
         </td>
-        <td class="px-8">
+        <td class="w-1/6">
           <div>
             <a :href="`https://ipfs.io/ipfs/${pin.node.piece.CID}`" target="_blank"
               class="hover:text-cyan-200">
@@ -21,9 +21,9 @@
             </a>
           </div>
         </td>
-        <td class="px-8">
+        <td class="w-1/6">
           <div v-if="pin.node">
-            <pin-actions :pin="pin.node" />
+            <PinActions :pin="pin.node" />
           </div>
         </td>
       </tr>
@@ -31,52 +31,14 @@
   </table>
 </template>
 
-<script>
+<script setup>
 import PinActions from './PinActions.vue'
 
-export default {
-  props: {
-    pins: Array // Pins array prop
-  },
-  components: {
-    PinActions // Componente PinActions
-  }
-}
+defineProps({
+  pins: Array
+})
+
 </script>
 
 <style scoped>
-/* Estilos CSS para la tabla */
-.table-auto {
-  width: auto;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.my-1 {
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-}
-
-.h-16 {
-  height: 4rem;
-}
-
-.w-16 {
-  width: 4rem;
-}
-
-.px-8 {
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.hover:text-cyan-200:hover {
-  color: #9cdbff;
-}</style>
+</style>
