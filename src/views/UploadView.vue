@@ -32,8 +32,7 @@ import { useUploadStore } from '../stores/upload';
 import { useWalletStore } from '../stores/wallet';
 import { 
   CREATE_PIECE, 
-  GET_CATEGORIES, 
-  CategoryFragment 
+  GET_CATEGORIES
 } from '../utils/constants';
 import mutatePin from '../utils/mutatePin'
 import Connect from '../components/Layout/Connect.vue';
@@ -43,6 +42,7 @@ import UploadForm from '../components/UploadForm.vue';
 
 
 import { useApolloClient, useQuery } from '@vue/apollo-composable';
+import getCategoryID from '../utils/getCategoryId';
 
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();
@@ -59,14 +59,6 @@ const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 useQuery(GET_CATEGORIES, { id: websiteID, pageSize: 1000})
 
 const { resolveClient } = useApolloClient();
-
-const getCategoryID = (client, category) => {
-  const result = client.readFragment({
-    id: client.cache.identify({ __typename: "Category", name: category }),
-    fragment: CategoryFragment
-  })
-  return result.id
-}
 
 const onSubmit = async () => {
   const apolloClient = resolveClient();
