@@ -521,13 +521,18 @@ export const UserFragment = gql`
     }
   }
 `
-
+export const CategoryFragment = gql`
+  fragment Category on Category {
+    id
+    name
+  }
+`
 export const GET_ADMINS = gql`
-  query GetAdmins($id: ID!, $pageSizeMedium: Int!) {
+  query GetAdmins($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        admins(first: $pageSizeMedium) {
+        admins(first: $pageSize) {
           edges {
             node {
               id
@@ -854,97 +859,80 @@ export const GET_FEATURED = gql`
 `;
 
 export const GET_CATEGORIES = gql`
-  query GetCategories($id: ID!, $pageSizeMedium: Int!) {
+  query GetCategories($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        categories(first: $pageSizeMedium) {
+        categories(first: $pageSize) {
           edges {
             node {
               id
               name
-              pins(first: $pageSizeMedium) {
-                edges {
-                  node {
-                    id
-                    website {
-                      id
-                    }
-                    owner {
-                      id
-                      address
-                    }
-                    category {
-                      id
-                      name
-                    }
-                    piece {
-                      id
-                      CID
-                      name
-                      details {
-                        tags
-                        type
-                        media
-                        IMDBID
-                        TMDBID
-                        format
-                        poster
-                        bitrate
-                        albumTitle
-                        artistNames
-                        releaseType
-                        musicBrainzID
-                        imageThumbnailCID
-                        initialReleaseYear
-                        releaseDescription
-                      }
-                      metadata {
-                        createdAt
-                        updatedAt
-                      }
-                    }
-                    approved
-                    rejected
-                    rejectionReason
-                    deleted
-                    likesCount
-                    likes(first: $pageSizeMedium) {
-                      edges {
-                        node {
-                          id
-                          pin {
-                            id
-                          }
-                          owner {
-                            address
-                          }
-                        }
-                      }
-                    }
-                    dislikesCount
-                    dislikes(first: $pageSizeMedium) {
-                      edges {
-                        node {
-                          id
-                          pin {
-                            id
-                          }
-                          owner {
-                            address
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
         }
-        categoriesCount
       }
     }
   }
 `;
 
+export const CREATE_PIECE = gql(`
+  mutation CreatePiece($input: CreatePieceInput!) {
+    createPiece(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+`)
+
+export const pinCategories = [
+  'TV Shows',
+  'Movies',
+  'Audiobooks',
+  'Games',
+  'Books',
+  'Music',
+  'Videos',
+  'Other',
+]
+
+export const releaseTypesOptions = [
+  'Album',
+  'Soundtrack',
+  'EP',
+  'Anthology',
+  'Compilation',
+  'Single',
+  'Live Album',
+  'Remix',
+  'Bootleg',
+  'Interview',
+  'Mixtape',
+  'Demo',
+  'Concert Recording',
+  'DJ Mix',
+  'Unknown',
+]
+
+export const formatOptions = ['MP3', 'FLAC', 'AAC', 'AC3', 'DTS']
+
+export const mediaOptions = [
+  'CD',
+  'DVD',
+  'Vinyl',
+  'Soundboard',
+  'SACD',
+  'DAT',
+  'WEB',
+  'Blu-Ray',
+]
+
+export const movieTypeOptions = [
+  'Feature Film',
+  'Short Film',
+  'Miniseries',
+  'Stand-up Comedy',
+  'Live Performance',
+  'Movie Collection',
+]
