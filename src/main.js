@@ -8,6 +8,17 @@ import App from './App.vue';
 import router from './router';
 import createCeramicClient from './utils/createCeramicClient';
 import createComposeClient from './utils/createComposeClient';
+import { OhVueIcon, addIcons } from "oh-vue-icons";
+import { 
+  HiCheckCircle,
+  HiXCircle,
+  HiTrash,
+  HiPencilAlt,
+  HiClock,
+  HiQuestionMarkCircle,
+  HiEye,
+  HiX
+ } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -112,7 +123,18 @@ const app = createApp({
   },
   render: () => h(App)
 })
+addIcons(
+  HiCheckCircle,
+  HiXCircle,
+  HiTrash,
+  HiPencilAlt,
+  HiClock,
+  HiQuestionMarkCircle,
+  HiEye,
+  HiX
+);
 
+app.component("v-icon", OhVueIcon);
 app.use(createPinia())
 app.use(router)
 

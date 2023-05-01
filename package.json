@@ -26,6 +26,7 @@
     "graphql-tag": "^2.12.6",
     "is-ipfs": "^8.0.1",
     "key-did-resolver": "^3.0.0",
+    "oh-vue-icons": "^1.0.0-rc3",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
