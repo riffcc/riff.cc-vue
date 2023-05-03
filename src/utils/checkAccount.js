@@ -16,7 +16,7 @@ function checkAddressInUsers(address, edges) {
 
 function checkAddressInAdmins(address, edges) {
   for (const edge of edges) {
-    if (edge.node.admin.address === address) {
+    if (edge.node.admin.address === address && !edge.node.admin.inactive) {
       return {
         exist: true,
         id: edge.node.id,
