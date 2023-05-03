@@ -45,7 +45,7 @@
             <p v-else class='m-auto text-sm text-center'>No extra admins found.</p>
           </div>
         </div>
-    </div>
+      </div>
     </div>
     <div 
       v-else-if="!walletStore.address"
@@ -144,12 +144,6 @@ const pieces = computed(() => {
     rejected
   }
 })
-
-
-const arre = () => {
-  console.log(adminsResult)
-  console.log(adminList)
-}
 
 const adminList = computed(() => {
   if (!adminsResult.value) {
