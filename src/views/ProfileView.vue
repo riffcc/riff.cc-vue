@@ -3,28 +3,19 @@
     <div v-if="walletStore.address && walletStore.accountId" class="grid h-full gap-3">
       <p class="font-semibold ml-4 text-lg flex-none">Approved</p>
       <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-        <PieceList
-          v-if="pieces.approved.length > 0"
-          :list="pieces.approved"
-          table
-        /> 
+        <PieceList v-if="pieces.approved.length > 0" :list="pieces.approved" table />
+        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
       </div>
       <p class="font-semibold ml-4 text-lg flex-none">Pending</p>
-        <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-          <PieceList
-            v-if="pieces.pending.length > 0"
-            :list="pieces.pending"
-            table
-          /> 
-        </div>
-        <p class="font-semibold ml-4 text-lg flex-none">Rejected</p>
-        <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-          <PieceList
-            v-if="pieces.rejected.length > 0"
-            :list="pieces.rejected"
-            table
-          /> 
-        </div>
+      <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
+        <PieceList v-if="pieces.pending.length > 0" :list="pieces.pending" table />
+        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
+      </div>
+      <p class="font-semibold ml-4 text-lg flex-none">Rejected</p>
+      <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
+        <PieceList v-if="pieces.rejected.length > 0" :list="pieces.rejected" table />
+        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
+      </div>
     </div>
     <div v-else class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20">
       <p>Please connect your wallet</p>
