@@ -4,8 +4,8 @@
     <PieceItem 
       v-else
       v-for="edge in list"
-      :key="edge.node.id"
-      :pin="edge.node" 
+      :key="edge.node.__typename === 'Featured' ? edge.node.pin.id : edge.node.id"
+      :pin="edge.node.__typename === 'Featured' ? edge.node.pin : edge.node" 
     />
   </div>
 </template>
