@@ -1,14 +1,14 @@
 <template>
   <div class="flex flex-col gap-3 relative">
     <div class="bg-gray-900 min-h-screen py-10 px-4 sm:px-8 md:px-16 flex">
-      <div class="flex flex-col w-full">
+      <p v-if="pinEdgesError || subscriptionEdgesError || featuredEdgesError">Something went wrong...</p>
+      <Spinner v-else-if="pinEdgesLoading || subscriptionEdgesLoading || featuredEdgesLoading" :className="'animate-spin h-8 w-8 text-slate-50 m-auto'" />
+      <div v-else class="flex flex-col w-full">
         <div v-if="featuredList.almostOneActive && featuredList.list.length > 0" class="min-h-[20rem]">
-          <h1 class="font-bold text-xl border-b border-slate-500 flex-none pb-2">Featured</h1>
+          <h1 class="font-bold text-xl border-b border-slate-500 text-slate-50 flex-none pb-2">Featured</h1>
           <PieceList :list="featuredList.list" />
         </div>
         <h1 class="font-bold text-xl border-b border-slate-500 text-slate-50 flex-none pb-2">Content</h1>
-        <p v-if="pinEdgesError || subscriptionEdgesError || featuredEdgesError">Something went wrong...</p>
-        <Spinner v-if="pinEdgesLoading || subscriptionEdgesLoading || featuredEdgesLoading" :className="'animate-spin h-8 w-8 text-slate-50 m-auto'" />
         <PieceList v-if="pinList.length > 0" :list="pinList" />
         <!-- <p v-if="! && !(pinList.length > 0)" class="m-auto">No content found.</p> -->
       </div>
@@ -29,10 +29,9 @@ import {
   GET_FEATURED 
 } from '../utils/constants';
 
-import { getDate } from '../utils/getDate'
 
 const runFeaturedTime = (featured) => {
-  const now = getDate('number')
+  const now = Date.now()
   return parseInt(featured.startAt) < now && parseInt(featured.endAt) > now
 }
 
@@ -67,7 +66,6 @@ const {
   pageSize: websiteDataQueryParams.pageSizeMedium
 });
 
-
 const featuredList = computed(() => {
   const empty = {
     list: [],
@@ -76,8 +74,8 @@ const featuredList = computed(() => {
   if (!featuredEdgesResult.value || !featuredEdgesResult.value.node) {
     return empty
   }
-  const featuredPinsEdges = featuredEdgesResult.value.node.featured.edges
-  const almostOneActive = featuredPinsEdges.map((edge) => runFeaturedTime(edge)).length > 0
+  const featuredPinsEdges = featuredEdgesResult.value.node.featured.edges.filter((edge) => runFeaturedTime(edge.node))
+  const almostOneActive = featuredPinsEdges.length > 0
 
   return {
     list: featuredPinsEdges,
@@ -90,7 +88,8 @@ const pinList = computed(() => {
     return []
   }
   const websitePinsEdges = pinEdgesResult.value.node.pins.edges
-  const subscriptionsPieceEdges = subscriptionEdgesResult.value.node.subscriptions.edges.map(subscriptionEdge => subscriptionEdge.node.subscribedWebsite.pins.edges)
+  const subscriptionList = subscriptionEdgesResult.value.node.subscriptions.edges.filter(subscriptionEdge => !subscriptionEdge.node.inactive)
+  const subscriptionsPieceEdges = subscriptionList.map(subscriptionEdge => subscriptionEdge.node.subscribedWebsite.pins.edges)
   const subscriptionsPieceEdgesFlat = subscriptionsPieceEdges.flat()
   const mergedList = websitePinsEdges.concat(subscriptionsPieceEdgesFlat) 
   return mergedList.filter(pin => pin.node.approved);
