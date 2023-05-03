@@ -23,6 +23,12 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('../views/AdminView.vue')
+    },
+    {
+      path: '/pin/:streamID',
+      name: 'pin',
+      component: () => import('../views/PinView.vue'),
+      props: true
     }
   ]
 })

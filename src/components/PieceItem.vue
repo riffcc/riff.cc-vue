@@ -5,23 +5,17 @@
         <img class="absolute w-full h-full rounded-xl" :alt="''" :src="`https://ipfs.io/ipfs/${pin.piece?.CID}`" />
       </a>
     </div>
-    <div class="w-full h-8">
-      
+    <button @click="$router.push(`/pin/${pin.id}`)" class="w-full h-8">
       <p class="text-xs mt-2 text-center font-medium text-slate-50 hover:cursor-pointer">{{ pin.piece?.name }}</p>
-      <!-- <a ="`/pin/${pin.id}`">
-      </a> -->
-    </div>
+    </button>
   </div>
 </template>
 
-<script>
+<script setup>
 
-export default {
-  name: "PieceItem",
-  props: {
-    pin: Object
-  },
-};
+defineProps({
+  pin: Object
+})
 </script>
 
 <style scoped>

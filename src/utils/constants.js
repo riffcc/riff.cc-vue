@@ -809,7 +809,7 @@ export const GET_CATEGORIES = gql`
   }
 `;
 
-export const GET_PIN = gql(`
+export const GET_PIN = gql`
   query Pin($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Pin {
@@ -886,9 +886,32 @@ export const GET_PIN = gql(`
       }
     }
   }
-`)
+`
 
-export const GET_SUBSCRIPTION_INDEX = gql(`
+export const GET_PIN_LIKES = gql`
+  query Pin($id: ID!, $pageSize: Int!, $cursor: String) {
+    node(id: $id) {
+      ... on Pin {
+        id
+        likes(first: $pageSize, after: $cursor) {
+          edges {
+            node {
+              id
+              pin {
+                id
+              }
+              owner {
+                address
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export const GET_SUBSCRIPTION_INDEX = gql`
   query SubscriptionIndex($pageSize: Int!) {
     subscriptionIndex(first: $pageSize) {
       pageInfo {
@@ -914,9 +937,9 @@ export const GET_SUBSCRIPTION_INDEX = gql(`
       }
     }
   }
-`)
+`
 
-export const CREATE_PIECE = gql(`
+export const CREATE_PIECE = gql`
   mutation CreatePiece($input: CreatePieceInput!) {
     createPiece(input: $input) {
       document {
@@ -924,9 +947,9 @@ export const CREATE_PIECE = gql(`
       }
     }
   }
-`)
+`
 
-export const CREATE_SUBSCRIPTION = gql(`
+export const CREATE_SUBSCRIPTION = gql`
   mutation CreateSubscription($input: CreateSubscriptionInput!) {
     createSubscription(input: $input) {
       document {
@@ -946,9 +969,9 @@ export const CREATE_SUBSCRIPTION = gql(`
       }
     }
   }
-`)
+`
 
-export const UPDATE_SUBSCRIPTION = gql(`
+export const UPDATE_SUBSCRIPTION = gql`
   mutation UpdateSubscription($input: UpdateSubscriptionInput!) {
     updateSubscription(input: $input) {
       document {
@@ -968,7 +991,7 @@ export const UPDATE_SUBSCRIPTION = gql(`
       }
     }
   }
-`)
+`
 
 
 export const GET_USERS = gql`
@@ -1064,7 +1087,7 @@ export const GET_ADMINS = gql`
   }
 `;
 
-export const CREATE_ETH_ACCOUNT = gql(`
+export const CREATE_ETH_ACCOUNT = gql`
   mutation CreateEthAccount($input: CreateEthAccountInput!) {
     createEthAccount(input: $input) {
       document {
@@ -1072,9 +1095,9 @@ export const CREATE_ETH_ACCOUNT = gql(`
       }
     }
   }
-`)
+`
 
-export const CREATE_ADMIN = gql(`
+export const CREATE_ADMIN = gql`
   mutation CreateAdmin($input: CreateAdminInput!) {
     createAdmin(input: $input) {
       document {
@@ -1093,9 +1116,9 @@ export const CREATE_ADMIN = gql(`
       }
     }
   }
-`)
+`
 
-export const UPDATE_ADMIN = gql(`
+export const UPDATE_ADMIN = gql`
   mutation UpdateaAdmin($input: UpdateAdminInput!) {
     updateAdmin(input: $input) {
       document {
@@ -1114,10 +1137,47 @@ export const UPDATE_ADMIN = gql(`
       }
     }
   }
-`)
+`
+
+export const GET_USER_LIKES_AND_DISLIKES = gql`
+  query Account($id: ID!, $pageSize: Int!) {
+      node(id: $id) {
+        ... on EthAccount {
+          id
+          address
+          pinLikes(first: $pageSize) {
+            pageInfo {
+              startCursor
+              endCursor
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                pinID
+              }
+            }
+          }
+          pinDislikes(first: $pageSize) {
+            pageInfo {
+              startCursor
+              endCursor
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                pinID
+              }
+            }
+          }
+        }
+    }
+  }
+`
 
 
-export const CREATE_FEATURED = gql(`
+export const CREATE_FEATURED = gql`
   mutation CreateFeatured($input: CreateFeaturedInput!) {
     createFeatured(input: $input) {
       document {
@@ -1125,7 +1185,39 @@ export const CREATE_FEATURED = gql(`
       }
     }
   }
-`)
+`
+
+export const CREATE_PIN_LIKE = gql`
+  mutation CreatePinLike($input: CreatePinLikeInput!) {
+    createPinLike(input: $input) {
+      document {
+        id
+        pin {
+          id
+        }
+        owner {
+          address
+        }
+      }
+    }
+  }
+`
+
+export const CREATE_PIN_DISLIKE = gql`
+  mutation CreatePinDislike($input: CreatePinDislikeInput!) {
+    createPinDislike(input: $input) {
+      document {
+        id
+        pin {
+          id
+        }
+        owner {
+          address
+        }
+      }
+    }
+  }
+`
 
 export const pinCategories = [
   'TV Shows',
