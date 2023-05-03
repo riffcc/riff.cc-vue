@@ -9,7 +9,18 @@ export const websiteDataQueryParams = {
   pageSizeMedium,
   pageSizeMax
 }
-
+export const GET_WEBSITE = gql`
+  query WebsiteData($id: ID!) {
+    node(id: $id) {
+      ... on Website {
+        id
+        websiteName
+        image
+        description
+      }
+    }
+  }
+`
 export const GET_WEBSITE_DATA = gql`
   query WebsiteData($id: ID!, $pageSize: Int!) {
     node(id: $id) {
@@ -468,10 +479,6 @@ export const AdminFragment = gql`
     }
     super
     inactive
-    metadata {
-      createdAt
-      updatedAt
-    }
   }
 `
 export const UserFragment = gql`
@@ -527,35 +534,25 @@ export const CategoryFragment = gql`
     name
   }
 `
-export const GET_ADMINS = gql`
-  query GetAdmins($id: ID!, $pageSize: Int!) {
-    node(id: $id) {
-      ... on Website {
-        id
-        admins(first: $pageSize) {
-          edges {
-            node {
-              id
-              adminID
-              admin {
-                address
-                ensName
-              }
-              super
-              inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        adminsCount
-      }
+export const SubscriptionFragment = gql`
+  fragment SubscriptionFragment on Subscription {
+    id
+    subscribedID
+    subscribedWebsite {
+      id
+    }
+    inactive
+    metadata {
+      createdAt
+      updatedAt
     }
   }
-`;
-
+`
+export const PinFragment = gql`
+  fragment Pin on Pin {
+    id
+  }
+`
 export const GET_PINS = gql`
   query GetPins($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
@@ -697,70 +694,6 @@ export const GET_SUBSCRIPTIONS = gql`
           }
         }
         subscriptionsCount
-      }
-    }
-  }
-`;
-
-export const GET_USERS = gql`
-  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
-    node(id: $id) {
-      ... on Website {
-        id
-        users(first: $pageSize, after: $cursor) {
-          pageInfo {
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              address
-              ensName
-              pins(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                  }
-                }
-              }
-              pinsCount
-              pinLikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinLikesCount
-              pinDislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinDislikesCount
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        usersCount
       }
     }
   }
@@ -955,9 +888,238 @@ export const GET_PIN = gql(`
   }
 `)
 
+export const GET_SUBSCRIPTION_INDEX = gql(`
+  query SubscriptionIndex($pageSize: Int!) {
+    subscriptionIndex(first: $pageSize) {
+      pageInfo {
+        startCursor
+        endCursor
+      }
+      edges {
+        node {
+          id
+          subscribedID
+          subscribedWebsite {
+            id
+            websiteName
+            description
+            image
+          }
+          inactive
+          metadata {
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    }
+  }
+`)
+
 export const CREATE_PIECE = gql(`
   mutation CreatePiece($input: CreatePieceInput!) {
     createPiece(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+`)
+
+export const CREATE_SUBSCRIPTION = gql(`
+  mutation CreateSubscription($input: CreateSubscriptionInput!) {
+    createSubscription(input: $input) {
+      document {
+        id
+        subscribedID
+        subscribedWebsite {
+          id
+          websiteName
+          description
+          image
+        }
+        inactive
+        metadata {
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`)
+
+export const UPDATE_SUBSCRIPTION = gql(`
+  mutation UpdateSubscription($input: UpdateSubscriptionInput!) {
+    updateSubscription(input: $input) {
+      document {
+        id
+        subscribedID
+        subscribedWebsite {
+          id
+          websiteName
+          description
+          image
+        }
+        inactive
+        metadata {
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`)
+
+
+export const GET_USERS = gql`
+  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
+    node(id: $id) {
+      ... on Website {
+        id
+        users(first: $pageSize, after: $cursor) {
+          pageInfo {
+            startCursor
+            endCursor
+          }
+          edges {
+            node {
+              id
+              address
+              ensName
+              pins(first: $pageSize) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+              pinsCount
+              pinLikes(first: $pageSize) {
+                edges {
+                  node {
+                    id
+                    pin {
+                      id
+                    }
+                    owner {
+                      address
+                    }
+                  }
+                }
+              }
+              pinLikesCount
+              pinDislikes(first: $pageSize) {
+                edges {
+                  node {
+                    id
+                    pin {
+                      id
+                    }
+                    owner {
+                      address
+                    }
+                  }
+                }
+              }
+              pinDislikesCount
+              metadata {
+                createdAt
+                updatedAt
+              }
+            }
+          }
+        }
+        usersCount
+      }
+    }
+  }
+`;
+
+export const GET_ADMINS = gql`
+  query GetAdmins($id: ID!, $pageSize: Int!) {
+    node(id: $id) {
+      ... on Website {
+        id
+        admins(first: $pageSize) {
+          edges {
+            node {
+              id
+              adminID
+              admin {
+                address
+                ensName
+              }
+              super
+              inactive
+              metadata {
+                createdAt
+                updatedAt
+              }
+            }
+          }
+        }
+        adminsCount
+      }
+    }
+  }
+`;
+
+export const CREATE_ETH_ACCOUNT = gql(`
+  mutation CreateEthAccount($input: CreateEthAccountInput!) {
+    createEthAccount(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+`)
+
+export const CREATE_ADMIN = gql(`
+  mutation CreateAdmin($input: CreateAdminInput!) {
+    createAdmin(input: $input) {
+      document {
+        id
+        adminID
+        admin {
+          address
+          ensName
+        }
+        super
+        inactive
+        metadata {
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`)
+
+export const UPDATE_ADMIN = gql(`
+  mutation UpdateaAdmin($input: UpdateAdminInput!) {
+    updateAdmin(input: $input) {
+      document {
+        id
+        adminID
+        admin {
+          address
+          ensName
+        }
+        super
+        inactive
+        metadata {
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`)
+
+
+export const CREATE_FEATURED = gql(`
+  mutation CreateFeatured($input: CreateFeaturedInput!) {
+    createFeatured(input: $input) {
       document {
         id
       }
