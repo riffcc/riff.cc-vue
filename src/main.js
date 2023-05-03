@@ -17,7 +17,9 @@ import {
   HiClock,
   HiQuestionMarkCircle,
   HiEye,
-  HiX
+  HiX,
+  HiCreditCard,
+  HiUser
  } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
@@ -28,9 +30,9 @@ const cache = new InMemoryCache({
     Category: {
       keyFields: ['name'],
     },
-    // Admin: {
-    //   keyFields: ['admin', ['address']],
-    // },
+    Admin: {
+      keyFields: ['admin', ['address']],
+    },
     // Query: {
     //   queryType: true,
     //   fields: {
@@ -39,9 +41,9 @@ const cache = new InMemoryCache({
     //     },
     //   },
     // },
-    // Subscription: {
-    //   keyFields: ['subscribedID'],
-    // },
+    Subscription: {
+      keyFields: ['subscribedID'],
+    },
     // PinLike: {
     //   keyFields: ['owner', ['address'], 'pin', ['id']],
     // },
@@ -131,7 +133,9 @@ addIcons(
   HiClock,
   HiQuestionMarkCircle,
   HiEye,
-  HiX
+  HiX,
+  HiCreditCard,
+  HiUser
 );
 
 app.component("v-icon", OhVueIcon);
