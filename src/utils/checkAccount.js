@@ -19,7 +19,8 @@ function checkAddressInAdmins(address, edges) {
     if (edge.node.admin.address === address) {
       return {
         exist: true,
-        id: edge.node.id
+        id: edge.node.id,
+        super: edge.node.super ? true : false
       }
     }
   }
@@ -34,9 +35,9 @@ async function checkAccount(getUsers, address, users) {
   if (!firstCheck.exists) {
     let newEndCursor = users.pageInfo.endCursor;
     while (newEndCursor !== null) {
-      const { endCursor, users } = await getUsers({ cursor: newEndCursor });
-      newEndCursor = endCursor;
-      const secondCheck = checkAddressInUsers(address, users);
+      const { data } = await getUsers({ cursor: newEndCursor });
+      newEndCursor = data.node.users.pageInfo.endCursor;
+      const secondCheck = checkAddressInUsers(address, data.node.users.edges);
       if (secondCheck.exists) {
         return secondCheck.id
       }

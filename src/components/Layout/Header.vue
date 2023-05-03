@@ -30,119 +30,15 @@
 
 <script setup>
 import { inject, watch } from "vue";
-import gql from "graphql-tag"
 import { useApolloClient } from '@vue/apollo-composable'
 import { useWalletStore } from "../../stores/wallet"
 import auth3IDConnect from '../../utils/auth3IDConnect'
-import { checkAddressInAdmins, checkAccount} from '../../utils/checkAccount'
+import { checkAddressInAdmins, checkAccount } from '../../utils/checkAccount'
+import { GET_USERS, GET_ADMINS, CREATE_ETH_ACCOUNT } from '../../utils/constants'
 import createCeramicClient from "../../utils/createCeramicClient"
 import Connect from "../Layout/Connect.vue"
 
 const id = import.meta.env.VITE_WEBSITE_ID
-
-const GET_USERS = gql`
-  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
-    node(id: $id) {
-      ... on Website {
-        id
-        users(first: $pageSize, after: $cursor) {
-          pageInfo {
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              address
-              ensName
-              pins(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                  }
-                }
-              }
-              pinsCount
-              pinLikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinLikesCount
-              pinDislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinDislikesCount
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        usersCount
-      }
-    }
-  }
-`;
-
-const GET_ADMINS = gql`
-  query GetAdmins($id: ID!, $pageSize: Int!) {
-    node(id: $id) {
-      ... on Website {
-        id
-        admins(first: $pageSize) {
-          edges {
-            node {
-              id
-              adminID
-              admin {
-                address
-                ensName
-              }
-              super
-              inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        adminsCount
-      }
-    }
-  }
-`;
-
-const CREATE_ETH_ACCOUNT = gql(`
-  mutation CreateEthAccount($input: CreateEthAccountInput!) {
-    createEthAccount(input: $input) {
-      document {
-        id
-      }
-    }
-  }
-`)
-
 
 const { resolveClient } = useApolloClient();
 const walletStore = useWalletStore();
@@ -165,15 +61,17 @@ watch(() => walletStore.address, async (address) => {
 
     const client = resolveClient()
 
-
     const getUsers = async (variables) => {
       return await client.query({
         query: GET_USERS,
-        variables,
+        variables: {
+          id,
+          pageSize: 1,
+          ...variables
+        },
         fetchPolicy: 'no-cache'
       })
     }
-
 
     const getAdmins = async () => {
       return await client.query({
@@ -186,14 +84,8 @@ watch(() => walletStore.address, async (address) => {
       })
     }
 
-
-    const resultGetUsers = await getUsers({
-      id,
-      pageSize: 1
-    })
-
+    const resultGetUsers = await getUsers()
     const accountId = await checkAccount(getUsers, address, resultGetUsers.data.node.users)
-
     if (accountId) {
       walletStore.accountId = accountId;
       const resultGetAdmins = await getAdmins()
@@ -201,6 +93,7 @@ watch(() => walletStore.address, async (address) => {
       if (resultCheckAdmin.exist) {
         walletStore.isAdmin = true
         walletStore.adminId = resultCheckAdmin.id
+        walletStore.adminIsSuper = resultCheckAdmin.super
       }
     } else {
       const resultCreateEthAccount = await client.mutate({
@@ -218,8 +111,7 @@ watch(() => walletStore.address, async (address) => {
           },
         }
       });
-      console.log('result of createEthAccount', resultCreateEthAccount)
-      // walletStore.accountId = data.node.id;
+      walletStore.accountId = resultCreateEthAccount.data.createEthAccount.document.id;
     }
 
   } else {
