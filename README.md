@@ -1,14 +1,5 @@
 # riff.cc-vue
 
-tooltip component
-refetch pins after edit
-error on edit pin abount details
-after upload, update cache
-test add admin when account already is user
-when add admin, if alreadyIsAdmin y alreadyAdminInactive, updateAdmin
-refect admins after add admin
-update submit button on edit modal pin disable conditions
-
 [![Contributors](https://img.shields.io/opencollective/all/riffcc?style=flat-square)](https://opencollective.com/riffcc)
 
 # Riff.CC on Ceramic (ComposeDB)
