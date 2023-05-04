@@ -109,13 +109,13 @@ const {
 });
 
 useQuery(GET_CATEGORIES, { id, pageSize: 50 })
-provide('refetchPins', refetchPins)
+
 
 const {
   result: subscriptionIndexResult,
   loading: subscriptionIndexLoading,
   error: subscriptionIndexError,
-  fetchMore: fetchMoreSubscriptionIndex
+  fetchMore: fetchMoreSubscriptionIndex,
 } = useQuery(GET_SUBSCRIPTION_INDEX, {
   pageSize: websiteDataQueryParams.pageSizeMedium
 });
@@ -124,11 +124,14 @@ const {
   result: subscriptionResult,
   loading: subscriptionLoading,
   error: subscriptionError,
-  fetchMore: fetchMoreSubscription
+  fetchMore: fetchMoreSubscription,
+  refetch: refetchSubscriptions
 } = useQuery(GET_SUBSCRIPTIONS, {
   id,
   pageSize: websiteDataQueryParams.pageSizeMedium
 });
+provide('refetchPins', refetchPins)
+provide('refetchSubscriptions', refetchSubscriptions)
 
 const pieces = computed(() => {
   if (!walletStore.address || !walletStore.accountId || !(pinsResult.value.node.pins.edges.length > 0)) {

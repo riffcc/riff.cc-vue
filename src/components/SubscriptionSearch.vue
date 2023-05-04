@@ -10,18 +10,19 @@
       <button
         class='w-fit sm:w-20 px-1.5 h-10 uppercase text-sm font-semibold border border-slate-500 disabled:text-slate-400'
         @click="handleOnSearch"
-        :disabled="!siteID || loading || !isValidID"
+        :disabled="!siteID || loading || !isValidID || isEqualToOwnSite"
       >
         Search
       </button>
     </div>
-    <p v-if="siteID && !isValidID" class="text-xs absolute -bottom-7 inset-x-0 w-fit mx-auto text-red-400">You can't subscribe to your own site.</p>
+    <p v-if="siteID && isEqualToOwnSite" class="text-xs absolute -bottom-3 inset-x-0 w-fit mx-auto text-red-400">You can't subscribe to your own site.</p>
+    <p v-else-if="siteID && !isValidID" class="text-xs absolute -bottom-3 inset-x-0 w-fit mx-auto text-red-400">Invalid site ID.</p>
     <div
-      v-if="showResult"
+      v-if="siteID && showResult"
       class="absolute inset-x-0 -mt-3 bg-slate-900 border border-slate-500 z-10 w-full md:w-[29.5rem] mx-auto py-5 flex"
       @mouseleave="delayHideResult"
     >
-      <SubscriptionItem v-if="siteID && site && site.node" :subscription="site.node" :isSubscribed="isSubscribed" />
+      <SubscriptionItem v-if="site && site.node" :subscription="site.node" :isSubscribed="isSubscribed" />
       <p v-else class="m-auto text-sm">No website found.</p>
     </div>
   </div>
@@ -40,11 +41,12 @@ const props = defineProps({
   subscriptionList: Array
 })
 
-const {load: getWebsite, result: site} = useLazyQuery(GET_WEBSITE)
+const {load: getWebsite, result: site, restart} = useLazyQuery(GET_WEBSITE)
+const isEqualToOwnSite = computed(() => {
+  return id === siteID.value
+})
 const isValidID = computed(() => {
-  return !!(
-    id !== siteID.value
-  )
+  return !!(siteID && siteID.value.length === 63 && siteID.value.startsWith('k'))
 })
 
 
@@ -53,6 +55,7 @@ const hideResult = () => showResult.value = false
 const delayHideResult = () => {
   setTimeout(() => {
     hideResult()
+    restart()
     siteID.value = null
   }, 700)
   
@@ -67,8 +70,11 @@ const isSubscribed = computed(() => {
 })
 
 const handleOnSearch = async () => {
+  if(!siteID.value) {
+    return
+  }
   hideResult()
-  getWebsite(GET_WEBSITE, { id: siteID })
+  getWebsite(GET_WEBSITE, { id: siteID.value })
   openResult()
 }
 

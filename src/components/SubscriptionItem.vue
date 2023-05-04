@@ -2,7 +2,7 @@
   <div class="flex items-center gap-1 justify-center w-[21rem] sm:w-[26rem] px-2 mx-auto">
     <div class="h-24 w-24 sm:h-28 sm:w-28 border-slate-800 border relative flex">
       <img v-if="subscription.image" :src="`https://${ipfsGateway}/ipfs/${subscription.image}`" alt="" class="my-auto">
-      <v-icon v-else name="hi-credit-card" class="h-12 w-12 text-slate-200" />
+      <v-icon v-else name="hi-credit-card" class="h-20 w-20 text-slate-200 m-auto" />
     </div>
     <div class="border-slate-800 border h-24 sm:h-28 px-2 py-1 flex-1">
       <div class="flex items-center justify-between w-full h-8">
@@ -32,6 +32,7 @@
 <script setup>
 import { useMutation, useApolloClient } from '@vue/apollo-composable';
 import { CREATE_SUBSCRIPTION, SubscriptionFragment, UPDATE_SUBSCRIPTION } from '../utils/constants';
+import { inject } from 'vue';
 
 const props = defineProps({
   subscription: Object,
@@ -40,7 +41,7 @@ const props = defineProps({
 
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const websiteID = import.meta.env.VITE_WEBSITE_ID
-
+const refetchSubscriptions = inject('refetchSubscriptions')
 const { resolveClient } = useApolloClient()
 const { mutate: createSubscription } = useMutation(CREATE_SUBSCRIPTION, {
   variables: {
@@ -87,6 +88,7 @@ const handleOnSubscribe = async () => {
     } else {
       await createSubscription()
     }
+    refetchSubscriptions()
   } catch (error) {
     console.log('error on handleSubscribe', error)
   }
