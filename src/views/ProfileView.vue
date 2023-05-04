@@ -45,7 +45,7 @@ const {
 });
 
 const pieces = computed (() => {
-  if (!walletStore.address || !walletStore.accountId || !(pinsResult.value.node.pins.edges.length > 0)) {
+  if (!walletStore.address || !walletStore.accountId || !pinsResult.value || !(pinsResult.value.node.pins.edges.length > 0)) {
     return {
       approved: [],
       pending: [],
