@@ -1,14 +1,14 @@
 <template>
   <div class='h-20 relative'>
-    <div class='flex items-center justify-center gap-2  h-full'>
+    <div class='flex items-center justify-center gap-2 h-full'>
       <input
         type="text"
-        class='form-input w-96 bg-slate-800 h-9 px-1.5'
+        class=' sm:w-80 md:w-96 bg-slate-800 h-9 px-1.5'
         placeholder='Site ID'
         v-model="siteID"
       />
       <button
-        class='w-20 h-10 uppercase text-sm font-semibold border border-slate-500 disabled:text-slate-400'
+        class='w-fit sm:w-20 px-1.5 h-10 uppercase text-sm font-semibold border border-slate-500 disabled:text-slate-400'
         @click="handleOnSearch"
         :disabled="!siteID || loading"
       >
@@ -17,7 +17,7 @@
     </div>
     <div
       v-if="showResult"
-      class="absolute inset-x-0 -mt-3 bg-slate-900 border border-slate-500 z-10 w-[29.5rem] mx-auto py-5 flex"
+      class="absolute inset-x-0 -mt-3 bg-slate-900 border border-slate-500 z-10 w-full md:w-[29.5rem] mx-auto py-5 flex"
       @mouseleave="delayHideResult"
     >
       <SubscriptionItem v-if="siteID && site" :subscription="site.node" :isSubscribed="isSubscribed" />

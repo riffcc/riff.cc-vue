@@ -1,13 +1,11 @@
 <template>
-  <li>
-    <div class="flex items-center justify-between gap-1">
-      <p v-if="admin.super" class="text-sm">🇸</p>
+  <li class="flex items-center justify-between gap-1 h-7">
+      <p v-if="admin.super" class="text-xs">🇸</p>
       <v-icon v-else name="hi-user" class="h-4 w-4" />
-      <p class="font-medium">{{ admin.admin.address }}</p>
-      <button @click="handleDelete">
-        <v-icon name="hi-trash" class="h-4 w-4 text-red-400 hover:cursor-pointer" />
+      <p class="font-medium text-xs sm:text-sm">{{ admin.admin.address }}</p>
+      <button @click="handleDelete" class="flex">
+        <v-icon name="hi-trash" class="h-4 w-4 text-red-400 hover:cursor-pointer my-auto" />
       </button>
-    </div>
   </li>
 </template>
 

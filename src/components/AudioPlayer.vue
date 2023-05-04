@@ -6,7 +6,7 @@
     <div v-if="selectedAudio" class="audio-player my-auto w-full">
       <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" autoplay></audio>
       <p class="text-center text-lg font-medium mb-2">{{ selectedAudio.name }}</p>
-      <div class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-10 px-4 gap-2">
+      <div class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-4 sm:mx-10 px-4 gap-2">
         <button @click="togglePlay">
           <v-icon v-if="isPlaying" name="hi-pause" class="h-8 w-8 mt-0.5 text-slate-50" />
           <v-icon v-else name="hi-play" class="h-8 w-8 mt-0.5 text-slate-50" />

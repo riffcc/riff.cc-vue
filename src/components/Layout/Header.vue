@@ -1,22 +1,64 @@
 <template>
   <header class="bg-slate-800 h-14 flex items-center px-6 justify-between text-slate-50 relative">
     <p class="w-1/6 text-2xl font-bold text-white">Riff.CC</p>
-    <div class="flex justify-center gap-6">
-      <div>
-        <RouterLink to="/" exact class="router-link" :class="{ 'text-cyan-200': $route.path === '/' }">Home</RouterLink>
-      </div>
-      <div>
-        <RouterLink to="/upload" class="router-link" :class="{ 'text-cyan-200': $route.path === '/upload' }">Upload
-        </RouterLink>
-      </div>
-      <div v-if="walletStore.accountId">
-        <RouterLink to="/profile" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }">My Pins
-        </RouterLink>
-      </div>
-      <div v-if="walletStore.isAdmin">
-        <RouterLink to="/admin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }">Admin Website
-        </RouterLink>
-      </div>
+    <div v-if="isGreatherThanSmall" class="flex gap-4">
+      <button
+        :class="{ 'text-cyan-200': $route.path === '/' }"
+        @click="() => $router.push('/')"
+      > 
+        Home
+      </button>
+      <button
+        :class="{ 'text-cyan-200': $route.path === '/upload' }"
+        @click="() => $router.push('/upload')"
+      >
+        Upload
+      </button>
+      <button 
+        v-if="walletStore.accountId" class="router-link" 
+        :class="{ 'text-cyan-200': $route.path === '/profile' }"
+        @click="() => $router.push('/profile')"
+      >
+        My Pins
+      </button>
+      <button 
+        v-if="walletStore.isAdmin" class="router-link" 
+        :class="{ 'text-cyan-200': $route.path === '/admin' }"
+        @click="() => $router.push('/admin')"
+      >
+          Admin Website
+      </button>
+    </div>
+    <button v-else @click="toggleMenu">
+      <v-icon name="hi-menu" class="h-7 w-8 text-slate-50" />
+    </button>
+    <div v-if="showMenu" class="fixed inset-x-0 top-14 mx-auto z-10 bg-gray-900 border border-slate-700 rounded-xl w-40 grid py-4">
+      <button
+        :class="{ 'text-cyan-200': $route.path === '/' }"
+        @click="() => redirect('/')"
+      > 
+        Home
+      </button>
+      <button
+        :class="{ 'text-cyan-200': $route.path === '/upload' }"
+        @click="() => redirect('/upload')"
+      >
+        Upload
+      </button>
+      <button 
+        v-if="walletStore.accountId" class="router-link" 
+        :class="{ 'text-cyan-200': $route.path === '/profile' }"
+        @click="() => redirect('/profile')"
+      >
+        My Pins
+      </button>
+      <button 
+        v-if="walletStore.isAdmin" class="router-link" 
+        :class="{ 'text-cyan-200': $route.path === '/admin' }"
+        @click="() => redirect('/admin')"
+      >
+          Admin Website
+      </button>
     </div>
     <div class="w-1/6 grow-0 shrink-0 flex justify-end">
       <p v-if="walletStore.formattedAddress" class="text-slate-50 font-medium hover:cursor-pointer"
@@ -29,7 +71,7 @@
 </template>
 
 <script setup>
-import { inject, watch } from "vue";
+import { inject, ref, watch } from "vue";
 import { useApolloClient } from '@vue/apollo-composable'
 import { useWalletStore } from "../../stores/wallet"
 import auth3IDConnect from '../../utils/auth3IDConnect'
@@ -37,9 +79,27 @@ import { checkAddressInAdmins, checkAccount } from '../../utils/checkAccount'
 import { GET_USERS, GET_ADMINS, CREATE_ETH_ACCOUNT } from '../../utils/constants'
 import createCeramicClient from "../../utils/createCeramicClient"
 import Connect from "../Layout/Connect.vue"
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { useRouter } from "vue-router";
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isGreatherThanSmall = breakpoints.greater("sm");
+
+watch(isGreatherThanSmall, () => {
+  showMenu.value = false
+})
+
+const router = useRouter()
+
+const showMenu = ref(false)
+const toggleMenu = () => showMenu.value = !showMenu.value
+
+const redirect = (route) => {
+  router.push(route)
+  showMenu.value = false
+}
 
 const id = import.meta.env.VITE_WEBSITE_ID
-
 const { resolveClient } = useApolloClient();
 const walletStore = useWalletStore();
 const initialCeramicClient = inject("ceramic");

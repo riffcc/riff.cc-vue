@@ -1,5 +1,5 @@
 <template>
-  <div class="grid w-[25rem] h-48">
+  <div class="grid w-80 sm:w-[25rem] h-48 mx-auto">
     <p class="font-medium mx-auto">New admin</p>
     <div class="py-4 relative mb-2">
       <p class="text-sm mb-1 ml-1">Address:</p>

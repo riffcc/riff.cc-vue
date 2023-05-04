@@ -1,26 +1,26 @@
 <template>
-  <main class="bg-gray-900 min-h-screen p-10 text-white">
+  <main class="bg-gray-900 min-h-screen py-6 sm:py-10 px-4 sm:px-10 text-white">
     <div v-if="walletStore.address && walletStore.accountId && walletStore.isAdmin" class="grid h-full gap-3">
       <div class="flex flex-col gap-3">
-        <h1 class='font-bold text-xl border-b border-slate-500 pb-2'>Content</h1>
-        <p class="font-semibold ml-4 text-lg text-center">Approved</p>
+        <h1 class='font-bold text-lg sm:text-xl border-b border-slate-500 pb-2'>Content</h1>
+        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Approved</p>
         <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
           <PieceList v-if="pieces.approved.length > 0" :list="pieces.approved" table />
           <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
         </div>
-        <p class="font-semibold ml-4 text-lg text-center">Pending</p>
+        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Pending</p>
         <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
           <PieceList v-if="pieces.pending.length > 0" :list="pieces.pending" table />
           <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
         </div>
-        <p class="font-semibold ml-4 text-lg text-center">Rejected</p>
+        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Rejected</p>
         <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
           <PieceList v-if="pieces.rejected.length > 0" :list="pieces.rejected" table />
           <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
         </div>
       </div>
       <div class='flex flex-col w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-xl flex-none mb-2'>Subscriptions</h1>
+        <h1 class='font-bold text-lg sm:text-xl flex-none mb-2'>Subscriptions</h1>
         <div class='grid border-t border-slate-500 py-4 min-h-[20rem]'>
           <SubscriptionSearch :subscriptionList="subscriptionList" />
           <SubscriptionList 
@@ -31,16 +31,16 @@
         </div>
       </div>
       <div class='flex flex-col w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-xl flex-none mb-2'>Featured</h1>
+        <h1 class='font-bold text-lg sm:text-xl flex-none mb-2'>Featured</h1>
         <div class='grid border-t border-slate-500 py-4 min-h-[20rem]'>
           <NewFeatured />
         </div>
       </div>
       <div v-if="walletStore.adminIsSuper" class='grid w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-xl mb-2'>Admins</h1>
+        <h1 class='font-bold text-lg sm:text-xl mb-2'>Admins</h1>
         <div class="flex flex-col lg:flex-row justify-center items-center py-10 border-t border-slate-500  min-h-[20rem] gap-10">
           <NewAdmin :refetchAdmins="refetchAdmins" />
-          <div class='w-[25rem]'>
+          <div class='w-80 sm:w-[25rem] mx-auto'>
             <AdminList v-if="adminList && adminList.length > 0" :list="adminList" />
             <p v-else class='m-auto text-sm text-center'>No extra admins found.</p>
           </div>

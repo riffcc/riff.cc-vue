@@ -1,6 +1,6 @@
 <template>
-  <div class="w-40">
-    <div class="h-36 w-36 relative mx-auto border rounded-lg">
+  <div>
+    <div class="h-28 w-28 md:h-32 md:w-32 relative mx-auto border rounded-xl">
       <a
         v-if="pin.piece.details?.imageThumbnailCID"
         :href="`https://ipfs.io/ipfs/${pin.piece.details?.imageThumbnailCID}`" 
@@ -13,7 +13,7 @@
       </div>
     </div>
     <button @click="$router.push(`/pin/${pin.id}`)" class="w-full h-8">
-      <p class="text-xs mt-2 text-center font-medium text-slate-50 hover:cursor-pointer">{{ pin.piece?.name }}</p>
+      <p class="text-xs md:text-sm mt-2 text-center font-medium text-slate-50 hover:cursor-pointer">{{ pin.piece?.name }}</p>
     </button>
   </div>
 </template>

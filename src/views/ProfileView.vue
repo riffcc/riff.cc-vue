@@ -1,17 +1,17 @@
 <template>
-  <main class="bg-gray-900 min-h-screen p-10 text-white">
+  <main class="bg-gray-900 min-h-screen py-6 sm:py-10 px-4 sm:px-10 text-white">
     <div v-if="walletStore.address && walletStore.accountId" class="grid h-full gap-3">
-      <p class="font-semibold ml-4 text-lg flex-none">Approved</p>
+      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Approved</p>
       <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
         <PieceList v-if="pieces.approved.length > 0" :list="pieces.approved" table />
         <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
       </div>
-      <p class="font-semibold ml-4 text-lg flex-none">Pending</p>
+      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Pending</p>
       <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
         <PieceList v-if="pieces.pending.length > 0" :list="pieces.pending" table />
         <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
       </div>
-      <p class="font-semibold ml-4 text-lg flex-none">Rejected</p>
+      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Rejected</p>
       <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
         <PieceList v-if="pieces.rejected.length > 0" :list="pieces.rejected" table />
         <p v-else class="m-auto text-sm text-slate-200">No items found.</p>

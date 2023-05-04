@@ -17,6 +17,7 @@
     "@composedb/client": "^0.4.3",
     "@headlessui/vue": "^1.7.13",
     "@vue/apollo-composable": "^4.0.0-beta.4",
+    "@vueuse/core": "^10.1.2",
     "@wagmi/core": "^0.10.9",
     "@web3modal/ethereum": "^2.3.0",
     "@web3modal/html": "^2.3.0",

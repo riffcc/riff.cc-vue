@@ -1,5 +1,5 @@
 <template>
-  <div class="grid lg:grid-cols-2 gap-3 mt-4 px-24">
+  <div class="grid lg:grid-cols-2 gap-3 mt-4 px-2 sm:px-12">
     <SubscriptionItem 
       v-for="subscription in subscriptionList" 
       :key="subscription.node.id" 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-wrap justify-center py-8 gap-2 content-evenly">
+  <div class="flex-1 flex flex-wrap justify-evenly md:justify-center py-4 gap-4 md:gap-8 items-center">
     <PieceTable v-if="table" :pins="list" />
     <PieceItem 
       v-else

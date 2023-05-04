@@ -1,53 +1,64 @@
 <template>
-  <div v-if="!loadingAction" class="flex w-full justify-center">
-    <button @click="handleApprove">
-      <v-icon 
-        v-if="walletStore.isAdmin && !pin.approved" 
-        name="hi-check-circle" 
-        class="text-green-400 h-4 w-4 mr-1" 
-      />
+  <button class="w-full" @click="toggleShowActions">
+    <v-icon name="hi-dots-vertical" class="h-6 w-6 text-slate-50" />
+  </button>
+  <div v-if="showActions" class="absolute right-6 sm:right-16 lg:right-20" @mouseleave="delayCloseActions">
+    <div class="grid w-24 py-1 border border-slate-600 rounded-lg bg-gray-900 ">
+    <button v-if="walletStore.isAdmin && !pin.approved"  @click="handleApprove">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-check-circle" 
+          class="text-green-400 h-4 w-4 mr-1 mt-0.25" 
+        />
+        Approve
+      </p>
     </button>
-    <button @click="openRejectionModal">
-      <v-icon 
-        v-if="walletStore.isAdmin && !pin.rejected" 
-        name="hi-x-circle" 
-        class="text-red-400 h-4 w-4 mr-1" 
-      />
+    <button v-if="walletStore.isAdmin && !pin.rejected" @click="openRejectionModal">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-x-circle" 
+          class="text-red-400 h-4 w-4 mr-1 mt-0.25" 
+        />
+        Reject
+      </p>
     </button>
-    <button @click="openEditModal">
-      <v-icon 
-        v-if="walletStore.isAdmin || (!walletStore.isAdmin && !pin.approved && !pin.rejected)" 
-        name="hi-pencil-alt" 
-        class="h-4 w-4 mr-1" 
-      />
+    <button v-if="walletStore.isAdmin || (!walletStore.isAdmin && !pin.approved && !pin.rejected)"  @click="openEditModal">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-pencil-alt" 
+          class="h-4 w-4 mr-1 mt-0.25" 
+        />
+        Edit
+      </p>
     </button>
-    <button @click="handleUnreject">
-      <v-icon 
-        v-if="walletStore.isAdmin && pin.rejected" 
-        name="hi-clock" 
-        class="text-blue-400 h-4 w-4 mr-1" 
-      />
+    <button v-if="walletStore.isAdmin && pin.rejected"  @click="handleUnreject">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-clock" 
+          class="text-blue-400 h-4 w-4 mr-1 mt-0.25" 
+        />
+        Unreject
+      </p>
     </button>
-    <button @click="handleDelete">
-      <v-icon 
-        v-if="walletStore.isAdmin" 
-        name="hi-trash" 
-        class="h-4 w-4 mr-1"
-      />
+    <button v-if="walletStore.isAdmin" @click="handleDelete">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-trash" 
+          class="h-4 w-4 mr-1 mt-0.25"
+        />
+        Delete
+      </p>
     </button>
-    <button>
-      <v-icon 
-        v-if="pin.rejected" 
-        name="hi-eye" 
-        class="h-4 w-4 mr-1"
-      />
+    <button v-if="pin.rejected && pin.rejectedReason">
+      <p class="text-sm inline-flex items-center justify-between w-full px-2">
+        <v-icon 
+          name="hi-eye" 
+          class="h-4 w-4 mr-1 mt-0.25"
+        />
+        Reject Reason
+      </p>
     </button>
-    <!-- <button @click="arre">
-      a
-    </button> -->
   </div>
-  <div v-else class="bg-gray-800 rounded animate-pulse w-full h-6">
-
   </div>
   <Modal v-if="showRejectionModal">
     <div class="h-44 w-80 bg-gray-900 m-auto border border-slate-400 rounded-lg px-6 py-4 relative">
@@ -103,6 +114,9 @@ const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 
 const { resolveClient } = useApolloClient()
 
+const showActions = ref(false)
+const toggleShowActions = () => showActions.value = !showActions.value
+const delayCloseActions = () => setTimeout(() => showActions.value = false, 600)
 const rejectionReason = ref(null)
 const showRejectionModal = ref(false)
 const openRejectionModal = () => showRejectionModal.value = true
@@ -113,7 +127,6 @@ const loadingAction = ref(false)
 
 const showEditModal = ref(false)
 const openEditModal = () => {
-  arre()
   uploadStore.name = props.pin.piece.name;
   uploadStore.CID = props.pin.piece.CID;
   uploadStore.category = props.pin.category.name;
@@ -136,6 +149,7 @@ const getPin = async (id) => {
 }
 
 const handleApprove = async () => {
+  showActions.value = false
   if (!walletStore.isAdmin || !walletStore.adminId) {
     return
   }
@@ -159,6 +173,7 @@ const handleApprove = async () => {
 }
 
 const handleReject= async () => {
+  showActions.value = false
   if (!walletStore.isAdmin || !walletStore.adminId) {
     return
   }
@@ -186,6 +201,7 @@ const handleReject= async () => {
 }
 
 const handleEdit = async () => {
+  showActions.value = false
   const apolloClient = resolveClient();
   try {
     loadingAction.value = true
@@ -237,6 +253,7 @@ const handleEdit = async () => {
 }
 
 const handleUnreject = async () => {
+  showActions.value = false
   if (!walletStore.isAdmin || !walletStore.adminId) {
     return
   }
@@ -260,6 +277,7 @@ const handleUnreject = async () => {
 }
 
 const handleDelete = async () => {
+  showActions.value = false
   if (!walletStore.isAdmin || !walletStore.adminId) {
     return
   }
@@ -287,7 +305,6 @@ const handleDelete = async () => {
   }
 }
 
-const arre = () => console.log(props.pin)
 
 </script>
 

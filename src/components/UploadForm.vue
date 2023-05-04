@@ -39,7 +39,7 @@
     </p>
     
     <p 
-      class=" ml-1 absolute text-xs text-green-400 -bottom-0.5 text-center w-full"
+      class="ml-1 absolute text-xs text-green-400 -bottom-0.5 text-center w-full"
       v-else-if="uploadStore.CID && uploadStore.category && uploadStore.contentIsValid"
     >
       Valid content.
@@ -55,7 +55,7 @@
       v-model="uploadStore.details.imageThumbnailCID" 
     />
     <p 
-      class="absolute text-xs text-red-400 -bottom-1"
+      class="ml-1 absolute text-xs text-red-400 -bottom-0.5 text-center w-full"
       v-if="uploadStore.details.imageThumbnailCID && uploadStore.details.imageThumbnailCID.length > 0 && !uploadStore.thumbnailIsValidCID"
     >
       Please enter a valid CIDv0 or CIDv1 ID.
@@ -78,9 +78,9 @@
   <div v-if="advancedIsOpen" class="absolute inset-0 z-10 flex h-full">
     <div class="bg-gray-900 w-[25rem] h-full rounded-lg relative">
       <button class="absolute right-6 top-4 text-slate-50 font-bold" @click="closeAdvanced">x</button>
-      <div class="pt-12 pb-8 px-4 h-5/6">
+      <div class="pt-12 pb-8 px-4 flex flex-col justify-between h-full">
         <p class="text-sm mb-2 text-center">Please fill out any extra information about the content that might be useful.</p>
-        <div v-if="uploadStore.category === 'Music'" class="grid py-4 h-full overflow-y-auto">
+        <div v-if="uploadStore.category === 'Music'" class="grid py-4 h-4/6 overflow-y-auto">
           <!-- <Label 
             :title="'Image/thumbnail IPFS CID:'"
             :info-icon="true"
@@ -179,7 +179,7 @@
             v-model="uploadStore.details.releaseDescription"
           />
         </div>
-        <div v-if="uploadStore.category === 'Movies'" class="grid py-4 h-full overflow-y-auto">
+        <div v-if="uploadStore.category === 'Movies'" class="grid py-4 h-4/6 overflow-y-auto">
           <Label 
             :title="'Image/thumbnail IPFS CID:'"
             :info-icon="true"

@@ -1,12 +1,14 @@
 <template>
-  <main class="bg-gray-900 h-screen p-10 text-white">
-    <div class="w-[25rem] border border-slate-400 px-6 pt-8 pb-12 m-auto rounded-lg relative">
+  <main class="bg-gray-900 h-screen py-10 px-4 text-white">
+    <div class="w-full sm:w-[25rem] border border-slate-400 px-6 pt-8 pb-12 m-auto rounded-lg relative">
       <p class="text-lg font-medium mb-4 text-center">Pin a new item</p>
       <div class='grid h-96'>
         <UploadForm />
         <button v-if="walletStore.accountId"
-          class="bg-cyan-500 px-4 py-2 rounded  disabled:cursor-default disabled:text-slate-300 disabled:bg-cyan-600"
-          @click="onSubmit" :disabled="!isAllowedToSubmit || uploadStore.isLoading">
+          class="bg-cyan-500 px-4 py-2 rounded  disabled:cursor-default disabled:text-slate-400 disabled:bg-cyan-900"
+          @click="onSubmit" 
+          :disabled="!isAllowedToSubmit || uploadStore.isLoading"
+        >
           <Spinner v-if="uploadStore.isLoading" :class="'h-5 w-5 text-slate-200 animate-spin m-auto'" />
           <p v-else class="font-medium">Submit</p>
         </button>
@@ -51,7 +53,10 @@ const isAllowedToSubmit = computed(() => (
   uploadStore.name &&
   uploadStore.CID &&
   uploadStore.category &&
-  uploadStore.isValidCID
+  uploadStore.details.imageThumbnailCID &&
+  uploadStore.isValidCID &&
+  !uploadStore.checkingContent &&
+  uploadStore.contentIsValid
 ));
 const websiteID = import.meta.env.VITE_WEBSITE_ID;
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
