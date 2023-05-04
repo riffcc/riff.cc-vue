@@ -21,7 +21,10 @@ import {
   HiCreditCard,
   HiUser,
   HiThumbUp,
-  HiThumbDown
+  HiThumbDown,
+  PrImage,
+  HiPlay,
+  HiPause
  } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
@@ -139,7 +142,10 @@ addIcons(
   HiCreditCard,
   HiUser,
   HiThumbUp,
-  HiThumbDown
+  HiThumbDown,
+  PrImage,
+  HiPlay,
+  HiPause
 );
 
 app.component("v-icon", OhVueIcon);
