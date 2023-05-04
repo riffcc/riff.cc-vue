@@ -20,6 +20,7 @@
     "@wagmi/core": "^0.10.9",
     "@web3modal/ethereum": "^2.3.0",
     "@web3modal/html": "^2.3.0",
+    "axios": "^1.4.0",
     "dids": "^4.0.1",
     "ethers": "^5",
     "graphql": "^16.6.0",
