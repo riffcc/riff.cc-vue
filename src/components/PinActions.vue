@@ -83,8 +83,11 @@
       <p class="text-lg font-medium mb-4 text-center">Edit item</p>
       <div class='grid h-96'>
         <UploadForm />
-        <button class="bg-cyan-500 px-4 py-2 rounded" @click="handleEdit">
-          Submit
+        <button 
+          class="bg-cyan-500 px-4 py-2 rounded disabled:cursor-default disabled:text-slate-400 disabled:bg-cyan-900" 
+          @click="handleEdit" :disabled="!isAllowedToEdit"
+        >
+          Edit
         </button>
       </div>
     </div>
@@ -98,7 +101,7 @@ import { useUploadStore } from '../stores/upload';
 import mutatePin from '../utils/mutatePin';
 import { useApolloClient } from '@vue/apollo-composable';
 import { CREATE_PIECE, GET_PIN } from '../utils/constants';
-import { ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import Modal from './Layout/Modal.vue'
 import CloseButton from './Layout/CloseButton.vue'
 import UploadForm from './UploadForm.vue'
@@ -124,24 +127,41 @@ const hideRejectionModal = () => showRejectionModal.value = false
 
 const loadingAction = ref(false)
 
-
+const refetchPins = inject('refetchPins')
 const showEditModal = ref(false)
 const openEditModal = () => {
+  uploadStore.reset()
   uploadStore.name = props.pin.piece.name;
   uploadStore.CID = props.pin.piece.CID;
   uploadStore.category = props.pin.category.name;
   if (props.pin.piece.details) {
-    uploadStore.details = props.pin.piece.details;
+    for (const [key, value] of Object.entries(props.pin.piece.details)) {
+      if(key === '__typename' || !value) {
+        continue
+      } else {
+        uploadStore.details[key] = value
+      }
+    }
   }
 
   showEditModal.value = true
 }
 const hideEditModal = () => showEditModal.value = false
 
-
+const isAllowedToEdit = computed(() => {
+  return !!(
+    uploadStore.name &&
+    uploadStore.CID &&
+    uploadStore.category &&
+    uploadStore.details.imageThumbnailCID &&
+    uploadStore.isValidCID &&
+    !uploadStore.checkingContent &&
+    uploadStore.contentIsValid
+  )
+});
 const getPin = async (id) => {
   const apolloClient = resolveClient()
-  await apolloClient.query({
+  return await apolloClient.query({
     query: GET_PIN,
     variables: { id, pageSize: 1000 },
     fetchPolicy: 'network-only'
@@ -242,7 +262,7 @@ const handleEdit = async () => {
     uploadStore.isLoading = false;
     hideEditModal()
     uploadStore.reset()
-    await getPin(resultMutatePin.pinID)
+    await refetchPins()
     loadingAction.value = false
   } catch (error) {
     console.log('error on createPin', error);

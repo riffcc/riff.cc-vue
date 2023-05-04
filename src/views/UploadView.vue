@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useUploadStore } from '../stores/upload';
 import { useWalletStore } from '../stores/wallet';
 import { 
@@ -49,15 +49,17 @@ import getCategoryID from '../utils/getCategoryId';
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();
 
-const isAllowedToSubmit = computed(() => (
-  uploadStore.name &&
-  uploadStore.CID &&
-  uploadStore.category &&
-  uploadStore.details.imageThumbnailCID &&
-  uploadStore.isValidCID &&
-  !uploadStore.checkingContent &&
-  uploadStore.contentIsValid
-));
+const isAllowedToSubmit = computed(() => {
+  return !!(
+    uploadStore.name &&
+    uploadStore.CID &&
+    uploadStore.category &&
+    uploadStore.details.imageThumbnailCID &&
+    uploadStore.isValidCID &&
+    !uploadStore.checkingContent &&
+    uploadStore.contentIsValid
+  )
+});
 const websiteID = import.meta.env.VITE_WEBSITE_ID;
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 
@@ -113,7 +115,9 @@ const onSubmit = async () => {
     setTimeout(() => uploadStore.isError = false, 4000);
   }
 }
-
+onMounted(() => {
+  uploadStore.reset()
+})
 
 </script>
 

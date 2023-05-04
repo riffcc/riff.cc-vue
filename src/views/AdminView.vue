@@ -71,9 +71,10 @@ import {
   GET_SUBSCRIPTION_INDEX, 
   GET_ADMINS, 
   GET_SUBSCRIPTIONS, 
-  websiteDataQueryParams 
+  websiteDataQueryParams, 
+GET_CATEGORIES
 } from "../utils/constants";
-import { computed } from "vue";
+import { computed, provide } from "vue";
 import { useWalletStore } from "../stores/wallet";
 import PieceList from "../components/PieceList.vue"
 import Connect from "../components/Layout/Connect.vue"
@@ -90,7 +91,8 @@ const {
   result: pinsResult,
   loading: pinsLoading,
   error: pinsError,
-  fetchMore: fetchMorePins
+  fetchMore: fetchMorePins,
+  refetch: refetchPins
 } = useQuery(GET_PINS, {
   id,
   pageSize: websiteDataQueryParams.pageSizeMedium
@@ -106,6 +108,8 @@ const {
   pageSize: websiteDataQueryParams.pageSizeMax
 });
 
+useQuery(GET_CATEGORIES, { id, pageSize: 50 })
+provide('refetchPins', refetchPins)
 
 const {
   result: subscriptionIndexResult,

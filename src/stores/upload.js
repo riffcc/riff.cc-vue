@@ -5,21 +5,21 @@ import getCIDContent from '../utils/getCIDContent';
 import getFileType from '../utils/getFileType';
 
 const detailsDefault = {
-  imageThumbnailCID: undefined,
-  tags: undefined,
-  musicBrainzID: undefined,
-  artistNames: undefined,
-  albumTitle: undefined,
-  initialReleaseYear: undefined,
-  releaseType: undefined,
-  format: undefined,
-  bitrate: undefined,
-  media: undefined,
-  releaseDescription: undefined,
-  poster: undefined,
-  TMDBID: undefined,
-  IMDBID: undefined,
-  type: undefined,
+  imageThumbnailCID: ref(undefined),
+  tags: ref(undefined),
+  musicBrainzID: ref(undefined),
+  artistNames: ref(undefined),
+  albumTitle: ref(undefined),
+  initialReleaseYear: ref(undefined),
+  releaseType: ref(undefined),
+  format: ref(undefined),
+  bitrate: ref(undefined),
+  media: ref(undefined),
+  releaseDescription: ref(undefined),
+  poster: ref(undefined),
+  TMDBID: ref(undefined),
+  IMDBID: ref(undefined),
+  type: ref(undefined),
 };
 
 export const useUploadStore = defineStore('upload', () => {
@@ -73,8 +73,8 @@ export const useUploadStore = defineStore('upload', () => {
 
       } else if (_category === "Videos") {
         const type = await getFileType(ipfsGateway, _CID)
-        if (!type.startsWith("video")) {
-          contentIsValid.value = false
+        if (type.startsWith("video")) {
+          contentIsValid.value = true
         }
       } else {
         contentIsValid.value = true
@@ -97,12 +97,14 @@ export const useUploadStore = defineStore('upload', () => {
     name.value = null;
     CID.value = null;
     category.value = null;
+    for (const key of Object.keys(detailsDefault)) {
+      detailsDefault[key].value = undefined
+    }
     details.value = detailsDefault
   }
 
   const resetDetails = () => {
     name.value = null;
-    CID.value = null;
     category.value = null;
     details.value = detailsDefault
   }
