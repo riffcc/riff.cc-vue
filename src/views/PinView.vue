@@ -64,7 +64,7 @@
               </div>
             </div>
             <div v-if="isVideo" class="w-full h-full md:p-4">
-              <video class="rounded-xl" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.CID}`" controls></video>
+              <video class="rounded-xl w-full" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.CID}`" controls></video>
             </div>
             <div v-else-if="musicAlbum.is" class="px-18">
               <ul

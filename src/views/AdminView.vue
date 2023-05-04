@@ -134,7 +134,7 @@ provide('refetchPins', refetchPins)
 provide('refetchSubscriptions', refetchSubscriptions)
 
 const pieces = computed(() => {
-  if (!walletStore.address || !walletStore.accountId || !(pinsResult.value.node.pins.edges.length > 0)) {
+  if (!walletStore.address || !walletStore.accountId || !pinsResult || !(pinsResult.value.node.pins.edges.length > 0)) {
     return {
       approved: [],
       pending: [],
