@@ -1,6 +1,6 @@
 <template>
-  <main class="bg-gray-900 h-screen py-10 px-4 text-white">
-    <div class="w-full sm:w-[25rem] border border-slate-400 px-6 pt-8 pb-12 m-auto rounded-lg relative">
+  <main class="bg-gray-900 h-screen py-10 px-2 text-white">
+    <div class="w-[21rem] sm:w-[25rem] border border-slate-400 px-4 sm:px-6 pt-8 pb-12 m-auto rounded-lg relative">
       <p class="text-lg font-medium mb-4 text-center">Pin a new item</p>
       <div class='grid h-96'>
         <UploadForm />
