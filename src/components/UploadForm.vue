@@ -4,27 +4,65 @@
     placeholder="Nyan Cat Meme" 
     name="name" 
     type="text" 
-    class="form-input bg-slate-800 mb-4 h-9 px-1.5"
+    class="form-input bg-slate-800 mb-5 h-9 px-1.5"
     v-model="uploadStore.name" 
   />
-  <p class="text-sm mb-1 ml-1">IPFS CID:</p>
+  <p class="text-sm mb-1 ml-1">Content CID:</p>
   <div class="relative">
     <input 
       placeholder="bafkreico2zlmcinytg2ri26o4mt73i25ikisd3vth6p4du5gcpek4fsace" 
       name="cid" 
       type="text"
-      class="form-input  w-full bg-slate-800 mb-4 h-9 px-1.5" 
+      class="form-input  w-full bg-slate-800 mb-5 h-9 px-1.5" 
       v-model="uploadStore.CID" 
     />
     <p 
+      class=" ml-1 absolute text-xs text-red-400 -bottom-0.5 text-center w-full"
+      v-if="uploadStore.CID && !uploadStore.isValidCID"
+    >
+      Please enter a valid CIDv0 or CIDv1 ID.
+    </p>
+    <p 
+      v-else-if="uploadStore.CID && uploadStore.checkingContent" 
+      class="absolute -bottom-0.5 inset-x-0 text-xs text-center inline-flex items-center justify-center gap-1"
+    >
+      <span>
+        <Spinner class="h-3 w-3 animate-spin text-slate-200" />
+      </span>
+      Checking content...
+    </p>
+    <p 
+      class=" ml-1 absolute text-xs text-red-400 -bottom-0.5 text-center w-full"
+      v-else-if="uploadStore.CID && uploadStore.category && !uploadStore.contentIsValid"
+    >
+      Invalid content type.
+    </p>
+    
+    <p 
+      class=" ml-1 absolute text-xs text-green-400 -bottom-0.5 text-center w-full"
+      v-else-if="uploadStore.CID && uploadStore.category && uploadStore.contentIsValid"
+    >
+      Valid content.
+    </p>
+  </div>
+  <p class="text-sm mb-1 ml-1">Image Thumbnail CID:</p>
+  <div class="relative">
+    <input 
+      placeholder="bafkreico2zlmcinytg2ri26o4mt73i25ikisd3vth6p4du5gcpek4fsace" 
+      name="cid" 
+      type="text"
+      class="form-input  w-full bg-slate-800 mb-5 h-9 px-1.5" 
+      v-model="uploadStore.details.imageThumbnailCID" 
+    />
+    <p 
       class="absolute text-xs text-red-400 -bottom-1"
-      v-if="uploadStore.CID && uploadStore.CID.length > 0 && !uploadStore.isValidCID"
+      v-if="uploadStore.details.imageThumbnailCID && uploadStore.details.imageThumbnailCID.length > 0 && !uploadStore.thumbnailIsValidCID"
     >
       Please enter a valid CIDv0 or CIDv1 ID.
     </p>
   </div>
   <p class="text-sm mb-1 ml-1">Category:</p>
-  <select class="form-select bg-slate-800 mb-4 h-9 px-1.5" v-model="uploadStore.category">
+  <select class="form-select bg-slate-800 mb-5 h-9 px-1.5" v-model="uploadStore.category">
     <option disabled hidden value="null">Select a category</option>
     <option v-for="category in pinCategories" :key="category" :value="category">
       {{ category }}
@@ -43,7 +81,7 @@
       <div class="pt-12 pb-8 px-4 h-5/6">
         <p class="text-sm mb-2 text-center">Please fill out any extra information about the content that might be useful.</p>
         <div v-if="uploadStore.category === 'Music'" class="grid py-4 h-full overflow-y-auto">
-          <Label 
+          <!-- <Label 
             :title="'Image/thumbnail IPFS CID:'"
             :info-icon="true"
             :content="'A thumbnail for the music, specified as an IPFS CID.'"
@@ -54,7 +92,7 @@
             type="text"
             class="form-input bg-slate-800 mb-4 h-9 px-1.5"
             v-model="uploadStore.details.imageThumbnailCID"
-          />
+          /> -->
           <Label 
             :title="'Tags:'"
             :info-icon="true"
@@ -205,6 +243,8 @@ import {
 } from '../utils/constants';
 import { useUploadStore } from '../stores/upload';
 import Label from '../components/Layout/Label.vue';
+import Spinner from '../components/Layout/Spinner.vue';
+
 
 const uploadStore = useUploadStore();
 

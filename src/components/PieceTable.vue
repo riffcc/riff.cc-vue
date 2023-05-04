@@ -3,9 +3,10 @@
     <tbody>
       <tr v-for="pin in pins" :key="pin.node.id" class="flex items-center justify-between px-10 h-20">
         <td class="w-1/6 flex">
-          <div class="w-20 m-auto">
-            <img :src="`https://ipfs.io/ipfs/${pin.node.piece.CID}`" alt="" />
+          <div v-if="pin.node.piece.details?.imageThumbnailCID" class="w-20 m-auto">
+            <img :src="`https://${ipfsGateway}/ipfs/${pin.node.piece.details?.imageThumbnailCID}`" alt="" />
           </div>
+          <v-icon v-else name="pr-image" class="h-12 w-12 m-auto" />
         </td>
         <td class="w-2/6">
           <p class="text-center">{{ pin.node.piece.name }}</p>
@@ -38,6 +39,7 @@ defineProps({
   pins: Array
 })
 
+const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 </script>
 
 <style scoped>
