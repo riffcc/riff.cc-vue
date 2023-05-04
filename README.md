@@ -1,5 +1,3 @@
-# riff.cc-vue
-
 [![Contributors](https://img.shields.io/opencollective/all/riffcc?style=flat-square)](https://opencollective.com/riffcc)
 
 # Riff.CC on Ceramic (ComposeDB)
