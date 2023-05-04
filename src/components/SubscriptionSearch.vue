@@ -10,17 +10,18 @@
       <button
         class='w-fit sm:w-20 px-1.5 h-10 uppercase text-sm font-semibold border border-slate-500 disabled:text-slate-400'
         @click="handleOnSearch"
-        :disabled="!siteID || loading"
+        :disabled="!siteID || loading || !isValidID"
       >
         Search
       </button>
     </div>
+    <p v-if="siteID && !isValidID" class="text-xs absolute -bottom-7 inset-x-0 w-fit mx-auto text-red-400">You can't subscribe to your own site.</p>
     <div
       v-if="showResult"
       class="absolute inset-x-0 -mt-3 bg-slate-900 border border-slate-500 z-10 w-full md:w-[29.5rem] mx-auto py-5 flex"
       @mouseleave="delayHideResult"
     >
-      <SubscriptionItem v-if="siteID && site" :subscription="site.node" :isSubscribed="isSubscribed" />
+      <SubscriptionItem v-if="siteID && site && site.node" :subscription="site.node" :isSubscribed="isSubscribed" />
       <p v-else class="m-auto text-sm">No website found.</p>
     </div>
   </div>
@@ -31,7 +32,7 @@ import { useLazyQuery } from '@vue/apollo-composable';
 import { computed, ref } from 'vue';
 import { GET_WEBSITE } from '../utils/constants';
 import SubscriptionItem from '../components/SubscriptionItem.vue'
-
+const id = import.meta.env.VITE_WEBSITE_ID;
 const siteID = ref(null)
 const showResult = ref(false)
 
@@ -40,6 +41,12 @@ const props = defineProps({
 })
 
 const {load: getWebsite, result: site} = useLazyQuery(GET_WEBSITE)
+const isValidID = computed(() => {
+  return !!(
+    id !== siteID.value
+  )
+})
+
 
 const openResult = () => showResult.value = true
 const hideResult = () => showResult.value = false
