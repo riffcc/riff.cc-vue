@@ -1,5 +1,5 @@
 <template>
-  <div class="grid w-full sm:w-[25rem] h-full mx-auto">
+  <div class="grid w-80 sm:w-[25rem] h-full mx-auto">
     <p class="font-medium mx-auto">New featured</p>
     <div class="h-24">
       <p class="text-sm mb-1 ml-1">Pin ID:</p>
