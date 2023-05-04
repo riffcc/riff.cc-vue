@@ -4,9 +4,9 @@
       <v-icon name="hi-x-circle" class="h-7 w-7 text-slate-50" />
     </button>
     <div v-if="selectedAudio" class="audio-player my-auto w-full">
-      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" autoplay></audio>
+      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" @loadeddata="onLoad"></audio>
       <p class="text-center text-lg font-medium mb-2">{{ selectedAudio.name }}</p>
-      <div class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-4 sm:mx-10 px-4 gap-2">
+      <div v-if="!isLoading" class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-4 sm:mx-10 px-4 gap-2">
         <button @click="togglePlay">
           <v-icon v-if="isPlaying" name="hi-pause" class="h-8 w-8 mt-0.5 text-slate-50" />
           <v-icon v-else name="hi-play" class="h-8 w-8 mt-0.5 text-slate-50" />
@@ -22,13 +22,14 @@
         {{ `${(audio.currentTime / 60).toFixed(2)}/${(audio.duration / 60).toFixed(2)}` }}
         </p>
       </div>
+      <div v-else class="h-14 mx-4 sm:mx-10 rounded-full bg-slate-700 animate-pulse"></div>
     </div>
   </div>
 </template>
 
 
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
   selectedAudio: Object,
@@ -40,21 +41,49 @@ const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 const audio = ref(null);
 const isPlaying = ref(false);
 const progress = ref(0);
+const isLoading = ref(true)
 
 const togglePlay = () => {
   if (isPlaying.value) {
-    audio.value.pause();
+    pause();
   } else {
-    audio.value.play();
+    play();
   }
-  isPlaying.value = !isPlaying.value;
+};
+
+watch(() => props.selectedAudio, (_audio) => {
+  if (!audio) {
+    return
+  }
+  isLoading.value = true
+})
+const onLoad = (e) => {
+  console.log(e);
+  play()
+}
+
+
+const pause = () => {
+  audio.value.pause();
+  isPlaying.value = false
+};
+
+const play = () => {
+  isLoading.value = false
+  if (progress.value !== 0) {
+    progress.value = 0
+  }
+  audio.value.play();
+  isPlaying.value = true
 };
 
 const updateProgress = () => {
-  const currentProgress = (audio.value.currentTime / audio.value.duration) * 100;
-  progress.value = currentProgress.toFixed(2);
-  if (isPlaying.value) {
-    requestAnimationFrame(updateProgress);
+  if (audio.value) {
+    const currentProgress = (audio.value.currentTime / audio.value.duration) * 100;
+    progress.value = currentProgress.toFixed(2);
+    if (isPlaying.value) {
+      requestAnimationFrame(updateProgress);
+    }
   }
 };
 
@@ -68,26 +97,18 @@ const onPause = () => {
 };
 
 const onClosePlayer = () => {
-  props.onCloseCallback()
-  progress.value = 0
+  pause()
   isPlaying.value = false;
+  progress.value = 0
+  props.onCloseCallback()
 }
 
 
-watch(audio, () => {
-  if (!audio.value) {
+watch(audio, (ref) => {
+  if (!ref) {
     return;
   }
-  audio.value.addEventListener('timeupdate', updateProgress);
-});
-
-onMounted(() => {
-  watch(audio, () => {
-    if (!audio.value) {
-      return;
-    }
-    audio.value.addEventListener('timeupdate', updateProgress);
-  });
+  ref.addEventListener('timeupdate', updateProgress);
 });
 
 onUnmounted(() => {
