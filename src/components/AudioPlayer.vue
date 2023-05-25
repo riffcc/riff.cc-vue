@@ -19,7 +19,7 @@
         <p 
           v-if="audio && audio.currentTime && audio.duration"
         >
-        {{ `${(audio.currentTime / 60).toFixed(2)}/${(audio.duration / 60).toFixed(2)}` }}
+        {{ `${formatTime(audio.currentTime)}/${formatTime(audio.duration)}` }}
         </p>
       </div>
       <div v-else class="h-14 mx-4 sm:mx-10 rounded-full bg-slate-700 animate-pulse"></div>
@@ -42,6 +42,13 @@ const audio = ref(null);
 const isPlaying = ref(false);
 const progress = ref(0);
 const isLoading = ref(true)
+
+const formatTime = (ms) => {
+  let [min, sec] = (ms / 60).toFixed(2).split('.')
+  sec = ((sec / 100) * 60).toFixed()
+  sec = sec < 10 ? `0${sec}` : sec
+  return `${min}:${sec}`
+}
 
 const togglePlay = () => {
   if (isPlaying.value) {
