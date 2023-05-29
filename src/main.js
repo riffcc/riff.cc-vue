@@ -26,7 +26,9 @@ import {
   HiPlay,
   HiPause,
   HiMenu,
-  HiDotsVertical
+  HiDotsVertical,
+  HiVolumeOff,
+  HiVolumeUp
  } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
@@ -149,7 +151,9 @@ addIcons(
   HiPlay,
   HiPause,
   HiMenu,
-  HiDotsVertical
+  HiDotsVertical,
+  HiVolumeOff,
+  HiVolumeUp
 );
 
 app.component("v-icon", OhVueIcon);

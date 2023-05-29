@@ -12,15 +12,18 @@
           <v-icon v-else name="hi-play" class="h-8 w-8 mt-0.5 text-slate-50" />
         </button>
         <div class="flex-1">
-          <div class="h-1.5 bg-gray-200 rounded-full">
+          <div id="progress-bar" ref="progressBar" class="h-1.5 bg-gray-200 rounded-full cursor-pointer w-full flex items-center">
             <div class="h-1.5 bg-blue-600 rounded-full" :style="{ width: progress + '%' }"></div>
           </div>
         </div>
         <p 
           v-if="audio && audio.currentTime && audio.duration"
+          class="text-sm"
         >
-        {{ `${formatTime(audio.currentTime)}/${formatTime(audio.duration)}` }}
+        {{ `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}` }}
         </p>
+        <v-icon v-if="audio.volume === 0" name="hi-volume-off" class="h-5 w-5 text-slate-50" @click="unmute" />
+        <v-icon v-else name="hi-volume-up" class="h-5 w-5 text-slate-50" @click="mute" />
       </div>
       <div v-else class="h-14 mx-4 sm:mx-10 rounded-full bg-slate-700 animate-pulse"></div>
     </div>
@@ -35,6 +38,7 @@ const props = defineProps({
   selectedAudio: Object,
   onCloseCallback: Function
 })
+
 
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 
@@ -74,6 +78,15 @@ const pause = () => {
   audio.value.pause();
   isPlaying.value = false
 };
+
+
+const mute = () => {
+  audio.value.volume = 0
+}
+
+const unmute = () => {
+  audio.value.volume = 1
+}
 
 const play = () => {
   isLoading.value = false
