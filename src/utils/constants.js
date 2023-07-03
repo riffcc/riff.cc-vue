@@ -21,6 +21,28 @@ export const GET_WEBSITE = gql`
     }
   }
 `
+
+export const GET_ACCOUNT_SETTINGS = gql`
+  query EthAccountSettings($id: ID!) {
+    node(id: $id) {
+      ... on EthAccount {
+        settings {
+          autoplay
+        }
+      }
+    }
+  }
+`
+
+export const CREATE_ARTIST = gql`
+  mutation CreateArtist($input: CreateArtistInput!){
+    createArtist(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+`
 export const GET_WEBSITE_DATA = gql`
   query WebsiteData($id: ID!, $pageSize: Int!) {
     node(id: $id) {
@@ -60,6 +82,10 @@ export const GET_WEBSITE_DATA = gql`
                 id
                 name
               }
+              artistID
+              artist {
+                name
+              }
               piece {
                 id
                 CID
@@ -74,7 +100,6 @@ export const GET_WEBSITE_DATA = gql`
                   poster
                   bitrate
                   albumTitle
-                  artistNames
                   releaseType
                   musicBrainzID
                   imageThumbnailCID
@@ -147,6 +172,10 @@ export const GET_WEBSITE_DATA = gql`
                         id
                         name
                       }
+                      artistID
+                      artist {
+                        name
+                      }
                       piece {
                         id
                         CID
@@ -161,7 +190,6 @@ export const GET_WEBSITE_DATA = gql`
                           poster
                           bitrate
                           albumTitle
-                          artistNames
                           releaseType
                           musicBrainzID
                           imageThumbnailCID
@@ -225,6 +253,9 @@ export const GET_WEBSITE_DATA = gql`
               id
               address
               ensName
+              settings {
+                autoplay
+              }
               pins(first: $pageSize) {
                 edges {
                   node {
@@ -286,6 +317,10 @@ export const GET_WEBSITE_DATA = gql`
                   id
                   name
                 }
+                artistID
+                artist {
+                  name
+                }
                 piece {
                   id
                   CID
@@ -300,7 +335,6 @@ export const GET_WEBSITE_DATA = gql`
                     poster
                     bitrate
                     albumTitle
-                    artistNames
                     releaseType
                     musicBrainzID
                     imageThumbnailCID
@@ -371,6 +405,10 @@ export const GET_WEBSITE_DATA = gql`
                       id
                       name
                     }
+                    artistID
+                    artist {
+                      name
+                    }
                     piece {
                       id
                       CID
@@ -385,7 +423,6 @@ export const GET_WEBSITE_DATA = gql`
                         poster
                         bitrate
                         albumTitle
-                        artistNames
                         releaseType
                         musicBrainzID
                         imageThumbnailCID
@@ -486,6 +523,9 @@ export const UserFragment = gql`
     id
     address
     ensName
+    settings {
+      autoplay
+    }
     pins(first: $pageSize) {
       edges {
         node {
@@ -577,6 +617,23 @@ export const GET_PINS = gql`
                 id
                 name
               }
+              artistID
+              artist {
+                name
+                pins(first: $pageSize) {
+                  edges {
+                    node {
+                      piece {
+                        name
+                        CID
+                        details {
+                          imageThumbnailCID
+                        }
+                      }
+                    }
+                  }
+                }
+              }
               piece {
                 id
                 CID
@@ -591,7 +648,6 @@ export const GET_PINS = gql`
                   poster
                   bitrate
                   albumTitle
-                  artistNames
                   releaseType
                   musicBrainzID
                   imageThumbnailCID
@@ -648,6 +704,10 @@ export const GET_SUBSCRIPTIONS = gql`
                         id
                         name
                       }
+                      artistID
+                      artist {
+                        name
+                      }
                       piece {
                         id
                         CID
@@ -662,7 +722,6 @@ export const GET_SUBSCRIPTIONS = gql`
                           poster
                           bitrate
                           albumTitle
-                          artistNames
                           releaseType
                           musicBrainzID
                           imageThumbnailCID
@@ -721,6 +780,10 @@ export const GET_FEATURED = gql`
                   id
                   name
                 }
+                artistID
+                artist {
+                  name
+                }
                 piece {
                   id
                   CID
@@ -735,7 +798,6 @@ export const GET_FEATURED = gql`
                     poster
                     bitrate
                     albumTitle
-                    artistNames
                     releaseType
                     musicBrainzID
                     imageThumbnailCID
@@ -825,6 +887,24 @@ export const GET_PIN = gql`
           id
           name
         }
+        artistID
+        artist {
+          name
+          pins(first: $pageSize) {
+            edges {
+              node {
+                id
+                piece {
+                  name
+                  CID
+                  details {
+                    imageThumbnailCID
+                  }
+                }
+              }
+            }
+          }
+        }
         piece {
           id
           CID
@@ -839,7 +919,6 @@ export const GET_PIN = gql`
             poster
             bitrate
             albumTitle
-            artistNames
             releaseType
             musicBrainzID
             imageThumbnailCID
@@ -1009,6 +1088,9 @@ export const GET_USERS = gql`
               id
               address
               ensName
+              settings {
+                autoplay
+              }
               pins(first: $pageSize) {
                 edges {
                   node {
@@ -1057,7 +1139,30 @@ export const GET_USERS = gql`
     }
   }
 `;
-
+export const GET_ARTISTS = gql`
+  query GetArtists($pageSize: Int!, $cursor: String) {
+    artistIndex(first: $pageSize, after: $cursor) {
+      pageInfo {
+        startCursor
+        endCursor
+      }
+      edges {
+        node {
+          id
+          name
+          pins(first: $pageSize) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+          pinsCount
+        }
+      }
+    }
+  }
+`;
 export const GET_ADMINS = gql`
   query GetAdmins($id: ID!, $pageSize: Int!) {
     node(id: $id) {
