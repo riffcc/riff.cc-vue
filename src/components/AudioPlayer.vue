@@ -3,19 +3,33 @@
     <button @click="onClosePlayer" class="absolute -top-2 right-2 bg-gray-900 rounded-full w-fit h-fit">
       <v-icon name="hi-x-circle" class="h-7 w-7 text-slate-50" />
     </button>
-    <div v-if="selectedAudio" class="audio-player my-auto w-full">
-      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" @loadeddata="onLoad"></audio>
+    <div v-if="selectedAudio" id="audio-player" class="my-auto w-full">
+      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" @loadeddata="onLoad" @ended="handleNext"></audio>
       <p class="text-center text-lg font-medium mb-2">{{ selectedAudio.name }}</p>
       <div v-if="!isLoading" class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-4 sm:mx-10 px-4 gap-2">
+        <button @click="handlePrevious">
+          <v-icon name="hi-rewind" class="h-7 w-7 mt-0.5 text-slate-50" />
+        </button>
         <button @click="togglePlay">
           <v-icon v-if="isPlaying" name="hi-pause" class="h-8 w-8 mt-0.5 text-slate-50" />
           <v-icon v-else name="hi-play" class="h-8 w-8 mt-0.5 text-slate-50" />
         </button>
-        <div class="flex-1">
-          <div id="progress-bar" ref="progressBar" class="h-1.5 bg-gray-200 rounded-full cursor-pointer w-full flex items-center">
+        
+        <button @click="handleNext">
+          <v-icon name="hi-fast-forward" class="h-7 w-7 mt-0.5 text-slate-50" />
+        </button>
+        <div class="flex-1 bg-slate-200 rounded-full cursor-pointer">
+          <div 
+            id="progress-bar"
+            class="h-1.5 flex items-center" 
+            @click="seekingTrack"
+          >
             <div class="h-1.5 bg-blue-600 rounded-full" :style="{ width: progress + '%' }"></div>
+            <div class="rounded-full w-4 h-4 bg-gray-200 border border-slate-700 -ml-0.5"></div>
           </div>
         </div>
+        
+        
         <p 
           v-if="audio && audio.currentTime && audio.duration"
           class="text-sm"
@@ -36,8 +50,19 @@ import { onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
   selectedAudio: Object,
-  onCloseCallback: Function
+  onCloseCallback: Function,
+  handleNext: Function,
+  handlePrevious: Function
 })
+
+const seekingTrack = (e) => {
+  pause();
+  const targetPercent = parseFloat((e.offsetX / e.target.parentElement.offsetWidth).toFixed(4));
+  const targetCurrenTime = audio.value.duration * targetPercent;
+  audio.value.currentTime = parseInt(targetCurrenTime);
+
+  resume();
+};
 
 
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
@@ -79,12 +104,18 @@ const pause = () => {
   isPlaying.value = false
 };
 
+const resume = () => {
+  audio.value.play();
+  isPlaying.value = true
+};
 
 const mute = () => {
+    console.log(audio.value);
   audio.value.volume = 0
 }
 
 const unmute = () => {
+    console.log(audio.value);
   audio.value.volume = 1
 }
 
@@ -122,7 +153,6 @@ const onClosePlayer = () => {
   progress.value = 0
   props.onCloseCallback()
 }
-
 
 watch(audio, (ref) => {
   if (!ref) {
