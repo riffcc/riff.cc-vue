@@ -12,15 +12,20 @@
         <v-icon name="pr-image" class="h-20 w-20 m-auto text-slate-300" />
       </div>
     </div>
-    <button @click="$router.push(`/pin/${pin.id}`)" class="w-full h-8">
+    <button @click="handleOnClick" class="w-full h-8">
       <p class="text-xs md:text-sm mt-2 text-center font-medium text-slate-50 hover:cursor-pointer">{{ pin.piece?.name }}</p>
     </button>
   </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 
-defineProps({
+const router = useRouter()
+const handleOnClick = () => {
+  router.push(`/pin/${props.pin.id}`)
+}
+const props = defineProps({
   pin: Object
 })
 </script>

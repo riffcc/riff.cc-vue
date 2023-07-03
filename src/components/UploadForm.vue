@@ -123,7 +123,7 @@
             name="artist-names"
             type="text"
             class="form-input bg-slate-800 mb-4 h-9 px-1.5"
-            v-model="uploadStore.details.artistNames"
+            v-model="uploadStore.artist"
           />
           <Label :title="'Album title:'" />
           <input

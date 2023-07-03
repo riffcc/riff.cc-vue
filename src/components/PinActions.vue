@@ -98,7 +98,7 @@
 import { useWalletStore } from '../stores/wallet';
 import { useUploadStore } from '../stores/upload';
 
-import mutatePin from '../utils/mutatePin';
+import callAdminServer from '../utils/callAdminServer';
 import { useApolloClient } from '@vue/apollo-composable';
 import { CREATE_PIECE, GET_PIN } from '../utils/constants';
 import { computed, inject, ref } from 'vue';
@@ -175,8 +175,8 @@ const handleApprove = async () => {
   }
   try {
     loadingAction.value = true
-    const response = await mutatePin(
-      adminServerUrl,
+    const response = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         action: 'approve',
         adminID: walletStore.adminId,
@@ -199,8 +199,8 @@ const handleReject= async () => {
   }
   try {
     loadingAction.value = true
-    const response = await mutatePin(
-      adminServerUrl,
+    const response = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         action: 'reject',
         adminID: walletStore.adminId,
@@ -243,8 +243,8 @@ const handleEdit = async () => {
       }
     });
     const categoryID = getCategoryID(apolloClient, uploadStore.category);
-    const resultMutatePin = await mutatePin(
-      adminServerUrl,
+    const resultcallAdminServer = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         action: 'edit',
         pinID: props.pin.id,
@@ -279,8 +279,8 @@ const handleUnreject = async () => {
   }
   try {
     loadingAction.value = true
-    const response = await mutatePin(
-      adminServerUrl,
+    const response = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         action: 'unreject',
         adminID: walletStore.adminId,
@@ -303,8 +303,8 @@ const handleDelete = async () => {
   }
   try {
     loadingAction.value = true
-    const response = await mutatePin(
-      adminServerUrl,
+    const response = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         action: 'delete',
         adminID: walletStore.adminId,

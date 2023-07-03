@@ -8,7 +8,6 @@ const detailsDefault = {
   imageThumbnailCID: ref(undefined),
   tags: ref(undefined),
   musicBrainzID: ref(undefined),
-  artistNames: ref(undefined),
   albumTitle: ref(undefined),
   initialReleaseYear: ref(undefined),
   releaseType: ref(undefined),
@@ -26,6 +25,7 @@ export const useUploadStore = defineStore('upload', () => {
   const name = ref(null);
   const CID = ref(null);
   const category = ref(null);
+  const artist = ref(null);
   const details = ref(detailsDefault);
 
   const isValidCID = computed(() => {
@@ -97,6 +97,8 @@ export const useUploadStore = defineStore('upload', () => {
     name.value = null;
     CID.value = null;
     category.value = null;
+    artist.value = null;
+
     for (const key of Object.keys(detailsDefault)) {
       detailsDefault[key].value = undefined
     }
@@ -113,6 +115,7 @@ export const useUploadStore = defineStore('upload', () => {
     name,
     CID,
     category,
+    artist,
     details,
     isValidCID,
     thumbnailIsValidCID,
