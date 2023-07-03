@@ -59,6 +59,7 @@ export const useWalletStore = defineStore('walletStore', () => {
     accountId,
     isAdmin,
     adminId,
-    adminIsSuper
+    adminIsSuper,
+    wagmiClient
   }
 })
