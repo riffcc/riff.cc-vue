@@ -6,23 +6,15 @@
         <UploadForm />
         <button v-if="walletStore.accountId"
           class="bg-cyan-500 px-4 py-2 rounded  disabled:cursor-default disabled:text-slate-400 disabled:bg-cyan-900"
-          @click="onSubmit" 
-          :disabled="!isAllowedToSubmit || uploadStore.isLoading"
-        >
+          @click="onSubmit" :disabled="!isAllowedToSubmit || uploadStore.isLoading">
           <Spinner v-if="uploadStore.isLoading" :class="'h-5 w-5 text-slate-200 animate-spin m-auto'" />
           <p v-else class="font-medium">Submit</p>
         </button>
         <Connect v-else />
-        <Badge 
-          v-if="uploadStore.isSuccess"
-          :class="'h-14 bg-green-200 rounded-lg flex mt-6'"
-          :message="'Piece created succesfully!'"
-        />
-        <Badge 
-          v-if="uploadStore.isError"
-          :class="'h-14 bg-red-200 rounded-lg flex mt-6'"
-          :message="'Has ocurred an error :('"
-        />
+        <Badge v-if="uploadStore.isSuccess" :class="'h-14 bg-green-200 rounded-lg flex mt-6'"
+          :message="'Piece created succesfully!'" />
+        <Badge v-if="uploadStore.isError" :class="'h-14 bg-red-200 rounded-lg flex mt-6'"
+          :message="'Has ocurred an error :('" />
       </div>
     </div>
   </main>
@@ -32,16 +24,18 @@
 import { computed, onMounted } from 'vue';
 import { useUploadStore } from '../stores/upload';
 import { useWalletStore } from '../stores/wallet';
-import { 
-  CREATE_PIECE, 
-  GET_CATEGORIES
+import {
+  CREATE_PIECE,
+  GET_CATEGORIES,
+  GET_ARTISTS,
+  CREATE_ARTIST
 } from '../utils/constants';
-import mutatePin from '../utils/mutatePin'
+import callAdminServer from '../utils/callAdminServer'
 import Connect from '../components/Layout/Connect.vue';
 import Spinner from '../components/Layout/Spinner.vue';
 import Badge from '../components/Layout/Badge.vue';
 import UploadForm from '../components/UploadForm.vue';
-
+import { checkArtist } from '../utils/checkArtist'
 
 import { useApolloClient, useQuery } from '@vue/apollo-composable';
 import getCategoryID from '../utils/getCategoryId';
@@ -63,15 +57,48 @@ const isAllowedToSubmit = computed(() => {
 const websiteID = import.meta.env.VITE_WEBSITE_ID;
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 
-useQuery(GET_CATEGORIES, { id: websiteID, pageSize: 1000})
+useQuery(GET_CATEGORIES, { id: websiteID, pageSize: 1000 })
 
 const { resolveClient } = useApolloClient();
 
 const onSubmit = async () => {
-  const apolloClient = resolveClient();
+  const client = resolveClient();
   try {
     uploadStore.isLoading = true;
-    const resultCreatePiece = await apolloClient.mutate({
+    let artistID
+    // search artist, if exists return de artistId
+    const getArtists = async (variables) => {
+      return await client.query({
+        query: GET_ARTISTS,
+        variables: {
+          pageSize: 1000,
+          ...variables
+        },
+        fetchPolicy: 'no-cache'
+      })
+    }
+    const resultGetArtists = await getArtists()
+    console.log('searching if artist exist');
+    artistID = await checkArtist(getArtists, !!uploadStore.artist ? uploadStore.artist : "Unknown", resultGetArtists.data.artistIndex)
+    console.log(artistID);
+    // if no exists, create the artist and return de id
+    if (!artistID) {
+      console.log('creating a new artist');
+      const result = await client.mutate({
+        mutation: CREATE_ARTIST,
+        variables: {
+          input: {
+            content: {
+              name: uploadStore.artist ? uploadStore.artist : "Unknown"
+            }
+          }
+        }
+      })
+      artistID = result.data.createArtist.document.id
+      console.log(artistID);
+    }
+
+    const resultCreatePiece = await client.mutate({
       mutation: CREATE_PIECE,
       variables: {
         input: {
@@ -87,14 +114,16 @@ const onSubmit = async () => {
         }
       }
     });
-    const categoryID = getCategoryID(apolloClient, uploadStore.category);
-    const resultMutatePin = await mutatePin(
-      adminServerUrl,
+
+    const categoryID = getCategoryID(client, uploadStore.category);
+    const resultcallAdminServer = await callAdminServer(
+      `${adminServerUrl}/pin`,
       {
         data: {
           ownerID: walletStore.accountId,
           websiteID,
           categoryID,
+          artistID,
           pieceID: resultCreatePiece.data.createPiece.document.id,
           approved: false,
           rejected: false
@@ -105,7 +134,7 @@ const onSubmit = async () => {
     uploadStore.isLoading = false;
     uploadStore.isSuccess = true;
     uploadStore.reset();
-    console.log('resultMutatePin', resultMutatePin);
+    console.log('resultcallAdminServer', resultcallAdminServer);
     setTimeout(() => uploadStore.isSuccess = false, 4000);
 
   } catch (error) {

@@ -96,6 +96,8 @@ const {
 } = useQuery(GET_PINS, {
   id,
   pageSize: websiteDataQueryParams.pageSizeMedium
+}, {
+  fetchPolicy: "network-only"
 });
 
 const {
