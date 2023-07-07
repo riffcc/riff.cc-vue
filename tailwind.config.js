@@ -6,7 +6,12 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "video-current-progress": "#5558DD",
+        "video-progress": "#343434",
+      }
+    },
   },
   plugins: [],
 }
