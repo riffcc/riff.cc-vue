@@ -31,7 +31,9 @@ import {
   HiVolumeUp,
   HiCog,
   HiFastForward,
-  HiRewind
+  HiRewind,
+  MdFullscreen,
+  HiArrowCircleLeft
  } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
@@ -159,7 +161,9 @@ addIcons(
   HiVolumeUp,
   HiCog,
   HiRewind,
-  HiFastForward
+  HiFastForward,
+  MdFullscreen,
+  HiArrowCircleLeft
 );
 
 app.component("v-icon", OhVueIcon);
