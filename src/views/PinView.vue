@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-gray-900 min-h-screen py-4 md:py-10 px-2 md:px-6 text-white">
+  <main class="bg-gray-900 min-h-screen pt-4 md:pt-10 px-2 md:px-6 pb-20 text-white">
     <div class='grid'>
       <div class='mx-auto w-full lg:w-5/6 min-h-screen '>
         <button class="ml-2 mb-2" @click="() => $router.push('/')">
@@ -64,7 +64,8 @@
               </div>
             </div>
             <div v-if="isVideo" class="w-full h-full md:p-4">
-              <video class="rounded-xl w-full" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.CID}`" controls></video>
+              <!-- <video class="rounded-xl w-full" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.CID}`" controls></video> -->
+              <VideoPlayer v-if="videoSource" :videoSource="videoSource" />
             </div>
             <div v-else-if="musicAlbum.is" class="px-18">
               <ul
@@ -81,7 +82,12 @@
                   </button>
                 </li>
               </ul>
-              <RelatedAlbums v-if="pinResult.node.artist.name !== 'Unknown'" :artist="pinResult.node.artist" :streamID="streamID" />
+              <RelatedAlbums 
+                v-if="pinResult.node.artist.name !== 'Unknown'" 
+                :artist="pinResult.node.artist" 
+                :streamID="streamID" 
+                :onCloseCallback="onCloseCallback"
+              />
               <AudioPlayer
                 v-if="selectedAudio"
                 :selectedAudio="selectedAudio"
@@ -110,6 +116,7 @@ import { useSettingsStore } from '../stores/settings';
 
 import RelatedAlbums from '../components/RelatedAlbums.vue';
 import { useRoute, useRouter,  } from 'vue-router';
+import VideoPlayer from '../components/VideoPlayer.vue';
 const props = defineProps({
   streamID: {
     required: true,
@@ -156,17 +163,22 @@ const musicAlbum = ref({
   index: null
 })
 const selectedAudio = ref(null)
-
+const videoSource = ref(null)
 onMounted(() => {
   loadPin(undefined, undefined, {fetchPolicy: "network-only"})
 })
 
 onResult(async ({data}) => {
+  console.log('from onResult', data);
   if (!data.node) {
     return
   }
-    if (data.node.category.name === "Videos") {
+    if (data.node.category.name === "Movies" || data.node.category.name === "Videos") {
     isVideo.value = true
+    videoSource.value = {
+      name: data.node.piece.name,
+      cid: data.node.piece.CID
+    }
   } else if (data.node.category.name === "Music") {
     const files = await getCIDContent(ipfsGateway, data.node.piece.CID)
     console.log(files);
