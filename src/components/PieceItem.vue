@@ -23,10 +23,14 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const handleOnClick = () => {
+  if (props.onCloseCallback) {
+    props.onCloseCallback()
+  }
   router.push(`/pin/${props.pin.id}`)
 }
 const props = defineProps({
-  pin: Object
+  pin: Object,
+  onCloseCallback: Function,
 })
 </script>
 

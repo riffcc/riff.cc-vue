@@ -2,7 +2,7 @@
   <div v-if="pinList.length > 0" class="p-4 border border-slate-600 mt-10">
     <p>More from {{ artist.name }}</p>
     <div class="flex justify-between items-center p-4">
-      <PieceItem v-for="pin in pinList" :pin="pin.node" />
+      <PieceItem v-for="pin in pinList" :pin="pin.node" :onCloseCallback="onCloseCallback" />
     </div>
   </div>
 </template>
@@ -17,7 +17,9 @@ const props = defineProps({
   streamID: {
     required: true,
     type: String  
-  }
+  },
+  onCloseCallback: Function,
+
 })
 
 const pinList = computed(() => {
