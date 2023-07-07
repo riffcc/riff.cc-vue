@@ -1,5 +1,5 @@
 <template>
-  <div class="h-96 w-80 sm:w-96 rounded-xl bg-slate-800 border border-slate-400 inset-0 m-auto p-4 relative">
+  <div class="h-96 w-80 sm:w-96 rounded-xl bg-gray-900 border border-slate-500 inset-0 m-auto p-4 relative">
     <CloseButton :on-close="settingsStore.hide"/>
     <p class="text-lg font-medium text-slate-50 mb-2">Settings</p>
     <div class="w-full p-4 h-5/6 flex flex-col">
