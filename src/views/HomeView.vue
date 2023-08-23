@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-3 relative">
-    <div class="bg-gray-900 min-h-screen py-10 px-4 sm:px-8 md:px-16 flex">
+    <div class="min-h-screen py-10 px-4 sm:px-8 md:px-16 flex">
       <p v-if="pinEdgesError || subscriptionEdgesError || featuredEdgesError">Something went wrong...</p>
       <Spinner v-else-if="pinEdgesLoading || subscriptionEdgesLoading || featuredEdgesLoading" :className="'animate-spin h-8 w-8 text-slate-50 m-auto'" />
       <div v-else class="flex flex-col w-full">

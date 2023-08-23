@@ -1,11 +1,26 @@
 <template>
-  <header class="bg-slate-800 h-14 flex items-center px-6 justify-between text-slate-50 relative">
-    <p class="w-1/6 text-2xl font-bold text-white">Riff.CC</p>
-    <div v-if="isGreatherThanSmall" class="flex gap-4">
-      <button :class="{ 'text-cyan-200': $route.path === '/' }" @click="() => $router.push('/')">
+  <header class="bg-background-secondary h-20 flex items-center px-6 lg:px-16 xl:px-36 py-5 justify-between text-slate-50 relative">
+    <img src="/logo.png" class="w-10 h-10" alt="">
+    <div v-if="isGreatherThanSmall" class="flex gap-10 flex-1 lg:pl-32">
+      <button @click="() => $router.push('/')">
         Home
       </button>
-      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/upload')">
+      <button @click="() => $router.push('/movie')">
+        Movie
+      </button>
+      <button @click="() => $router.push('/tv-shows')">
+        Tv Shows
+      </button>
+      <button @click="() => $router.push('/music')">
+        Music
+      </button>
+      <button @click="() => $router.push('/audio-books')">
+        Audio Books
+      </button>
+      <button @click="() => $router.push('/contact')">
+        Contact
+      </button>
+      <!-- <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/audio-books')">
         Upload
       </button>
       <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
@@ -15,7 +30,7 @@
       <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
         @click="() => $router.push('/admin')">
         Admin Website
-      </button>
+      </button> -->
     </div>
     <button v-else @click="toggleMenu">
       <v-icon name="hi-menu" class="h-7 w-8 text-slate-50" />
@@ -37,14 +52,19 @@
         Admin Website
       </button>
     </div>
-    <div class="w-1/6 grow-0 shrink-0 flex justify-end">
-      <div v-if="walletStore.formattedAddress" class="flex item-center gap-2">
-        <p class="text-slate-50 font-medium hover:cursor-pointer" @click="walletStore.showAccount">
+    <div class="flex items-center gap-2">
+      <div v-if="walletStore.formattedAddress" class="flex items-center gap-4">
+        <v-icon name="md-search" class="w-5 h-5 text-white" />
+        <v-icon name="md-notificationsnone-outlined" class="w-5 h-5 text-white" />
+        <button @click="() => $router.push('/profile')">
+          <img src="/avatar.png" alt="" class="h-11 w-11">
+        </button>
+        <!-- <p class="text-slate-50 font-medium hover:cursor-pointer" @click="walletStore.showAccount">
           {{ walletStore.formattedAddress }}
         </p>
         <button @click="settingsStore.open">
           <v-icon name="hi-cog" class="h-5 w-5 text-slate-200 mt-0.5" />
-        </button>
+        </button> -->
       </div>
       <Connect v-else />
     </div>
@@ -69,7 +89,7 @@ const settingsStore = useSettingsStore();
 
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
-const isGreatherThanSmall = breakpoints.greater("sm");
+const isGreatherThanSmall = breakpoints.greater("md");
 
 watch(isGreatherThanSmall, () => {
   showMenu.value = false

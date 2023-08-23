@@ -1,7 +1,10 @@
 <template>
   <div>
     <LayoutHeader />
-    <slot></slot> <!-- Utiliza el slot para mostrar el contenido dinámico pasado como children -->
+    <div class="bg-background min-h-screen">
+      <slot></slot> <!-- Utiliza el slot para mostrar el contenido dinámico pasado como children -->
+    </div>
+    <LayoutFooter />
     <Modal v-if="settingsStore.show">
       <Settings />
     </Modal>
@@ -9,8 +12,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import LayoutHeader from './Header.vue' // Importa el componente LayoutHeader
+import LayoutFooter from './Footer.vue' // Importa el componente LayoutHeader
+
 import Modal from './Modal.vue';
 import Settings from '../Settings.vue'; 
 import { useSettingsStore } from '../../stores/settings';

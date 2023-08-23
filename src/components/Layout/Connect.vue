@@ -1,6 +1,6 @@
 <template>
   <button 
-    class="bg-cyan-500 px-4 py-2 rounded font-medium"
+    class="bg-primary px-4 md:px-6 py-1 md:py-2"
     @click="walletStore.connectWallet"
   >
     Connect
