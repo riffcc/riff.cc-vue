@@ -1,45 +1,48 @@
 <template>
-  <div class="h-32 bg-gray-900 border border-slate-700 fixed bottom-0 inset-x-0 rounded-t-3xl mx-2 lg:mx-20 flex">
-    <button @click="onClosePlayer" class="absolute -top-2 right-2 bg-gray-900 rounded-full w-fit h-fit">
+  <div class="h-32 backdrop-blur-sm bg-white/30 w-screen fixed bottom-0 inset-x-0 flex z-20">
+    <!-- <button @click="onClosePlayer" class="absolute -top-2 right-2 bg-gray-900 rounded-full w-fit h-fit">
       <v-icon name="hi-x-circle" class="h-7 w-7 text-slate-50" />
-    </button>
-    <div v-if="selectedAudio" id="audio-player" class="my-auto w-full">
-      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause" @loadeddata="onLoad" @ended="handleNext"></audio>
-      <p class="text-center text-lg font-medium mb-2">{{ selectedAudio.name }}</p>
-      <div v-if="!isLoading" class="flex items-center justify-between h-14 bg-slate-800 rounded-full mx-4 sm:mx-10 px-4 gap-2">
-        <button @click="handlePrevious">
-          <v-icon name="hi-rewind" class="h-7 w-7 mt-0.5 text-slate-50" />
-        </button>
-        <button @click="togglePlay">
-          <v-icon v-if="isPlaying" name="hi-pause" class="h-8 w-8 mt-0.5 text-slate-50" />
-          <v-icon v-else name="hi-play" class="h-8 w-8 mt-0.5 text-slate-50" />
-        </button>
-        
-        <button @click="handleNext">
-          <v-icon name="hi-fast-forward" class="h-7 w-7 mt-0.5 text-slate-50" />
-        </button>
-        <div class="flex-1 bg-slate-200 rounded-full cursor-pointer">
-          <div 
-            id="progress-bar"
-            class="h-1.5 flex items-center" 
-            @click="seekingTrack"
-          >
-            <div class="h-1.5 bg-blue-600 rounded-full" :style="{ width: progress + '%' }"></div>
-            <div class="rounded-full w-4 h-4 bg-gray-200 border border-slate-700 -ml-0.5"></div>
+    </button> -->
+    <div v-if="selectedAudio" id="audio-player" class="m-auto w-full md:px-8 lg:px-10 md:max-w-4xl">
+      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause"
+        @loadeddata="onLoad" @ended="handleNext"></audio>
+      <div v-if="!isLoading" class="flex items-center justify-between gap-6">
+        <img src="/artist.png" alt="" class="rounded-full w-28 h-28">
+        <div class="flex items-center gap-2">
+          <button @click="handlePrevious">
+            <v-icon name="ri-skip-back-fill" class="h-7 w-7 text-white" />
+          </button>
+          <button @click="togglePlay">
+            <v-icon v-if="isPlaying" name="md-pausecirclefilled" class="h-8 w-8 text-white" />
+            <v-icon v-else name="md-playcirclefilled" class="h-8 w-8 text-white" />
+          </button>
+          <button @click="handleNext">
+            <v-icon name="ri-skip-forward-fill" class="h-7 w-7 text-white" />
+          </button>
+        </div>
+        <div class="flex-1 mt-5">
+          <div id="progress-bar" class=" bg-white bg-opacity-30 rounded-full cursor-pointer">
+            <div  class="h-1 flex items-center" @click="seekingTrack">
+              <div class="h-1  bg-primary bg-opacity-50 rounded-full" :style="{ width: progress + '%' }"></div>
+              <div class="rounded-full w-3 h-3 bg-primary outline outline-offset-0 outline-primary/30"></div>
+            </div>
+          </div>
+          <div class="flex justify-between text-sm mt-1.5">
+            <h4>{{ `${formatTime(audio.currentTime)}`}}</h4>
+            <h4>{{ `${formatTime(audio.duration)}` }}</h4>
           </div>
         </div>
-        
-        
-        <p 
-          v-if="audio && audio.currentTime && audio.duration"
-          class="text-sm"
-        >
-        {{ `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}` }}
-        </p>
-        <v-icon v-if="audio.volume === 0" name="hi-volume-off" class="h-5 w-5 text-slate-50" @click="unmute" />
-        <v-icon v-else name="hi-volume-up" class="h-5 w-5 text-slate-50" @click="mute" />
+        <div class="flex gap-4 items-center ">
+          <VolumeControl @updateVolume="handleVolume" :volume="audio.volume" />
+          <div class="border-2 rounded-full border-opacity-50 h-10 w-10 flex ">
+            <v-icon name="pr-replay" class="h-4 w-4 m-auto" />
+          </div>
+          <div class="border-2 rounded-full border-opacity-50 h-10 w-10 flex ">
+            <v-icon name="io-shuffle" class="h-4 w-4 m-auto" />
+          </div>
+        </div>
       </div>
-      <div v-else class="h-14 mx-4 sm:mx-10 rounded-full bg-slate-700 animate-pulse"></div>
+      <Spinner v-else class="h-7 w-7 text-primary animate-spin mx-auto" />
     </div>
   </div>
 </template>
@@ -47,6 +50,9 @@
 
 <script setup>
 import { onUnmounted, ref, watch } from 'vue';
+import VolumeControl from './VolumeControl.vue'
+import Spinner from './Layout/Spinner.vue'
+
 
 const props = defineProps({
   selectedAudio: Object,
@@ -64,9 +70,7 @@ const seekingTrack = (e) => {
   resume();
 };
 
-
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
-
 const audio = ref(null);
 const isPlaying = ref(false);
 const progress = ref(0);
@@ -88,16 +92,16 @@ const togglePlay = () => {
 };
 
 watch(() => props.selectedAudio, (_audio) => {
-  if (!audio) {
+  if (!_audio) {
     return
   }
   isLoading.value = true
 })
+
 const onLoad = (e) => {
   console.log(e);
   play()
 }
-
 
 const pause = () => {
   audio.value.pause();
@@ -109,14 +113,9 @@ const resume = () => {
   isPlaying.value = true
 };
 
-const mute = () => {
-    console.log(audio.value);
-  audio.value.volume = 0
-}
-
-const unmute = () => {
-    console.log(audio.value);
-  audio.value.volume = 1
+const handleVolume = (v) => {
+  audio.value.volume = v
+  console.log(audio.value.volume)
 }
 
 const play = () => {
@@ -147,12 +146,12 @@ const onPause = () => {
   isPlaying.value = false;
 };
 
-const onClosePlayer = () => {
-  pause()
-  isPlaying.value = false;
-  progress.value = 0
-  props.onCloseCallback()
-}
+// const onClosePlayer = () => {
+//   pause()
+//   isPlaying.value = false;
+//   progress.value = 0
+//   props.onCloseCallback()
+// }
 
 watch(audio, (ref) => {
   if (!ref) {
