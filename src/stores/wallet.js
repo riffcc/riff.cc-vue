@@ -6,7 +6,7 @@ import { mainnet } from '@wagmi/core/chains'
 import { computed, ref } from 'vue'
 
 const chains = [mainnet]
-const projectId = "e06631aa2696fd934c15258e8cfe82d7"
+const projectId = "d3ef2ee08419cd12b2036f7a77c21da8"
 
 export const useWalletStore = defineStore('walletStore', () => {
   
@@ -26,11 +26,11 @@ export const useWalletStore = defineStore('walletStore', () => {
   const address = ref(null)
   const accountId = ref(null)
   const isAdmin = ref(false)
-  const adminId = ref(null)
-  const adminIsSuper = ref(null)
-
-
+  const isSuperAdmin = ref(false)
+  const error = ref(null)
   
+wagmiClient.subscribe(e => console.log('subcribe wagmiclient', e))
+
   ethereumClient.watchAccount((account) => {
     if (!account.address && !address.value) {
       return
@@ -58,8 +58,8 @@ export const useWalletStore = defineStore('walletStore', () => {
     showAccount,
     accountId,
     isAdmin,
-    adminId,
-    adminIsSuper,
+    isSuperAdmin,
+    error,
     wagmiClient
   }
 })
