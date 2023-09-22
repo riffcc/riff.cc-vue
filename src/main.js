@@ -55,32 +55,12 @@ import {
 
 const cache = new InMemoryCache({
   typePolicies: {
-    // EthAccount: {
-    //   keyFields: ['address'],
-    // },
     Category: {
       keyFields: ['name'],
     },
-    Admin: {
-      keyFields: ['admin', ['address']],
-    },
-    // Query: {
-    //   queryType: true,
-    //   fields: {
-    //     node: {
-    //       merge: true,
-    //     },
-    //   },
-    // },
     Subscription: {
       keyFields: ['subscribedID'],
-    },
-    // PinLike: {
-    //   keyFields: ['owner', ['address'], 'pin', ['id']],
-    // },
-    // PinDislike: {
-    //   keyFields: ['owner', ['address'], 'pin', ['id']],
-    // }
+    }
   }
 })
 
