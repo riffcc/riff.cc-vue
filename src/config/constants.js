@@ -9,12 +9,13 @@ export const websiteDataQueryParams = {
   pageSizeMedium,
   pageSizeMax
 }
+
 export const GET_WEBSITE = gql`
   query WebsiteData($id: ID!) {
     node(id: $id) {
       ... on Website {
         id
-        websiteName
+        name
         image
         description
       }
@@ -43,30 +44,12 @@ export const CREATE_ARTIST = gql`
     }
   }
 `
+
 export const GET_WEBSITE_DATA = gql`
   query WebsiteData($id: ID!, $pageSize: Int!) {
     node(id: $id) {
       ... on Website {
         id
-        admins(first: $pageSize) {
-          edges {
-            node {
-              id
-              adminID
-              admin {
-                address
-                ensName
-              }
-              super
-              inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        adminsCount
         pins(first: $pageSize) {
           edges {
             node {
@@ -88,7 +71,7 @@ export const GET_WEBSITE_DATA = gql`
               }
               piece {
                 id
-                CID
+                cid
                 name
                 details {
                   tags
@@ -106,10 +89,8 @@ export const GET_WEBSITE_DATA = gql`
                   initialReleaseYear
                   releaseDescription
                 }
-                metadata {
-                  createdAt
-                  updatedAt
-                }
+                createdAt
+                updatedAt
               }
               approved
               rejected
@@ -154,7 +135,7 @@ export const GET_WEBSITE_DATA = gql`
               subscribedID
               subscribedWebsite {
                 id
-                websiteName
+                name
                 description
                 image
                 pins(first: $pageSize) {
@@ -178,7 +159,7 @@ export const GET_WEBSITE_DATA = gql`
                       }
                       piece {
                         id
-                        CID
+                        cid
                         name
                         details {
                           tags
@@ -196,10 +177,8 @@ export const GET_WEBSITE_DATA = gql`
                           initialReleaseYear
                           releaseDescription
                         }
-                        metadata {
-                          createdAt
-                          updatedAt
-                        }
+                        createdAt
+                        updatedAt
                       }
                       approved
                       rejected
@@ -239,10 +218,8 @@ export const GET_WEBSITE_DATA = gql`
                 pinsCount
               }
               inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
+              createdAt
+              updatedAt
             }
           }
         }
@@ -292,10 +269,8 @@ export const GET_WEBSITE_DATA = gql`
                 }
               }
               pinDislikesCount
-              metadata {
-                createdAt
-                updatedAt
-              }
+              createdAt
+              updatedAt
             }
           }
         }
@@ -323,7 +298,7 @@ export const GET_WEBSITE_DATA = gql`
                 }
                 piece {
                   id
-                  CID
+                  cid
                   name
                   details {
                     tags
@@ -341,10 +316,8 @@ export const GET_WEBSITE_DATA = gql`
                     initialReleaseYear
                     releaseDescription
                   }
-                  metadata {
-                    createdAt
-                    updatedAt
-                  }
+                  createdAt
+                  updatedAt
                 }
                 approved
                 rejected
@@ -411,7 +384,7 @@ export const GET_WEBSITE_DATA = gql`
                     }
                     piece {
                       id
-                      CID
+                      cid
                       name
                       details {
                         tags
@@ -429,10 +402,8 @@ export const GET_WEBSITE_DATA = gql`
                         initialReleaseYear
                         releaseDescription
                       }
-                      metadata {
-                        createdAt
-                        updatedAt
-                      }
+                      createdAt
+                      updatedAt
                     }
                     approved
                     rejected
@@ -506,18 +477,7 @@ export const GET_WEBSITE_DATA = gql`
     }
   }
 `
-export const AdminFragment = gql`
-  fragment WebsiteAdmin on Admin {
-    id
-    adminID
-    admin {
-      address
-      ensName
-    }
-    super
-    inactive
-  }
-`
+
 export const UserFragment = gql`
   fragment WebsiteUser on EthAccount {
     id
@@ -562,18 +522,18 @@ export const UserFragment = gql`
       }
     }
     pinDislikesCount
-    metadata {
-      createdAt
-      updatedAt
-    }
+    createdAt
+    updatedAt
   }
 `
+
 export const CategoryFragment = gql`
   fragment Category on Category {
     id
     name
   }
 `
+
 export const SubscriptionFragment = gql`
   fragment SubscriptionFragment on Subscription {
     id
@@ -582,17 +542,17 @@ export const SubscriptionFragment = gql`
       id
     }
     inactive
-    metadata {
-      createdAt
-      updatedAt
-    }
+    createdAt
+    updatedAt
   }
 `
+
 export const PinFragment = gql`
   fragment Pin on Pin {
     id
   }
 `
+
 export const GET_PINS = gql`
   query GetPins($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
@@ -625,7 +585,7 @@ export const GET_PINS = gql`
                     node {
                       piece {
                         name
-                        CID
+                        cid
                         details {
                           imageThumbnailCID
                         }
@@ -636,7 +596,7 @@ export const GET_PINS = gql`
               }
               piece {
                 id
-                CID
+                cid
                 name
                 details {
                   tags
@@ -654,10 +614,8 @@ export const GET_PINS = gql`
                   initialReleaseYear
                   releaseDescription
                 }
-                metadata {
-                  createdAt
-                  updatedAt
-                }
+                createdAt
+                updatedAt
               }
               approved
               rejected
@@ -672,7 +630,7 @@ export const GET_PINS = gql`
       }
     }
   }
-`;
+`
 
 export const GET_SUBSCRIPTIONS = gql`
   query GetSubscriptions($id: ID!, $pageSize: Int!) {
@@ -686,7 +644,7 @@ export const GET_SUBSCRIPTIONS = gql`
               subscribedID
               subscribedWebsite {
                 id
-                websiteName
+                name
                 description
                 image
                 pins(first: $pageSize) {
@@ -710,7 +668,7 @@ export const GET_SUBSCRIPTIONS = gql`
                       }
                       piece {
                         id
-                        CID
+                        cid
                         name
                         details {
                           tags
@@ -728,10 +686,8 @@ export const GET_SUBSCRIPTIONS = gql`
                           initialReleaseYear
                           releaseDescription
                         }
-                        metadata {
-                          createdAt
-                          updatedAt
-                        }
+                        createdAt
+                        updatedAt
                       }
                       approved
                       rejected
@@ -745,10 +701,8 @@ export const GET_SUBSCRIPTIONS = gql`
                 pinsCount
               }
               inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
+              createdAt
+              updatedAt
             }
           }
         }
@@ -756,7 +710,7 @@ export const GET_SUBSCRIPTIONS = gql`
       }
     }
   }
-`;
+`
 
 export const GET_FEATURED = gql`
   query GetFeatured($id: ID!, $pageSize: Int!) {
@@ -786,7 +740,7 @@ export const GET_FEATURED = gql`
                 }
                 piece {
                   id
-                  CID
+                  cid
                   name
                   details {
                     tags
@@ -804,10 +758,8 @@ export const GET_FEATURED = gql`
                     initialReleaseYear
                     releaseDescription
                   }
-                  metadata {
-                    createdAt
-                    updatedAt
-                  }
+                  createdAt
+                  updatedAt
                 }
                 approved
                 rejected
@@ -851,7 +803,7 @@ export const GET_FEATURED = gql`
       }
     }
   }
-`;
+`
 
 export const GET_CATEGORIES = gql`
   query GetCategories($id: ID!, $pageSize: Int!) {
@@ -869,7 +821,7 @@ export const GET_CATEGORIES = gql`
       }
     }
   }
-`;
+`
 
 export const GET_PIN = gql`
   query Pin($id: ID!, $pageSize: Int!) {
@@ -896,7 +848,7 @@ export const GET_PIN = gql`
                 id
                 piece {
                   name
-                  CID
+                  cid
                   details {
                     imageThumbnailCID
                   }
@@ -907,7 +859,7 @@ export const GET_PIN = gql`
         }
         piece {
           id
-          CID
+          cid
           name
           details {
             tags
@@ -925,10 +877,8 @@ export const GET_PIN = gql`
             initialReleaseYear
             releaseDescription
           }
-          metadata {
-            createdAt
-            updatedAt
-          }
+          createdAt
+          updatedAt
         }
         approved
         rejected
@@ -1003,20 +953,36 @@ export const GET_SUBSCRIPTION_INDEX = gql`
           subscribedID
           subscribedWebsite {
             id
-            websiteName
+            name
             description
             image
           }
           inactive
-          metadata {
-            createdAt
-            updatedAt
-          }
+          createdAt
+          updatedAt
         }
       }
     }
   }
 `
+
+export const GET_ETH_ACCOUNT = gql`
+query EthAccountQuery($filters: EthAccountFiltersInput, $items: Int!) {
+  ethAccountIndex(first: $items, filters: $filters) {
+    edges {
+      node {
+        id
+        address
+        isAdmin
+        isSuperAdmin
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}`;
+
+
 
 export const CREATE_PIECE = gql`
   mutation CreatePiece($input: CreatePieceInput!) {
@@ -1036,15 +1002,13 @@ export const CREATE_SUBSCRIPTION = gql`
         subscribedID
         subscribedWebsite {
           id
-          websiteName
+          name
           description
           image
         }
         inactive
-        metadata {
-          createdAt
-          updatedAt
-        }
+        createdAt
+        updatedAt
       }
     }
   }
@@ -1058,20 +1022,17 @@ export const UPDATE_SUBSCRIPTION = gql`
         subscribedID
         subscribedWebsite {
           id
-          websiteName
+          name
           description
           image
         }
         inactive
-        metadata {
-          createdAt
-          updatedAt
-        }
+        createdAt
+        updatedAt
       }
     }
   }
 `
-
 
 export const GET_USERS = gql`
   query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
@@ -1127,10 +1088,8 @@ export const GET_USERS = gql`
                 }
               }
               pinDislikesCount
-              metadata {
-                createdAt
-                updatedAt
-              }
+              createdAt
+              updatedAt
             }
           }
         }
@@ -1138,7 +1097,8 @@ export const GET_USERS = gql`
       }
     }
   }
-`;
+`
+
 export const GET_ARTISTS = gql`
   query GetArtists($pageSize: Int!, $cursor: String) {
     artistIndex(first: $pageSize, after: $cursor) {
@@ -1162,83 +1122,13 @@ export const GET_ARTISTS = gql`
       }
     }
   }
-`;
-export const GET_ADMINS = gql`
-  query GetAdmins($id: ID!, $pageSize: Int!) {
-    node(id: $id) {
-      ... on Website {
-        id
-        admins(first: $pageSize) {
-          edges {
-            node {
-              id
-              adminID
-              admin {
-                address
-                ensName
-              }
-              super
-              inactive
-              metadata {
-                createdAt
-                updatedAt
-              }
-            }
-          }
-        }
-        adminsCount
-      }
-    }
-  }
-`;
+`
 
 export const CREATE_ETH_ACCOUNT = gql`
   mutation CreateEthAccount($input: CreateEthAccountInput!) {
     createEthAccount(input: $input) {
       document {
         id
-      }
-    }
-  }
-`
-
-export const CREATE_ADMIN = gql`
-  mutation CreateAdmin($input: CreateAdminInput!) {
-    createAdmin(input: $input) {
-      document {
-        id
-        adminID
-        admin {
-          address
-          ensName
-        }
-        super
-        inactive
-        metadata {
-          createdAt
-          updatedAt
-        }
-      }
-    }
-  }
-`
-
-export const UPDATE_ADMIN = gql`
-  mutation UpdateaAdmin($input: UpdateAdminInput!) {
-    updateAdmin(input: $input) {
-      document {
-        id
-        adminID
-        admin {
-          address
-          ensName
-        }
-        super
-        inactive
-        metadata {
-          createdAt
-          updatedAt
-        }
       }
     }
   }
@@ -1280,7 +1170,6 @@ export const GET_USER_LIKES_AND_DISLIKES = gql`
     }
   }
 `
-
 
 export const CREATE_FEATURED = gql`
   mutation CreateFeatured($input: CreateFeaturedInput!) {
@@ -1374,3 +1263,7 @@ export const movieTypeOptions = [
   'Live Performance',
   'Movie Collection',
 ]
+
+export const defaultUserSettings = {
+  autoplay: true
+}

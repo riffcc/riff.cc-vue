@@ -1,4 +1,4 @@
-import { CategoryFragment } from "./constants"
+import { CategoryFragment } from "../config/constants"
 
 export default function getCategoryID(client, category) {
   const result = client.readFragment({
