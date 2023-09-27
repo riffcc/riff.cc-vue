@@ -13,7 +13,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useApolloClient, useLazyQuery, useMutation } from '@vue/apollo-composable';
-import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE, GET_USER_LIKES_AND_DISLIKES } from '../utils/constants';
+import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE } from '../config/constants';
 import { useWalletStore } from '../stores/wallet';
 import { useRoute } from 'vue-router';
 
@@ -59,17 +59,17 @@ onMounted(() => {
   loadPin(undefined, undefined, { fetchPolicy: "network-only" })
 })
 
-const getUserLikesAndDislikes = async (variables) => {
-  return await client.query({
-    query: GET_USER_LIKES_AND_DISLIKES,
-    variables: {
-      id: walletStore.accountId,
-      pageSize: 1000,
-      ...variables
-    },
-    fetchPolicy: 'no-cache'
-  })
-}
+// const getUserLikesAndDislikes = async (variables) => {
+//   return await client.query({
+//     query: GET_USER_LIKES_AND_DISLIKES,
+//     variables: {
+//       id: walletStore.accountId,
+//       pageSize: 1000,
+//       ...variables
+//     },
+//     fetchPolicy: 'no-cache'
+//   })
+// }
 
 const { mutate: createPinLike } = useMutation(CREATE_PIN_LIKE);
 const { mutate: createPinDislike } = useMutation(CREATE_PIN_DISLIKE);
@@ -81,18 +81,18 @@ watch(() => [walletStore.accountId, pinResult.value], async ([accountId]) => {
     return
   }
 
-  const result = await getUserLikesAndDislikes()
-  for (const like of result.data.node.pinLikes.edges) {
-    if (like.node.pinID === props.streamID) {
-      alreadyLiked.value = true;
-    }
-  }
+  // const result = await getUserLikesAndDislikes()
+  // for (const like of result.data.node.pinLikes.edges) {
+  //   if (like.node.pinID === props.streamID) {
+  //     alreadyLiked.value = true;
+  //   }
+  // }
 
-  for (const dislike of result.data.node.pinDislikes.edges) {
-    if (dislike.node.pinID === props.streamID) {
-      alreadyDisliked.value = true;
-    }
-  }
+  // for (const dislike of result.data.node.pinDislikes.edges) {
+  //   if (dislike.node.pinID === props.streamID) {
+  //     alreadyDisliked.value = true;
+  //   }
+  // }
 })
 
 const handleOnLike = async () => {

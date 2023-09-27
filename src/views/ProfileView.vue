@@ -2,7 +2,7 @@
   <main class="min-h-screen py-5 px-4 md:px-28 text-white">
     <div class="bg-background-secondary px-10 md:px-10 xl:px-24 2xl:px-60 py-14">
       <h2 class="text-4xl font-bold mb-5 text-center md:text-left">Account Settings</h2>
-      <section class="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      <!-- <section class="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
         <div class="bg-background-secondary-alt lg:max-w-[22rem] h-fit px-14 py-12 space-y-6 relative">
           <button class="absolute top-5 right-3 text-slate-300">Edit</button>
           <img src="/avatar.png" class="w-36 h-36 rounded-ful mx-auto" alt="">
@@ -76,7 +76,7 @@
             <h6 class="text-slate-400">Download your person information</h6>
           </div>
         </div>
-      </section>
+      </section> -->
     </div>
     <!-- <div v-if="walletStore.address && walletStore.accountId" class="grid h-full gap-3">
       <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Approved</p>
@@ -104,7 +104,7 @@
 
 <script setup>
 import { useQuery } from "@vue/apollo-composable"
-import { GET_PINS, websiteDataQueryParams } from "../utils/constants";
+import { GET_PINS } from "../config/constants";
 import { computed } from "vue";
 import { useWalletStore } from "../stores/wallet";
 import PieceList from "../components/PieceList.vue"
@@ -112,17 +112,17 @@ import Connect from "../components/Layout/Connect.vue"
 
 const walletStore = useWalletStore()
 const id = import.meta.env.VITE_WEBSITE_ID;
-const {
-  result: pinsResult,
-  loading: pinsLoading,
-  error: pinsError,
-  fetchMore: fetchMorePins
-} = useQuery(GET_PINS, {
-  id,
-  pageSize: websiteDataQueryParams.pageSizeMedium
-}, {
-  fetchPolicy: "network-only"
-});
+// const {
+//   result: pinsResult,
+//   loading: pinsLoading,
+//   error: pinsError,
+//   fetchMore: fetchMorePins
+// } = useQuery(GET_PINS, {
+//   id,
+//   pageSize: siteDataQueryParams.pageSizeMedium
+// }, {
+//   fetchPolicy: "network-only"
+// });
 
 const pieces = computed(() => {
   if (!walletStore.address || !walletStore.accountId || !pinsResult.value || !(pinsResult.value.node.pins.edges.length > 0)) {
