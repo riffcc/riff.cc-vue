@@ -144,6 +144,9 @@ const {
   items: 1000,
   filters: {
     where: {
+      siteID: {
+        equalTo: siteID
+      },
       deleted: {
         equalTo: false
       }
