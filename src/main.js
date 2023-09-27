@@ -50,7 +50,8 @@ import {
   MdPausecirclefilled,
   PrReplay,
   IoVolumeMedium,
-  IoVolumeOff
+  IoVolumeOff,
+  HiFolderAdd
  } from "oh-vue-icons/icons";
 
 const cache = new InMemoryCache({
@@ -180,7 +181,8 @@ addIcons(
   IoShuffle,
   PrReplay,
   IoVolumeMedium,
-  IoVolumeOff
+  IoVolumeOff,
+  HiFolderAdd
 );
 
 app.component("v-icon", OhVueIcon);

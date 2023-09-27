@@ -1,485 +1,9 @@
 import gql from "graphql-tag"
 
-export const pageSizeSmall = 50
-export const pageSizeMedium = 100
-export const pageSizeLarge = 400
-export const pageSizeMax = 1000
-
-export const websiteDataQueryParams = {
-  pageSizeMedium,
-  pageSizeMax
-}
-
-export const GET_WEBSITE = gql`
-  query WebsiteData($id: ID!) {
-    node(id: $id) {
-      ... on Website {
-        id
-        name
-        image
-        description
-      }
-    }
-  }
-`
-
-export const GET_ACCOUNT_SETTINGS = gql`
-  query EthAccountSettings($id: ID!) {
-    node(id: $id) {
-      ... on EthAccount {
-        settings {
-          autoplay
-        }
-      }
-    }
-  }
-`
-
-export const CREATE_ARTIST = gql`
-  mutation CreateArtist($input: CreateArtistInput!){
-    createArtist(input: $input) {
-      document {
-        id
-      }
-    }
-  }
-`
-
-export const GET_WEBSITE_DATA = gql`
-  query WebsiteData($id: ID!, $pageSize: Int!) {
-    node(id: $id) {
-      ... on Website {
-        id
-        pins(first: $pageSize) {
-          edges {
-            node {
-              id
-              website {
-                id
-              }
-              owner {
-                id
-                address
-              }
-              category {
-                id
-                name
-              }
-              artistID
-              artist {
-                name
-              }
-              piece {
-                id
-                cid
-                name
-                details {
-                  tags
-                  type
-                  media
-                  IMDBID
-                  TMDBID
-                  format
-                  poster
-                  bitrate
-                  albumTitle
-                  releaseType
-                  musicBrainzID
-                  imageThumbnailCID
-                  initialReleaseYear
-                  releaseDescription
-                }
-                createdAt
-                updatedAt
-              }
-              approved
-              rejected
-              rejectionReason
-              deleted
-              likesCount
-              likes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              dislikesCount
-              dislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        pinsCount
-        subscriptions(first: $pageSize) {
-          edges {
-            node {
-              id
-              subscribedID
-              subscribedWebsite {
-                id
-                name
-                description
-                image
-                pins(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      website {
-                        id
-                      }
-                      owner {
-                        id
-                        address
-                      }
-                      category {
-                        id
-                        name
-                      }
-                      artistID
-                      artist {
-                        name
-                      }
-                      piece {
-                        id
-                        cid
-                        name
-                        details {
-                          tags
-                          type
-                          media
-                          IMDBID
-                          TMDBID
-                          format
-                          poster
-                          bitrate
-                          albumTitle
-                          releaseType
-                          musicBrainzID
-                          imageThumbnailCID
-                          initialReleaseYear
-                          releaseDescription
-                        }
-                        createdAt
-                        updatedAt
-                      }
-                      approved
-                      rejected
-                      rejectionReason
-                      deleted
-                      likesCount
-                      likes(first: $pageSize) {
-                        edges {
-                          node {
-                            id
-                            pin {
-                              id
-                            }
-                            owner {
-                              address
-                            }
-                          }
-                        }
-                      }
-                      dislikesCount
-                      dislikes(first: $pageSize) {
-                        edges {
-                          node {
-                            id
-                            pin {
-                              id
-                            }
-                            owner {
-                              address
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                pinsCount
-              }
-              inactive
-              createdAt
-              updatedAt
-            }
-          }
-        }
-        subscriptionsCount
-        users(first: $pageSize) {
-          edges {
-            node {
-              id
-              address
-              ensName
-              settings {
-                autoplay
-              }
-              pins(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                  }
-                }
-              }
-              pinsCount
-              pinLikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinLikesCount
-              pinDislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinDislikesCount
-              createdAt
-              updatedAt
-            }
-          }
-        }
-        usersCount
-        featured(first: $pageSize) {
-          edges {
-            node {
-              id
-              pin {
-                id
-                website {
-                  id
-                }
-                owner {
-                  id
-                  address
-                }
-                category {
-                  id
-                  name
-                }
-                artistID
-                artist {
-                  name
-                }
-                piece {
-                  id
-                  cid
-                  name
-                  details {
-                    tags
-                    type
-                    media
-                    IMDBID
-                    TMDBID
-                    format
-                    poster
-                    bitrate
-                    albumTitle
-                    releaseType
-                    musicBrainzID
-                    imageThumbnailCID
-                    initialReleaseYear
-                    releaseDescription
-                  }
-                  createdAt
-                  updatedAt
-                }
-                approved
-                rejected
-                rejectionReason
-                deleted
-                likesCount
-                likes(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      pin {
-                        id
-                      }
-                      owner {
-                        address
-                      }
-                    }
-                  }
-                }
-                dislikesCount
-                dislikes(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      pin {
-                        id
-                      }
-                      owner {
-                        address
-                      }
-                    }
-                  }
-                }
-              }
-              startAt
-              endAt
-            }
-          }
-        }
-        featuredCount
-        categories(first: $pageSize) {
-          edges {
-            node {
-              id
-              name
-              pins(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    website {
-                      id
-                    }
-                    owner {
-                      id
-                      address
-                    }
-                    category {
-                      id
-                      name
-                    }
-                    artistID
-                    artist {
-                      name
-                    }
-                    piece {
-                      id
-                      cid
-                      name
-                      details {
-                        tags
-                        type
-                        media
-                        IMDBID
-                        TMDBID
-                        format
-                        poster
-                        bitrate
-                        albumTitle
-                        releaseType
-                        musicBrainzID
-                        imageThumbnailCID
-                        initialReleaseYear
-                        releaseDescription
-                      }
-                      createdAt
-                      updatedAt
-                    }
-                    approved
-                    rejected
-                    rejectionReason
-                    deleted
-                    likesCount
-                    likes(first: $pageSize) {
-                      edges {
-                        node {
-                          id
-                          pin {
-                            id
-                          }
-                          owner {
-                            address
-                          }
-                        }
-                      }
-                    }
-                    dislikesCount
-                    dislikes(first: $pageSize) {
-                      edges {
-                        node {
-                          id
-                          pin {
-                            id
-                          }
-                          owner {
-                            address
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              pinsCount
-              likesCount
-              likes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              dislikesCount
-              dislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        categoriesCount
-      }
-    }
-  }
-`
+// Fragments
 
 export const UserFragment = gql`
-  fragment WebsiteUser on EthAccount {
+  fragment SiteUser on EthAccount {
     id
     address
     ensName
@@ -533,284 +57,151 @@ export const CategoryFragment = gql`
     name
   }
 `
+export const siteShortFragment = gql`fragment SiteShortFragment on Site {
+  id
+  name
+  description
+  image
+}`
 
-export const SubscriptionFragment = gql`
-  fragment SubscriptionFragment on Subscription {
+export const subscriptionFragment = gql`fragment SubscriptionFragment on Subscription {
+  id
+  siteID
+  subscribedID
+  subscribedSite {
+    ...SiteShortFragment
+  }
+	inactive
+  createdAt
+  updatedAt
+}
+${siteShortFragment}
+`
+export const pieceFragment = gql`fragment PieceFragment on Piece {
     id
-    subscribedID
-    subscribedWebsite {
+    name
+    contentCid
+    details {
+      IMDBID
+      TMDBID
+      albumTitle
+      bitrate
+      format
+      initialReleaseYear
+      media
+      musicBrainzID
+      poster
+      releaseDescription
+      releaseType
+      tags
+      thumbnailCid
+      type
+    }
+    updatedAt
+    createdAt
+}`
+
+export const pinFragment = gql`fragment PinFragment on Pin {
+    id
+    siteID
+    owner {
+      address
       id
     }
-    inactive
-    createdAt
-    updatedAt
+    piece {
+      ...PieceFragment
+    }
+    artist {
+      id
+      name
+    }
+    category {
+      id
+      name
+    }
+    approved
+    deleted
+    rejected
+    rejectionReason
+    likesCount
+    dislikesCount
+  }
+  ${pieceFragment}
+`
+
+export const pageInfoFragment = gql`
+  fragment PageInfoFragment on PageInfo {
+    hasNextPage
+    hasPreviousPage
+    startCursor
+    endCursor
   }
 `
 
-export const PinFragment = gql`
-  fragment Pin on Pin {
-    id
-  }
-`
+// Queries
 
-export const GET_PINS = gql`
-  query GetPins($id: ID!, $pageSize: Int!, $cursor: String) {
+export const GET_WEBSITE = gql`
+  query SiteData($id: ID!) {
     node(id: $id) {
-      ... on Website {
+      ... on Site {
         id
-        pins(first: $pageSize, after: $cursor) {
-          pageInfo {
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              website {
-                id
-              }
-              owner {
-                id
-                address
-              }
-              category {
-                id
-                name
-              }
-              artistID
-              artist {
-                name
-                pins(first: $pageSize) {
-                  edges {
-                    node {
-                      piece {
-                        name
-                        cid
-                        details {
-                          imageThumbnailCID
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              piece {
-                id
-                cid
-                name
-                details {
-                  tags
-                  type
-                  media
-                  IMDBID
-                  TMDBID
-                  format
-                  poster
-                  bitrate
-                  albumTitle
-                  releaseType
-                  musicBrainzID
-                  imageThumbnailCID
-                  initialReleaseYear
-                  releaseDescription
-                }
-                createdAt
-                updatedAt
-              }
-              approved
-              rejected
-              rejectionReason
-              deleted
-              likesCount
-              dislikesCount
-            }
-          }
-        }
-        pinsCount
+        name
+        image
+        description
       }
     }
   }
-`
-
-export const GET_SUBSCRIPTIONS = gql`
-  query GetSubscriptions($id: ID!, $pageSize: Int!) {
+`;
+export const GET_ACCOUNT_SETTINGS = gql`
+  query EthAccountSettings($id: ID!) {
     node(id: $id) {
-      ... on Website {
-        id
-        subscriptions(first: $pageSize) {
-          edges {
-            node {
-              id
-              subscribedID
-              subscribedWebsite {
-                id
-                name
-                description
-                image
-                pins(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      website {
-                        id
-                      }
-                      owner {
-                        id
-                        address
-                      }
-                      category {
-                        id
-                        name
-                      }
-                      artistID
-                      artist {
-                        name
-                      }
-                      piece {
-                        id
-                        cid
-                        name
-                        details {
-                          tags
-                          type
-                          media
-                          IMDBID
-                          TMDBID
-                          format
-                          poster
-                          bitrate
-                          albumTitle
-                          releaseType
-                          musicBrainzID
-                          imageThumbnailCID
-                          initialReleaseYear
-                          releaseDescription
-                        }
-                        createdAt
-                        updatedAt
-                      }
-                      approved
-                      rejected
-                      rejectionReason
-                      deleted
-                      likesCount
-                      dislikesCount
-                    }
-                  }
-                }
-                pinsCount
-              }
-              inactive
-              createdAt
-              updatedAt
-            }
-          }
+      ... on EthAccount {
+        settings {
+          autoplay
         }
-        subscriptionsCount
       }
     }
   }
-`
+`;
+export const GET_PINS = gql`query PinQueryWithFilter($filters: PinFiltersInput, $items: Int!) {
+  pinIndex(filters: $filters, first: $items) {
+    pageInfo {
+      ...PageInfoFragment
+    }
+    edges {
+      node {
+        ...PinFragment
+      }
+    }
+  }}
+  ${pinFragment}
+  ${pageInfoFragment}
+`;
 
-export const GET_FEATURED = gql`
-  query GetFeatured($id: ID!, $pageSize: Int!) {
-    node(id: $id) {
-      ... on Website {
+export const GET_FEATUREDS = gql`query FeaturedIndexQuery($items: Int!, $filters: FeaturedFiltersInput!) {
+  featuredIndex(first: $items, filters: $filters) {
+    edges {
+      node {
         id
-        featured(first: $pageSize) {
-          edges {
-            node {
-              id
-              pin {
-                id
-                website {
-                  id
-                }
-                owner {
-                  id
-                  address
-                }
-                category {
-                  id
-                  name
-                }
-                artistID
-                artist {
-                  name
-                }
-                piece {
-                  id
-                  cid
-                  name
-                  details {
-                    tags
-                    type
-                    media
-                    IMDBID
-                    TMDBID
-                    format
-                    poster
-                    bitrate
-                    albumTitle
-                    releaseType
-                    musicBrainzID
-                    imageThumbnailCID
-                    initialReleaseYear
-                    releaseDescription
-                  }
-                  createdAt
-                  updatedAt
-                }
-                approved
-                rejected
-                rejectionReason
-                deleted
-                likesCount
-                likes(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      pin {
-                        id
-                      }
-                      owner {
-                        address
-                      }
-                    }
-                  }
-                }
-                dislikesCount
-                dislikes(first: $pageSize) {
-                  edges {
-                    node {
-                      id
-                      pin {
-                        id
-                      }
-                      owner {
-                        address
-                      }
-                    }
-                  }
-                }
-              }
-              startAt
-              endAt
-            }
-          }
+        pinID
+        pin {
+          ...PinFragment
         }
-        featuredCount
+        siteID
+        startAt
+        endAt
       }
     }
   }
-`
-
+}
+${pinFragment}
+`;
 export const GET_CATEGORIES = gql`
-  query GetCategories($id: ID!, $pageSize: Int!) {
+  query GetCategories($id: ID!) {
     node(id: $id) {
-      ... on Website {
+      ... on Site {
         id
-        categories(first: $pageSize) {
+        categories(first: 100) {
           edges {
             node {
               id
@@ -821,102 +212,17 @@ export const GET_CATEGORIES = gql`
       }
     }
   }
-`
-
+`;
 export const GET_PIN = gql`
-  query Pin($id: ID!, $pageSize: Int!) {
+  query Pin($id: ID!) {
     node(id: $id) {
       ... on Pin {
-        id
-        website {
-          id
-        }
-        owner {
-          id
-          address
-        }
-        category {
-          id
-          name
-        }
-        artistID
-        artist {
-          name
-          pins(first: $pageSize) {
-            edges {
-              node {
-                id
-                piece {
-                  name
-                  cid
-                  details {
-                    imageThumbnailCID
-                  }
-                }
-              }
-            }
-          }
-        }
-        piece {
-          id
-          cid
-          name
-          details {
-            tags
-            type
-            media
-            IMDBID
-            TMDBID
-            format
-            poster
-            bitrate
-            albumTitle
-            releaseType
-            musicBrainzID
-            imageThumbnailCID
-            initialReleaseYear
-            releaseDescription
-          }
-          createdAt
-          updatedAt
-        }
-        approved
-        rejected
-        rejectionReason
-        deleted
-        likesCount
-        likes(first: $pageSize) {
-          edges {
-            node {
-              id
-              pin {
-                id
-              }
-              owner {
-                address
-              }
-            }
-          }
-        }
-        dislikesCount
-        dislikes(first: $pageSize) {
-          edges {
-            node {
-              id
-              pin {
-                id
-              }
-              owner {
-                address
-              }
-            }
-          }
-        }
+      ...PinFragment
       }
     }
   }
-`
-
+  ${pinFragment}
+`;
 export const GET_PIN_LIKES = gql`
   query Pin($id: ID!, $pageSize: Int!, $cursor: String) {
     node(id: $id) {
@@ -938,51 +244,54 @@ export const GET_PIN_LIKES = gql`
       }
     }
   }
-`
-
-export const GET_SUBSCRIPTION_INDEX = gql`
-  query SubscriptionIndex($pageSize: Int!) {
-    subscriptionIndex(first: $pageSize) {
-      pageInfo {
-        startCursor
-        endCursor
+`;
+export const GET_SUBSCRIPTIONS = gql`query SubscriptionIndexQuery($items: Int!, $filters: SubscriptionFiltersInput) {
+  subscriptionIndex(first: $items, filters: $filters) {
+    edges {
+      node {
+        ...SubscriptionFragment
       }
+    }
+  }
+}
+${subscriptionFragment}
+`;
+export const GET_ETH_ACCOUNT = gql`query EthAccountQuery($filters: EthAccountFiltersInput, $items: Int!) {
+    ethAccountIndex(first: $items, filters: $filters) {
       edges {
         node {
           id
-          subscribedID
-          subscribedWebsite {
-            id
-            name
-            description
-            image
-          }
-          inactive
+          address
+          isAdmin
+          isSuperAdmin
           createdAt
           updatedAt
         }
       }
     }
   }
-`
-
-export const GET_ETH_ACCOUNT = gql`
-query EthAccountQuery($filters: EthAccountFiltersInput, $items: Int!) {
-  ethAccountIndex(first: $items, filters: $filters) {
+`;
+export const GET_ARTIST = gql`query GetArtistsWithFilter($filters: ArtistFiltersInput, $items: Int!) {
+  artistIndex(filters: $filters, first: $items) {
     edges {
       node {
         id
-        address
-        isAdmin
-        isSuperAdmin
-        createdAt
-        updatedAt
+        name
+        pins(first: $items) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+        pinsCount
       }
     }
   }
-}`;
+}
+`;
 
-
+// Mutations
 
 export const CREATE_PIECE = gql`
   mutation CreatePiece($input: CreatePieceInput!) {
@@ -992,15 +301,23 @@ export const CREATE_PIECE = gql`
       }
     }
   }
-`
-
+`;
+export const CREATE_ARTIST = gql`
+  mutation CreateArtist($input: CreateArtistInput!){
+    createArtist(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+`;
 export const CREATE_SUBSCRIPTION = gql`
   mutation CreateSubscription($input: CreateSubscriptionInput!) {
     createSubscription(input: $input) {
       document {
         id
         subscribedID
-        subscribedWebsite {
+        subscribedSite {
           id
           name
           description
@@ -1012,15 +329,14 @@ export const CREATE_SUBSCRIPTION = gql`
       }
     }
   }
-`
-
+`;
 export const UPDATE_SUBSCRIPTION = gql`
   mutation UpdateSubscription($input: UpdateSubscriptionInput!) {
     updateSubscription(input: $input) {
       document {
         id
         subscribedID
-        subscribedWebsite {
+        subscribedSite {
           id
           name
           description
@@ -1032,145 +348,7 @@ export const UPDATE_SUBSCRIPTION = gql`
       }
     }
   }
-`
-
-export const GET_USERS = gql`
-  query GetUsers($id: ID!, $pageSize: Int!, $cursor: String) {
-    node(id: $id) {
-      ... on Website {
-        id
-        users(first: $pageSize, after: $cursor) {
-          pageInfo {
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              address
-              ensName
-              settings {
-                autoplay
-              }
-              pins(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                  }
-                }
-              }
-              pinsCount
-              pinLikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinLikesCount
-              pinDislikes(first: $pageSize) {
-                edges {
-                  node {
-                    id
-                    pin {
-                      id
-                    }
-                    owner {
-                      address
-                    }
-                  }
-                }
-              }
-              pinDislikesCount
-              createdAt
-              updatedAt
-            }
-          }
-        }
-        usersCount
-      }
-    }
-  }
-`
-
-export const GET_ARTISTS = gql`
-  query GetArtists($pageSize: Int!, $cursor: String) {
-    artistIndex(first: $pageSize, after: $cursor) {
-      pageInfo {
-        startCursor
-        endCursor
-      }
-      edges {
-        node {
-          id
-          name
-          pins(first: $pageSize) {
-            edges {
-              node {
-                id
-              }
-            }
-          }
-          pinsCount
-        }
-      }
-    }
-  }
-`
-
-export const CREATE_ETH_ACCOUNT = gql`
-  mutation CreateEthAccount($input: CreateEthAccountInput!) {
-    createEthAccount(input: $input) {
-      document {
-        id
-      }
-    }
-  }
-`
-
-export const GET_USER_LIKES_AND_DISLIKES = gql`
-  query Account($id: ID!, $pageSize: Int!) {
-      node(id: $id) {
-        ... on EthAccount {
-          id
-          address
-          pinLikes(first: $pageSize) {
-            pageInfo {
-              startCursor
-              endCursor
-              hasNextPage
-              hasPreviousPage
-            }
-            edges {
-              node {
-                pinID
-              }
-            }
-          }
-          pinDislikes(first: $pageSize) {
-            pageInfo {
-              startCursor
-              endCursor
-              hasNextPage
-              hasPreviousPage
-            }
-            edges {
-              node {
-                pinID
-              }
-            }
-          }
-        }
-    }
-  }
-`
-
+`;
 export const CREATE_FEATURED = gql`
   mutation CreateFeatured($input: CreateFeaturedInput!) {
     createFeatured(input: $input) {
@@ -1179,8 +357,7 @@ export const CREATE_FEATURED = gql`
       }
     }
   }
-`
-
+`;
 export const CREATE_PIN_LIKE = gql`
   mutation CreatePinLike($input: CreatePinLikeInput!) {
     createPinLike(input: $input) {
@@ -1195,8 +372,7 @@ export const CREATE_PIN_LIKE = gql`
       }
     }
   }
-`
-
+`;
 export const CREATE_PIN_DISLIKE = gql`
   mutation CreatePinDislike($input: CreatePinDislikeInput!) {
     createPinDislike(input: $input) {
@@ -1211,7 +387,8 @@ export const CREATE_PIN_DISLIKE = gql`
       }
     }
   }
-`
+`;
+// Config constants
 
 export const pinCategories = [
   'TV Shows',
@@ -1242,7 +419,13 @@ export const releaseTypesOptions = [
   'Unknown',
 ]
 
-export const formatOptions = ['MP3', 'FLAC', 'AAC', 'AC3', 'DTS']
+export const formatOptions = [
+  'MP3',
+  'FLAC',
+  'AAC',
+  'AC3',
+  'DTS'
+]
 
 export const mediaOptions = [
   'CD',
