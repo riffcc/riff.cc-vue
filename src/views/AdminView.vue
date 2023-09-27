@@ -25,17 +25,17 @@
         <div class="grid mt-4 border-t border-slate-600 py-4 relative">
           <p class="font-semibold ml-4 text-md sm:text-lg text-center">Approved</p>
           <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceList v-if="pins.approved.length > 0" :list="pins.approved" table />
+            <PieceTable v-if="pins.approved.length > 0" :pins="pins.approved" />
             <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
           </div>
           <p class="font-semibold ml-4 text-md sm:text-lg text-center">Pending</p>
           <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceList v-if="pins.pending.length > 0" :list="pins.pending" table />
+            <PieceTable v-if="pins.pending.length > 0" :pins="pins.pending" />
             <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
           </div>
           <p class="font-semibold ml-4 text-md sm:text-lg text-center">Rejected</p>
           <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceList v-if="pins.rejected.length > 0" :list="pins.rejected" table />
+            <PieceTable v-if="pins.rejected.length > 0" :pins="pins.rejected" />
             <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
           </div>
         </div>
@@ -84,7 +84,6 @@ import {
 } from "../config/constants";
 import { computed, provide, ref, watch } from "vue";
 import { useWalletStore } from "../stores/wallet";
-import PieceList from "../components/PieceList.vue"
 import Connect from "../components/Layout/Connect.vue"
 import SubscriptionSearch from "../components/SubscriptionSearch.vue"
 import SubscriptionItem from "../components/SubscriptionItem.vue";
@@ -92,6 +91,7 @@ import NewFeatured from "../components/NewFeatured.vue"
 import NewAdmin from "../components/NewAdmin.vue"
 import AdminItem from "../components/AdminItem.vue";
 import Spinner from "../components/Layout/Spinner.vue";
+import PieceTable from "../components/PieceTable.vue";
 
 
 const walletStore = useWalletStore()

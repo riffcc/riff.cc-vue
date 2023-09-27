@@ -107,7 +107,6 @@ import { useQuery } from "@vue/apollo-composable"
 import { GET_PINS } from "../config/constants";
 import { computed } from "vue";
 import { useWalletStore } from "../stores/wallet";
-import PieceList from "../components/PieceList.vue"
 import Connect from "../components/Layout/Connect.vue"
 
 const walletStore = useWalletStore()
