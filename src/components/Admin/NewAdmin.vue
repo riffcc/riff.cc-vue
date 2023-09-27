@@ -25,9 +25,9 @@
 <script setup>
 import { useApolloClient } from '@vue/apollo-composable';
 import { computed, ref, watch } from 'vue';
-import { GET_ETH_ACCOUNT, defaultUserSettings } from '../config/constants'
-import { useWalletStore } from '../stores/wallet';
-import callAdminServer from '../utils/callAdminServer';
+import { GET_ETH_ACCOUNT, defaultUserSettings } from '../../config/constants'
+import { useWalletStore } from '../../stores/wallet';
+import callAdminServer from '../../utils/callAdminServer';
 
 const walletStore = useWalletStore()
 const siteID = import.meta.env.VITE_WEBSITE_ID

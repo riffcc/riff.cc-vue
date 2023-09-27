@@ -40,7 +40,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import Spinner from "./Layout/Spinner.vue"
+import Spinner from "../Layout/Spinner.vue"
 const props = defineProps({
   videoSource: {
     type: Object,

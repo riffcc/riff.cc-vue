@@ -51,7 +51,7 @@
 <script setup>
 import { onUnmounted, ref, watch } from 'vue';
 import VolumeControl from './VolumeControl.vue'
-import Spinner from './Layout/Spinner.vue'
+import Spinner from '../Layout/Spinner.vue'
 
 
 const props = defineProps({

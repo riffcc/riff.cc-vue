@@ -128,9 +128,9 @@ import {
   formatOptions,
   mediaOptions,
   movieTypeOptions,
-} from '../config/constants';
-import Label from '../components/Layout/Label.vue';
-import { useUploadStore } from '../stores/upload';
+} from '../../config/constants';
+import Label from '../Layout/Label.vue';
+import { useUploadStore } from '../../stores/upload';
 defineProps({
   handleFileChange: Function
 })

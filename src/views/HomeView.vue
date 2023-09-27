@@ -29,8 +29,8 @@ import {
   GET_SUBSCRIPTIONS,
   GET_FEATUREDS
 } from '../config/constants';
-import Pagination from '../components/Pagination.vue';
 import PieceItem from '../components/PieceItem.vue';
+import Pagination from '../components/Layout/Pagination.vue';
 
 const siteID = import.meta.env.VITE_WEBSITE_ID
 

@@ -36,12 +36,12 @@ import callAdminServer from '../utils/callAdminServer'
 import Connect from '../components/Layout/Connect.vue';
 import Spinner from '../components/Layout/Spinner.vue';
 import Badge from '../components/Layout/Badge.vue';
-import UploadForm from '../components/UploadForm.vue';
 import { checkArtist } from '../utils/checkArtist'
 
 import { useApolloClient, useQuery } from '@vue/apollo-composable';
 import getCategoryID from '../utils/getCategoryId';
 import uploadToIPFS from '../utils/uploadToIPFS'
+import UploadForm from '../components/Upload/UploadForm.vue';
 const { resolveClient } = useApolloClient()
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();

@@ -28,10 +28,10 @@
 
 <script setup>
 import { useApolloClient, useQuery } from '@vue/apollo-composable';
-import { GET_SUBSCRIPTIONS } from '../config/constants';
+import { GET_SUBSCRIPTIONS } from '../../config/constants';
 import { computed, inject } from 'vue';
-import callAdminServer from '../utils/callAdminServer';
-import { useWalletStore } from '../stores/wallet';
+import callAdminServer from '../../utils/callAdminServer';
+import { useWalletStore } from '../../stores/wallet';
 
 const props = defineProps({
   subscription: Object

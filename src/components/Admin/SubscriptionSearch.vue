@@ -23,8 +23,8 @@
 <script setup>
 import { useApolloClient, useLazyQuery } from '@vue/apollo-composable';
 import { computed, ref, watch } from 'vue';
-import { GET_SUBSCRIPTIONS, GET_WEBSITE } from '../config/constants';
-import SubscriptionItem from '../components/SubscriptionItem.vue'
+import { GET_SUBSCRIPTIONS, GET_WEBSITE } from '../../config/constants';
+import SubscriptionItem from './SubscriptionItem.vue'
 
 const { resolveClient } = useApolloClient()
 

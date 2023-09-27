@@ -10,8 +10,8 @@
 </template>
 
 <script setup>
-import { useWalletStore } from '../stores/wallet';
-import callAdminServer from '../utils/callAdminServer';
+import { useWalletStore } from '../../stores/wallet';
+import callAdminServer from '../../utils/callAdminServer';
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
 
 const walletStore = useWalletStore()

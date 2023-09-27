@@ -85,13 +85,13 @@ import {
 import { computed, provide, ref, watch } from "vue";
 import { useWalletStore } from "../stores/wallet";
 import Connect from "../components/Layout/Connect.vue"
-import SubscriptionSearch from "../components/SubscriptionSearch.vue"
-import SubscriptionItem from "../components/SubscriptionItem.vue";
-import NewFeatured from "../components/NewFeatured.vue"
-import NewAdmin from "../components/NewAdmin.vue"
-import AdminItem from "../components/AdminItem.vue";
+import NewFeatured from "../components/Admin/NewFeatured.vue"
+import NewAdmin from "../components/Admin/NewAdmin.vue"
+import AdminItem from "../components/Admin/AdminItem.vue";
 import Spinner from "../components/Layout/Spinner.vue";
 import PieceTable from "../components/PieceTable.vue";
+import SubscriptionSearch from "../components/Admin/SubscriptionSearch.vue";
+import SubscriptionItem from "../components/Admin/SubscriptionItem.vue";
 
 
 const walletStore = useWalletStore()
