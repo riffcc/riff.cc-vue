@@ -1,22 +1,27 @@
 <template>
   <div class="flex flex-col gap-3 relative">
     <div class="min-h-screen py-10 px-4 sm:px-8 md:px-16 flex">
-      <p v-if="pinsResultError">Something went wrong...</p>
-      <Spinner v-else-if="pinsResultLoading" :className="'animate-spin h-8 w-8 text-slate-50 m-auto'" />
-      <div v-else class="flex flex-col w-full">
-        <div v-if="featuredResult?.featuredIndex?.edges?.length > 0" class=" bg-gray-700">
-          <PieceList :list="featuredResult?.featuredIndex?.edges" />
+      <div v-if="pinList" class="w-full">
+        <div class="flex flex-wrap h-3/4 p-10 justify-center gap-4">
+          <PieceItem v-for="edge in pinList" :key="edge.node.id" :pin="edge.node" />
         </div>
-        <PieceList v-if="pinsResult?.pinIndex?.edges?.length > 0" :list="pinsResult?.pinIndex?.edges" />
+        <div class="flex items-center">
+          <Pagination
+            v-if="pageInfo?.hasNextPage || page > 1"
+            :page="page"
+            :hasNextPage="pageInfo?.hasNextPage"
+            :handlePrevPage="handlePrevPage"
+            :handleNextPage="handleNextPage"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useLazyQuery, useQuery } from '@vue/apollo-composable';
-import PieceList from '../components/PieceList.vue';
 import Spinner from '../components/Layout/Spinner.vue';
 
 import {
@@ -24,29 +29,10 @@ import {
   GET_SUBSCRIPTIONS,
   GET_FEATUREDS
 } from '../config/constants';
+import Pagination from '../components/Pagination.vue';
+import PieceItem from '../components/PieceItem.vue';
 
 const siteID = import.meta.env.VITE_WEBSITE_ID
-const {
-  result: pinsResult,
-  load: fetchPins,
-  loading: pinsResultLoading,
-  error: pinsResultError,
-  fetchMore: fetchMorePins
-} = useLazyQuery(GET_PINS, {
-  items: 100,
-  filters: {
-    where: {
-      siteID: {
-        equalTo: siteID
-      },
-      approved: {
-        equalTo: true
-      }
-    }
-  }
-}, {
-  fetchPolicy: 'network-only'
-});
 
 const {
   result: subscriptionsResult,
@@ -68,36 +54,58 @@ const {
   fetchPolicy: 'network-only'
 });
 
+const {
+  result: pinsResult,
+  load: fetchPins,
+  loading: pinsResultLoading,
+  error: pinsResultError,
+  fetchMore: fetchMorePins
+} = useLazyQuery(GET_PINS, undefined, {
+  fetchPolicy: 'network-only'
+});
 
-watch(subscriptionsResult, async (subscriptions) => {
-  const subscriptionsNodes = subscriptions?.subscriptionIndex?.edges
-  let filtersIds = [siteID]
-  if (subscriptionsNodes && subscriptionsNodes.length > 0) {
-    filtersIds = [...filtersIds, ...subscriptionsNodes.map(subscription => subscription.node.subscribedID)]
+const pinList = computed(() => pinsResult.value?.pinIndex?.edges ?? [])
+const pageInfo = computed(() => pinsResult.value?.pinIndex?.pageInfo ?? null)
+const pinsFilters = computed(() => {
+  let ids = [siteID]
+  const subscriptions = subscriptionsResult.value?.subscriptionIndex?.edges
+  if (subscriptions && subscriptions.length > 0) {
+    ids = [...ids, ...subscriptions.map(subscription => subscription.node.subscribedID)]
   }
+  return {
+    where: {
+      siteID: {
+        in: ids
+      },
+      approved: {
+        equalTo: true
+      }
+    }
+  }
+})
+
+
+
+watch(pinsFilters, async (filters) => {
+  if (!filters) return;
+
   await fetchPins(
     undefined,
     {
-      items: 1000,
-      filters: {
-        where: {
-          siteID: {
-            in: filtersIds
-          },
-          approved: {
-            equalTo: true
-          }
-        }
-      }
+      items: 2,
+      filters
     }
   )
 })
+
+
 
 const {
   result: featuredResult,
   loading: featuredEdgesLoading,
   error: featuredEdgesError,
-  refetch: refetchFeatured
+  refetch: refetchFeatured,
+  fetchMore: fetchMoreFeatured
 } = useQuery(GET_FEATUREDS, {
   items: 1000,
   filters: {
@@ -118,6 +126,39 @@ const {
 });
 
 
+const page = ref(1)
+const handleNextPage = async () => {
+  console.log('from handleNextPage')
+  await fetchMorePins({
+    variables: {
+      items: 2,
+      filters: pinsFilters.value,
+      after: pageInfo.value.endCursor
+    },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      return fetchMoreResult ?? previousResult
+    }
+  })
+    page.value += 1
+
+}
+const handlePrevPage = async () => {
+  if (page.value - 1 === 0) return
+  console.log('from handlePrevPage')
+
+  await fetchMorePins({
+    variables: {
+      items: 2,
+      filters: pinsFilters.value,
+      before: pageInfo.value.startCursor
+    },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      return fetchMoreResult ?? previousResult
+    }
+  })
+    page.value -= 1
+
+}
 setInterval(() => refetchFeatured({
   items: 1000,
   filters: {

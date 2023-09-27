@@ -163,8 +163,8 @@ export const GET_ACCOUNT_SETTINGS = gql`
     }
   }
 `;
-export const GET_PINS = gql`query PinQueryWithFilter($filters: PinFiltersInput, $items: Int!) {
-  pinIndex(filters: $filters, first: $items) {
+export const GET_PINS = gql`query PinQueryWithFilter($filters: PinFiltersInput, $items: Int!, $before: String, $after: String) {
+  pinIndex(filters: $filters, first: $items, before: $before, after: $after) {
     pageInfo {
       ...PageInfoFragment
     }
@@ -178,8 +178,8 @@ export const GET_PINS = gql`query PinQueryWithFilter($filters: PinFiltersInput, 
   ${pageInfoFragment}
 `;
 
-export const GET_FEATUREDS = gql`query FeaturedIndexQuery($items: Int!, $filters: FeaturedFiltersInput!) {
-  featuredIndex(first: $items, filters: $filters) {
+export const GET_FEATUREDS = gql`query FeaturedIndexQuery($items: Int!, $filters: FeaturedFiltersInput!, $before: String, $after: String) {
+  featuredIndex(first: $items, filters: $filters, before: $before, after: $after) {
     edges {
       node {
         id
