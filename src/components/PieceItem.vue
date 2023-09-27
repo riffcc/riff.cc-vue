@@ -2,12 +2,19 @@
   <div>
     <div class="h-28 w-28 md:h-32 md:w-32 relative mx-auto border rounded-xl">
       <a
-        v-if="pin.piece.details?.imageThumbnailCID"
-        :href="`https://ipfs.io/ipfs/${pin.piece.details?.imageThumbnailCID}`" 
+        v-if="pin.piece.details?.thumbnailCid"
+        :href="`https://ipfs.io/ipfs/${pin.piece.details?.thumbnailCid}`" 
         target="_blank"
       >
-        <img class="absolute w-full h-full rounded-xl" :alt="''" :src="`https://ipfs.io/ipfs/${pin.piece.details?.imageThumbnailCID}`" />
+        <img class="absolute w-full h-full rounded-xl" :alt="''" :src="`https://${ipfsGateway}/ipfs/${pin.piece.details?.thumbnailCid}`" />
       </a>
+      <a
+          v-else-if="pin.piece?.contentCid"
+          :href="`https://ipfs.io/ipfs/${pin.piece?.contentCid}`" 
+          target="_blank"
+        >
+          <img class="absolute w-full h-full rounded-xl" :alt="''" :src="`https://${ipfsGateway}/ipfs/${pin.piece?.contentCid}`" />
+        </a>
       <div v-else class="flex h-full">
         <v-icon name="pr-image" class="h-20 w-20 m-auto text-slate-300" />
       </div>
@@ -20,6 +27,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 
 const router = useRouter()
 const handleOnClick = () => {

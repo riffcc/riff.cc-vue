@@ -6,18 +6,15 @@
     </div>
     <div class="border-slate-800 border h-24 sm:h-28 px-2 py-1 flex-1">
       <div class="flex items-center justify-between w-full h-8">
-        <p class="truncate text-sm font-medium">{{ subscription.websiteName }}</p>
-        <button 
-          v-if="!isSubscribed" 
+        <p class="truncate text-sm font-medium">{{ subscription.name }}</p>
+        <button v-if="!isSubscribed || isSubscribed.inactive"
           class="border border-slate-600 px-1.5 py-0.5 bg-cyan-500 delay-400 text-xs sm:text-sm uppercase font-semibold"
-          @click="handleOnSubscribe"
-        >
+          @click="handleOnSubscribe">
           Subscribe
         </button>
-        <button 
-          v-else class="border border-slate-600 px-1.5 py-0.5 bg-red-500 delay-400 text-xs sm:text-sm uppercase font-semibold"
-          @click="handleOnUnsubscribe"
-        >
+        <button v-else
+          class="border border-slate-600 px-1.5 py-0.5 bg-red-500 delay-400 text-xs sm:text-sm uppercase font-semibold"
+          @click="handleOnUnsubscribe">
           Unsubscribe
         </button>
       </div>
@@ -30,63 +27,87 @@
 
 
 <script setup>
-import { useMutation, useApolloClient } from '@vue/apollo-composable';
-import { CREATE_SUBSCRIPTION, SubscriptionFragment, UPDATE_SUBSCRIPTION } from '../utils/constants';
-import { inject } from 'vue';
+import { useApolloClient, useQuery } from '@vue/apollo-composable';
+import { GET_SUBSCRIPTIONS } from '../config/constants';
+import { computed, inject } from 'vue';
+import callAdminServer from '../utils/callAdminServer';
+import { useWalletStore } from '../stores/wallet';
 
 const props = defineProps({
-  subscription: Object,
-  isSubscribed: Boolean
+  subscription: Object
 })
-
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
-const websiteID = import.meta.env.VITE_WEBSITE_ID
+const siteID = import.meta.env.VITE_WEBSITE_ID
+const adminNodeUrl = import.meta.env.VITE_ADMIN_SERVER
+
+const walletStore = useWalletStore()
+
 const refetchSubscriptions = inject('refetchSubscriptions')
-const { resolveClient } = useApolloClient()
-const { mutate: createSubscription } = useMutation(CREATE_SUBSCRIPTION, {
-  variables: {
-    input: {
-      content: {
-        websiteID,
-        subscribedID: props.subscription.id,
-        metadata: {
-          createdAt: Date.now().toString(),
-          updatedAt: Date.now().toString()
-        }
+
+const {
+  result: subscriptionExistResult
+} = useQuery(GET_SUBSCRIPTIONS, {
+  items: 1,
+  filters: {
+    where: {
+      siteID: {
+        equalTo: siteID
+      },
+      subscribedID: {
+        equalTo: props.subscription.id
       }
     }
   }
+}, {
+  fetchPolicy: 'network-only'
+});
+const isSubscribed = computed(() => {
+  const subscriptionNode = subscriptionExistResult.value?.subscriptionIndex?.edges[0]?.node
+  if (!subscriptionNode) return null
+  return subscriptionNode
 })
 
-
-const { mutate: updateSubscription } = useMutation(UPDATE_SUBSCRIPTION)
-
-const getSubscriptionFromCache = (subscribedID) => {
-  const apolloClient = resolveClient();
-  return apolloClient.readFragment({
-    id: apolloClient.cache.identify({ __typename: "Subscription", subscribedID}),
-    fragment: SubscriptionFragment
-  })
-}
-
 const handleOnSubscribe = async () => {
-  const subscriptionExists = getSubscriptionFromCache(props.subscription.id)
+
   try {
-    if (subscriptionExists && subscriptionExists.inactive) {
-      await updateSubscription({
-        input: {
-          id: subscriptionExists.id,
-          content: {
-            inactive: false,
-            metadata: {
-              createdAt: subscriptionExists.metadata.createdAt,
-              updatedAt: Date.now().toString()
-            }
-          }
-        }
+    const msgToSign = "Create new subscription"
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    if (!isSubscribed.value) {
+      await callAdminServer(
+        `${adminNodeUrl}/subscription`, {
+        action: "create",
+        data: {
+          siteID,
+          subscribedID: props.subscription.id,
+          inactive: false,
+          createdAt: (new Date).toISOString(),
+          updatedAt: (new Date).toISOString()
+        },
+        msg: msgToSign,
+        signature,
+        address: walletStore.address
       })
     } else {
-      await createSubscription()
+      await callAdminServer(
+        `${adminNodeUrl}/subscription`, {
+        action: "update",
+        data: {
+          id: isSubscribed.value.id,
+          content: {
+            inactive: false,
+            updatedAt: (new Date).toISOString()
+          }
+        },
+        msg: msgToSign,
+        signature,
+        address: walletStore.address
+      })
     }
     refetchSubscriptions()
   } catch (error) {
@@ -95,24 +116,30 @@ const handleOnSubscribe = async () => {
 }
 
 const handleOnUnsubscribe = async () => {
-  const subscriptionExists = getSubscriptionFromCache(props.subscription.id)
   try {
-    if (subscriptionExists && !subscriptionExists.inactive) {
-      await updateSubscription({
-        input: {
-          id: subscriptionExists.id,
-          content: {
-            inactive: true,
-            metadata: {
-              createdAt: subscriptionExists.metadata.createdAt,
-              updatedAt: Date.now().toString()
-            }
-          }
+    const msgToSign = "Delete subscription"
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    await callAdminServer(
+      `${adminNodeUrl}/subscription`, {
+      action: "update",
+      data: {
+        id: isSubscribed.value.id,
+        content: {
+          inactive: true,
+          createdAt: (new Date).toISOString()
         }
-      })
-    } else {
-      throw new Error('subscription not found')
-    }
+      },
+      msg: msgToSign,
+      signature,
+      address: walletStore.address
+    })
+    refetchSubscriptions()
   } catch (error) {
     console.log('error on handleUnsubscribe', error)
   }

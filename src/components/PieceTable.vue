@@ -3,9 +3,12 @@
     <tbody>
       <tr v-for="pin in pins" :key="pin.node.id" class="flex items-center justify-between px-4 sm:px-10 h-20 text-sm sm:text-md">
         <td class="w-2/12 flex">
-          <div v-if="pin.node.piece.details?.imageThumbnailCID" class="w-20 h-14 rounded-xl">
-            <img class="w-full h-full rounded-xl" :src="`https://${ipfsGateway}/ipfs/${pin.node.piece.details?.imageThumbnailCID}`" alt="" />
+          <div v-if="pin.node.piece.details?.thumbnailCid" class="w-20 h-14 rounded-xl">
+            <img class="w-full h-full rounded-xl" :src="`https://${ipfsGateway}/ipfs/${pin.node.piece.details?.thumbnailCid}`" alt="" />
           </div>
+          <div v-else-if="pin.node.piece?.contentCid" class="w-20 h-14 rounded-xl">
+              <img class="w-full h-full rounded-xl" :src="`https://${ipfsGateway}/ipfs/${pin.node.piece?.contentCid}`" alt="" />
+            </div>
           <div v-else class="w-20 h-14 border border-slate-600 rounded-xl flex">
             <v-icon name="pr-image" class="h-12 w-12 m-auto" />
           </div>
@@ -18,11 +21,11 @@
         </td>
         <td class="w-2/12">
           <a 
-            :href="`https://ipfs.io/ipfs/${pin.node.piece.CID}`" 
+            :href="`https://ipfs.io/ipfs/${pin.node.piece.contentCid}`" 
             target="_blank"
             class="hover:text-cyan-200"
           >
-            {{ pin.node.piece.CID.substring(0, 2) }}...{{ pin.node.piece.CID.substring(pin.node.piece.CID.length - 4) }}
+            {{ pin.node.piece.contentCid.substring(0, 2) }}...{{ pin.node.piece.contentCid.substring(pin.node.piece.contentCid.length - 4) }}
           </a>
         </td>
         <td class="w-1/12">

@@ -1,10 +1,10 @@
 <template>
   <div id="piece-card" class='flex flex-col md:flex-row p-10 min-h-80 gap-16'>
     <div id="piece-thumbnail">
-      <a v-if="pinResult.node.piece.details?.imageThumbnailCID"
-        :href="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.imageThumbnailCID}`" target='_blank'>
+      <a v-if="pinResult.node.piece.details?.thumbnailCid"
+        :href="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.thumbnailCid}`" target='_blank'>
         <img class="h-48 w-56 md:h-64 md:w-72 max-w-none mx-auto"
-          :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.imageThumbnailCID}`" alt="" />
+          :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.thumbnailCid}`" alt="" />
       </a>
       <div v-else class="h-48 w-56 md:h-64 md:w-72 flex border border-background-secondary-alt">
         <v-icon name="pr-image" class="h-20 w-20 m-auto text-slate-300" />

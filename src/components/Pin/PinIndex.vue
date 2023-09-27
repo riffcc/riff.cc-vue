@@ -77,10 +77,10 @@ onMounted(() => {
     isVideo.value = true
     videoSource.value = {
       name: props.pinResult.node.piece.name,
-      cid: props.pinResult.node.piece.CID
+      cid: props.pinResult.node.piece.contentCid
     }
   } else if (props.pinResult.node.category.name === "Music") {
-    getCIDContent(ipfsGateway, props.pinResult.node.piece.CID)
+    getCIDContent(ipfsGateway, props.pinResult.node.piece.contentCid)
       .then(files => {
         musicAlbum.value.is = true
         musicAlbum.value.files = files

@@ -1,10 +1,9 @@
 <template>
-  <header class="bg-background-secondary h-20 flex items-center px-6 lg:px-16 xl:px-36 py-5 justify-between text-slate-50 relative">
+  <header
+    class="bg-background-secondary h-20 flex items-center px-6 lg:px-16 xl:px-36 py-5 justify-between text-slate-50 relative">
     <img src="/logo.png" class="w-10 h-10" alt="">
-    <div v-if="isGreatherThanSmall" class="flex gap-10 flex-1 lg:pl-32">
-      <button @click="() => $router.push('/')">
-        Home
-      </button>
+    <div v-if="isGreatherThanSmall" class="flex gap-10 flex-1 lg:pl-32u justify-center">
+      <!-- 
       <button @click="() => $router.push('/movie')">
         Movie
       </button>
@@ -19,8 +18,11 @@
       </button>
       <button @click="() => $router.push('/contact')">
         Contact
+      </button> -->
+      <button @click="() => $router.push('/')">
+        Home
       </button>
-      <!-- <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/audio-books')">
+      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/upload')">
         Upload
       </button>
       <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
@@ -30,7 +32,7 @@
       <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
         @click="() => $router.push('/admin')">
         Admin Website
-      </button> -->
+      </button>
     </div>
     <button v-else @click="toggleMenu">
       <v-icon name="hi-menu" class="h-7 w-8 text-slate-50" />
@@ -78,13 +80,12 @@ import { useWalletStore } from "../../stores/wallet"
 import { useSettingsStore } from '../../stores/settings';
 
 import auth3IDConnect from '../../utils/auth3IDConnect'
-import { checkAddressInAdmins, checkAccount } from '../../utils/checkAccount'
-import { GET_USERS, GET_ADMINS, CREATE_ETH_ACCOUNT } from '../../utils/constants'
 import createCeramicClient from "../../utils/createCeramicClient"
 import Connect from "../Layout/Connect.vue"
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useRouter } from "vue-router";
 import callAdminServer from "../../utils/callAdminServer"
+import { GET_ETH_ACCOUNT } from "../../config/constants";
 const settingsStore = useSettingsStore();
 
 
@@ -105,14 +106,15 @@ const redirect = (route) => {
   showMenu.value = false
 }
 
-const id = import.meta.env.VITE_WEBSITE_ID
-const { resolveClient } = useApolloClient();
+const siteID = import.meta.env.VITE_WEBSITE_ID
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
 const walletStore = useWalletStore();
 const initialCeramicClient = inject("ceramic");
 const updateApolloClient = inject("updateApolloClient");
-const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
+const { resolveClient } = useApolloClient();
 
 watch(() => walletStore.address, async (address) => {
+  console.log('from watchAddress', address)
   if (!address) {
     walletStore.accountId = null
     walletStore.isAdmin = false
@@ -122,51 +124,42 @@ watch(() => walletStore.address, async (address) => {
   }
   const { ceramic } = await auth3IDConnect(address, initialCeramicClient);
   console.log('ceramic is authenticated?', ceramic.did?.authenticated);
+
   if (ceramic.did?.authenticated) {
     updateApolloClient(ceramic);
     walletStore.threeIdAuthenticated = true;
-
     const client = resolveClient()
+    const result = await client.query({
+      query: GET_ETH_ACCOUNT,
+      variables: {
+        items: 100,
+        filters: {
+          where: {
+            address: {
+              equalTo: address
+            }
+          }
+        }
+      },
+      fetchPolicy: 'network-only'
+    })
 
-    const getUsers = async (variables) => {
-      return await client.query({
-        query: GET_USERS,
-        variables: {
-          id,
-          pageSize: 1000,
-          ...variables
-        },
-        fetchPolicy: 'no-cache'
-      })
-    }
 
-    const getAdmins = async () => {
-      return await client.query({
-        query: GET_ADMINS,
-        variables: {
-          id,
-          pageSize: 1000
-        },
-        fetchPolicy: 'no-cache'
-      })
-    }
+    console.log('result', result)
 
-    const resultGetUsers = await getUsers()
-    const accountId = await checkAccount(getUsers, address, resultGetUsers.data.node.users)
-    if (accountId) {
-      walletStore.accountId = accountId;
-      const resultGetAdmins = await getAdmins()
-      const resultCheckAdmin = checkAddressInAdmins(address, resultGetAdmins.data.node.admins.edges)
-      if (resultCheckAdmin.exist) {
-        walletStore.isAdmin = true
-        walletStore.adminId = resultCheckAdmin.id
-        walletStore.adminIsSuper = resultCheckAdmin.super
-      }
+    const node = result.data.ethAccountIndex.edges[0]?.node
+
+    if (node) {
+      walletStore.accountId = node.id;
+      walletStore.isAdmin = node.isAdmin
+      walletStore.isSuperAdmin = node.isSuperAdmin
+
     } else {
+      const msgToSign = "Create new account"
       const signature = await window.ethereum.request({
         method: "personal_sign",
         params: [
-          "create new account",
+          msgToSign,
           walletStore.address
         ]
       })
@@ -177,49 +170,27 @@ watch(() => walletStore.address, async (address) => {
           action: 'create',
           data: {
             address,
-            websiteID: id,
-            metadata: {
-              updatedAt: Date.now().toString(),
-              createdAt: Date.now().toString()
-            },
+            siteID,
+            isAdmin: false,
+            isSuperAdmin: false,
+            createdAt: (new Date).toISOString(),
+            updatedAt: (new Date).toISOString(),
+            settings: defaultUserSettings
           },
-          msg: 'create new account',
+          msg: msgToSign,
           signature,
           address,
-
         });
 
       walletStore.accountId = result.accountID;
+
     }
+
   } else {
-
-    const signature = await window.ethereum.request({
-      method: "personal_sign",
-      params: [
-        "create new account",
-        walletStore.address
-      ]
-    })
-    console.log(signature)
-    const result = await callAdminServer(
-      `${adminServerUrl}/account`,
-      {
-        action: 'create',
-        data: {
-          address,
-          websiteID: id,
-          metadata: {
-            updatedAt: Date.now().toString(),
-            createdAt: Date.now().toString()
-          },
-        },
-        msg: 'create new account',
-        signature,
-        address,
-
-      });
-
-    walletStore.accountId = result.accountID;
+    walletStore.error = "error on connect wallet"
+    setTimeout(() => {
+      walletStore.error = null
+    }, 3000);
   }
 
 })
