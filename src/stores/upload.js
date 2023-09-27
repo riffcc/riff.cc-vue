@@ -3,90 +3,93 @@ import { defineStore } from 'pinia';
 import checkCID from '../utils/checkCID';
 import getCIDContent from '../utils/getCIDContent';
 import getFileType from '../utils/getFileType';
+import uploadToIPFS from '../utils/uploadToIPFS';
 
 const detailsDefault = {
-  imageThumbnailCID: ref(undefined),
-  tags: ref(undefined),
-  musicBrainzID: ref(undefined),
-  albumTitle: ref(undefined),
-  initialReleaseYear: ref(undefined),
-  releaseType: ref(undefined),
-  format: ref(undefined),
-  bitrate: ref(undefined),
-  media: ref(undefined),
-  releaseDescription: ref(undefined),
-  poster: ref(undefined),
-  TMDBID: ref(undefined),
-  IMDBID: ref(undefined),
-  type: ref(undefined),
+  thumbnailCid: ref(null),
+  tags: ref(null),
+  musicBrainzID: ref(null),
+  albumTitle: ref(null),
+  initialReleaseYear: ref(null),
+  releaseType: ref(null),
+  format: ref(null),
+  bitrate: ref(null),
+  media: ref(null),
+  releaseDescription: ref(null),
+  poster: ref(null),
+  TMDBID: ref(null),
+  IMDBID: ref(null),
+  type: ref(null),
 };
 
 export const useUploadStore = defineStore('upload', () => {
   const name = ref(null);
-  const CID = ref(null);
+  const contentCid = ref(null);
   const category = ref(null);
   const artist = ref(null);
   const details = ref(detailsDefault);
 
-  const isValidCID = computed(() => {
-    if (!CID.value) {
-      return false
-    }
-    return checkCID(CID.value);
-  });
-
+  const inputHasFiles = ref(false)
   const thumbnailIsValidCID = computed(() => {
-    if (!details.value.imageThumbnailCID) {
+    if (!details.value.thumbnailCid) {
       return false
     }
-    return checkCID(details.value.imageThumbnailCID);
+    return checkCID(details.value.thumbnailCid);
   });
-
+  const isValidCID = computed(() => {
+    if (!contentCid.value) {
+      return false
+    }
+    return checkCID(contentCid.value);
+  });
   const checkingContent = ref(false)
+
 
   const contentIsValid = ref(false)
   const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
-  watch(() => [category.value, CID.value], async ([_category, _CID]) => {
-    if (!_CID || !_category) {
-      return;
-    }
-    console.log('_category', _category);
-    try { 
-      checkingContent.value = true
-      if (_category === "Music") {
-        const files = await getCIDContent(ipfsGateway, _CID)
-        
-        let someoneInvalid = false
-        for (let index = 0; index < files.length; index++) {
-          const type = await getFileType(ipfsGateway, files[index].cid)
 
-          if (!type.startsWith("audio")) {
-            someoneInvalid = true
-            break
-          }
-          await new Promise(resolve => setTimeout(resolve, 500))
-        }
 
-        if(!someoneInvalid) {
-          contentIsValid.value = true 
-        }
 
-      } else if (_category === "Videos") {
-        const type = await getFileType(ipfsGateway, _CID)
-        if (type.startsWith("video")) {
-          contentIsValid.value = true
-        }
-      } else {
-        contentIsValid.value = true
-      }
-      checkingContent.value = false
-    } catch (error) {
-      contentIsValid.value = false
-      checkingContent.value = false
-      console.log(error);
-    }
+  // watch(() => [category.value, contentCid.value], async ([_category, _CID]) => {
+  //   if (!_CID || !_category) {
+  //     return;
+  //   }
+  //   console.log('_category', _category);
+  //   try { 
+  //     checkingContent.value = true
+  //     if (_category === "Music") {
+  //       const files = await getCIDContent(_CID)
+  //       console.log('files', files)
+  //       let someoneInvalid = false
+  //       for (let index = 0; index < files.length; index++) {
+  //         const type = await getFileType(ipfsGateway, files[index].cid)
+  //         console.log('type', type)
+  //         // if (!type.startsWith("audio")) {
+  //         //   someoneInvalid = true
+  //         //   break
+  //         // }
+  //         await new Promise(resolve => setTimeout(resolve, 500))
+  //       }
 
-  })
+  //       if(!someoneInvalid) {
+  //         contentIsValid.value = true 
+  //       }
+
+  //     } else if (_category === "Videos") {
+  //       const type = await getFileType(ipfsGateway, _CID)
+  //       if (type.startsWith("video")) {
+  //         contentIsValid.value = true
+  //       }
+  //     } else {
+  //       contentIsValid.value = true
+  //     }
+  //   } catch (error) {
+  //     contentIsValid.value = false
+  //     checkingContent.value = false
+  //     console.log(error);
+  //   }
+
+  // })
 
   
   const isLoading = ref(false);
@@ -95,7 +98,7 @@ export const useUploadStore = defineStore('upload', () => {
 
   const reset = () => {
     name.value = null;
-    CID.value = null;
+    contentCid.value = null;
     category.value = null;
     artist.value = null;
 
@@ -113,7 +116,7 @@ export const useUploadStore = defineStore('upload', () => {
 
   return { 
     name,
-    CID,
+    contentCid,
     category,
     artist,
     details,
@@ -125,6 +128,7 @@ export const useUploadStore = defineStore('upload', () => {
     isError,
     isSuccess,
     reset,
-    resetDetails
+    resetDetails,
+    inputHasFiles
    }
 })
