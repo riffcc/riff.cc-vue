@@ -31,7 +31,7 @@
 import { computed, ref, watch } from 'vue';
 import { CREATE_FEATURED, GET_PIN } from '../../config/constants'
 import { useMutation, useApolloClient } from '@vue/apollo-composable';
-import Spinner from '../components/Layout/Spinner.vue';
+import Spinner from '../Layout/Spinner.vue';
 import callAdminServer from '../../utils/callAdminServer';
 import { useWalletStore } from '../../stores/wallet';
 const walletStore = useWalletStore()

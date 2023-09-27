@@ -71,16 +71,16 @@
 </template>
 
 <script setup>
-import { useWalletStore } from '../../stores/wallet';
-import { useUploadStore } from '../../stores/upload';
+import { useWalletStore } from '../stores/wallet';
+import { useUploadStore } from '../stores/upload';
 
-import callAdminServer from '../../utils/callAdminServer';
-import { CREATE_PIECE, GET_PIN } from '../../config/constants';
+import callAdminServer from '../utils/callAdminServer';
+import { CREATE_PIECE, GET_PIN } from '../config/constants';
 import { computed, inject, ref } from 'vue';
-import Modal from '../Layout/Modal.vue'
-import CloseButton from '../Layout/CloseButton.vue'
-import UploadForm from '../Upload/UploadForm.vue'
-import getCategoryID from '../../utils/getCategoryId';
+import Modal from './Layout/Modal.vue'
+import CloseButton from './Layout/CloseButton.vue'
+import UploadForm from './Upload/UploadForm.vue'
+import getCategoryID from '../utils/getCategoryId';
 import { useApolloClient } from '@vue/apollo-composable';
 
 const uploadStore = useUploadStore();
