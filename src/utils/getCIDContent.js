@@ -13,13 +13,13 @@ export default async function getCIDContent(cid) {
     undefined,
     {
       headers: {
-        "Authorization": `Basic ${Buffer.from(credentials).toString('base64')}`
+        "Authorization": `Basic ${btoa(credentials)}`
       }
     });
   const data = response.data["Data"]
   console.log('data', data)
   if (data && data["/"].bytes === "CAE") {
-    return response.data["Links"].map(link => ({ cid: link["Hash"]["/"], name: link["Name"] }))
+    return response.data["Links"].map(link => ({ cid: link["Hash"]["/"], name: link["Name"].replace(/^\d+\s*(.*?)\.\w+$/, '$1')}))
   } else {
     throw new Error("Format not supported")
   }
