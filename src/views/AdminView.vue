@@ -12,11 +12,11 @@
       </v-sheet>
       <div v-else style="min-height: inherit;" class="d-flex flex-column">
         <v-tabs v-model="tab" center-active fixed-tabs>
-          <v-tab value="content">Content</v-tab>
-          <v-tab value="admins">Admins</v-tab>
-          <v-tab value="featured">Featured</v-tab>
-          <v-tab value="subscriptions">Subscriptions</v-tab>
-          <v-tab value="site">Site</v-tab>
+          <v-tab slider-color="primary" value="content">Content</v-tab>
+          <v-tab slider-color="primary" value="admins">Admins</v-tab>
+          <v-tab slider-color="primary" value="featured">Featured</v-tab>
+          <v-tab slider-color="primary" value="subscriptions">Subscriptions</v-tab>
+          <v-tab slider-color="primary" value="site">Site</v-tab>
 
         </v-tabs>
         <v-window v-model="tab" class="flex-1-0">
