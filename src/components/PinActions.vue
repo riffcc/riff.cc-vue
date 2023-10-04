@@ -1,87 +1,91 @@
 <template>
-  <button class="w-full" @click="toggleShowActions">
-    <v-icon name="hi-dots-vertical" class="h-6 w-6 text-slate-50" />
-  </button>
-  <div v-if="showActions" class="absolute right-6 sm:right-16 lg:right-20" @mouseleave="delayCloseActions">
-    <div class="grid w-24 py-1 border bg-background-secondary">
-      <button v-if="walletStore.isAdmin && !pin.approved" @click="() => handleAction('approve')">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-check-circle" class="text-green-400 h-4 w-4" />
-          Approve
-        </p>
-      </button>
-      <button v-if="walletStore.isAdmin && !pin.rejected" @click="openRejectionModal">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-x-circle" class="text-red-400 h-4 w-4" />
-          Reject
-        </p>
-      </button>
-      <button v-if="walletStore.isAdmin || (!walletStore.isAdmin && !pin.approved && !pin.rejected)"
-        @click="openEditModal">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-pencil-alt" class="h-4 w-4" />
-          Edit
-        </p>
-      </button>
-      <button v-if="walletStore.isAdmin && pin.rejected" @click="() => handleAction('unreject')">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-clock" class="text-blue-400 h-4 w-4" />
-          Unreject
-        </p>
-      </button>
-      <button v-if="walletStore.isAdmin" @click="() => handleAction('delete')">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-trash" class="h-4 w-4" />
-          Delete
-        </p>
-      </button>
-      <button v-if="pin.rejected && pin.rejectedReason">
-        <p class="text-sm inline-flex items-center justify-between w-full px-2">
-          <v-icon name="hi-eye" class="h-4 w-4" />
-          Reject Reason
-        </p>
-      </button>
-    </div>
-  </div>
-  <Modal v-if="showRejectionModal">
-    <div class="h-40 w-80 bg-background m-auto border px-6 py-4 relative">
-      <CloseButton :onClose="hideRejectionModal" />
-      <div class="h-full flex flex-col justify-center">
-        <p class="text-sm mb-1 ml-1">Reason:</p>
-        <input name="reject-reason" type="text" class="bg-background-secondary h-9 px-1.5 mb-4" v-model="rejectionReason" />
-        <button class="bg-cyan-500 px-4 py-2 rounded" @click="() => handleAction('reject')">
-          Reject
-        </button>
-      </div>
-    </div>
-  </Modal>
-  <Modal v-if="showEditModal">
-    <div class="w-[25rem] border bg-background px-6 pt-8 pb-12 m-auto relative">
-      <CloseButton :onClose="hideEditModal" />
-      <p class="text-lg font-medium mb-4 text-center">Edit item</p>
-      <div class='grid h-96'>
-        <UploadForm />
-        <button class="bg-primary px-4 py-2 disabled:cursor-default disabled:text-slate-400 disabled:bg-slate-600"
-          @click="() => handleAction('edit')" :disabled="!isAllowedToEdit">
-          Edit
-        </button>
-      </div>
-    </div>
-  </Modal>
+  <v-menu>
+    <template v-slot:activator="{ props }">
+      <v-btn icon v-bind="props">
+        <v-icon icon="fas fa-ellipsis-vertical" size="small"></v-icon>
+      </v-btn>
+    </template>
+    <v-list>
+      <v-list-item v-if="walletStore.isAdmin && !pin.approved">
+        <v-btn text="Approve" @click="() => handleAction('approve')" block>
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-circle-check" size="small" color="success"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+      <v-list-item v-if="walletStore.isAdmin && !pin.rejected">
+        <v-btn text="Reject" @click="openRejectionModal" id="reject-button" block>
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-circle-xmark" size="small" color="error"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+      <v-list-item v-if="walletStore.isAdmin || (!walletStore.isAdmin && !pin.approved && !pin.rejected)">
+        <v-btn text="Edit" @click="openEditModal" id="edit-button" block>
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-pen-to-square" size="small"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+      <v-list-item v-if="walletStore.isAdmin && pin.rejected">
+        <v-btn text="Unreject" @click="() => handleAction('unreject')" block>
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-clock" size="small" color="info"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+      <v-list-item v-if="walletStore.isAdmin">
+        <v-btn text="Delete" @click="() => handleAction('delete')" block>
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-trash" size="small" color="error"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+      <v-list-item v-if="pin.rejected && pin.rejectedReason" block>
+        <v-btn text="Reject Reason">
+          <template v-slot:prepend>
+            <v-icon icon="fas fa-eye" size="small"></v-icon>
+          </template>
+        </v-btn>
+      </v-list-item>
+    </v-list>
+  </v-menu>
+  <v-dialog v-model="showEditModal" activator="edit-button" width="auto">
+    <v-card width="360px">
+      <v-card-text>
+        <p>jaja arre</p>
+
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn @click="showEditModal = false" text="Cancel"></v-btn>
+        <v-btn color="primary" @click="() => handleAction('reject')" text="Save"></v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="showRejectionModal" activator="reject-button" width="auto">
+    <v-card width="360px">
+      <v-card-text>
+        <v-text-field v-model="rejectionReason" label="Reject Reason"></v-text-field>
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn @click="showRejectionModal = false" text="Cancel"></v-btn>
+        <v-btn color="primary" @click="() => handleAction('reject')" text="Reject"></v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
-import { useWalletStore } from '../stores/wallet';
-import { useUploadStore } from '../stores/upload';
-
-import callAdminServer from '../utils/callAdminServer';
-import { CREATE_PIECE, GET_PIN } from '../config/constants';
 import { computed, inject, ref } from 'vue';
-import Modal from './Layout/Modal.vue'
-import CloseButton from './Layout/CloseButton.vue'
-import UploadForm from './Upload/UploadForm.vue'
-import getCategoryID from '../utils/getCategoryId';
 import { useApolloClient } from '@vue/apollo-composable';
+import { useWalletStore } from '@stores/wallet';
+import { useUploadStore } from '@stores/upload';
+import { useSettingsStore } from '@stores/settings';
+import {callAdminServer, getCategoryId } from '@utils';
+import { CREATE_PIECE, GET_PIN } from '@config/constants';
+
+
+const settingsStore = useSettingsStore();
 
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();
@@ -200,7 +204,7 @@ const handleAction = async (action) => {
           }
         }
       });
-      const categoryID = getCategoryID(client, uploadStore.category);
+      const categoryID = getCategoryId(client, uploadStore.category);
       console.log('props.pin vefore data', props.pin)
       data = {
         ownerID: props.pin.owner.id,

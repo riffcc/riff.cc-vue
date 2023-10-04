@@ -1,39 +1,35 @@
 <template>
-  <div class="grid w-80 sm:w-[25rem] h-full mx-auto">
-    <p class="font-medium mx-auto">New featured</p>
-    <div class="h-24">
-      <p class="text-sm mb-1 ml-1">Pin ID:</p>
-      <input type="text" class="form-input bg-background-secondary w-full h-9 px-1.5"
-        :min="(new Date).toISOString().replace(/.\d+Z$/g, 'Z')" v-model="pinID" />
-      <p v-if="pinID && !isPin" class="text-xs text-red-600 mt-1 ml-2">Not pin exists.</p>
-    </div>
-    <div class="h-24 text-slate-100">
-      <p class="text-sm mb-1 ml-1">Start at:</p>
-      <input type="datetime-local" :min="(new Date).toISOString().substring(0, 16)"
-        class="form-datetime-local bg-background-secondary w-full cursor-pointer h-9 px-1.5" v-model="startAt" />
-      <!-- {startAt !== '' && endAt !== '' && !startAtIsValid && <p class="text-xs text-red-600 mt-1 ml-2">Invalid date.</p>} -->
-    </div>
-    <div class="h-24">
-      <p class="text-sm mb-1 ml-1">End at:</p>
-      <input type="datetime-local" :min="(new Date).toISOString().substring(0, 16)"
-        class="form-datetime-local bg-background-secondary w-full cursor-pointer h-9 px-1.5" v-model="endAt" />
-    </div>
-    <button
-      class="py-2 px-4 h-10 w-1/3 mx-auto rounded-lg bg-cyan-500 disabled:hover:bg-cyan-900 disabled:bg-cyan-900 disabled:text-slate-400 hover:cursor-point disabled:hover:cursor-default delay-100 hover:bg-cyan-600"
-      :disabled="!isPin || !startAtIsValid || loadingNewFeatured" @click="handleSubmit">
-      <Spinner v-if="loadingNewFeatured" class="h-5 w-5 text-white animate-spin mx-auto" />
-      <p v-else>Create</p>
-    </button>
-  </div>
+  <v-sheet width="450px" class="ma-auto d-flex flex-column">
+    <v-text-field label="Pin ID" validate-on="input" v-model="pinID" :rules="[rules.required, rules.isValidID]">
+      <template v-slot:details="{ isValid }">
+        <div class="w-100" v-if="isValid.value && !pinExists">
+          <p class="text-error text-start">Pin don't exists.</p>
+        </div>
+      </template>
+    </v-text-field>
+    <v-text-field type="datetime-local" :min="minDate" :max="maxDate" label="Start at" v-model="startAt"></v-text-field>
+    <v-text-field :disabled="!startAt" type="datetime-local" :min="minEndDate" :max="maxDate" label="End at"
+      v-model="endAt"></v-text-field>
+    <v-btn color="primary" class="w-50 mx-auto mt-4" :loading="isLoading" :disabled="!pinExists || !startAt || !endAt" @click="handleSubmit" text="Create">
+    </v-btn>
+    <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+    <p class="text-center">{{ `Featured created succesfully!` }}</p>
+    </v-snackbar>
+    <v-snackbar color="error" v-model="isError" timeout="3000">
+    <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+    </v-snackbar>
+  </v-sheet>
+
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
-import { CREATE_FEATURED, GET_PIN } from '../../config/constants'
-import { useMutation, useApolloClient } from '@vue/apollo-composable';
-import Spinner from '../Layout/Spinner.vue';
-import callAdminServer from '../../utils/callAdminServer';
-import { useWalletStore } from '../../stores/wallet';
+import { ref, watch } from 'vue';
+import { GET_PIN } from '@config/constants'
+import { useApolloClient } from '@vue/apollo-composable';
+import {callAdminServer} from '@utils';
+import { useWalletStore } from '@stores/wallet';
+
+
 const walletStore = useWalletStore()
 const siteID = import.meta.env.VITE_WEBSITE_ID;
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
@@ -42,30 +38,61 @@ const pinID = ref(null)
 const startAt = ref(null)
 const endAt = ref(null)
 const isPin = ref(false)
+const isError = ref(false)
+const isLoading = ref(false)
+const isSuccess = ref(false)
+const pinExists = ref(false)
+
+const fetchPin = async (pinId) => {
+  const client = resolveClient();
+  const res = await client.query({
+    query: GET_PIN,
+    variables: {
+      id: pinId,
+    },
+    errorPolicy: 'ignore'
+  });
+  console.log('res from fetch', res)
+  const pin = res?.data?.node;
+  if (pin && pin.__typename === 'Pin') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+
+
 watch(pinID, async (newPinID) => {
   if (!newPinID) {
     isPin.value = false
     return
   }
-  const client = resolveClient()
-  const result = await client.query({
-    query: GET_PIN,
-    variables: { id: newPinID },
-    fetchPolicy: 'network-only'
-  })
-  console.log(result.data)
-  if (result.data?.node?.id) {
-    isPin.value = true
-  } else {
-    isPin.value = false
-  }
+  pinExists.value = await fetchPin(newPinID)
 })
 
-const { mutate: createFeatured, loading: loadingNewFeatured } = useMutation(CREATE_FEATURED)
+const rules = {
+  required: value => !!value || 'Required',
+  isValidID: value => value?.length === 63 && value?.startsWith('k') || 'Invalid pin ID'
+}
 
-const startAtIsValid = computed(() => {
-  return Date.now() < Date.parse(startAt.value) && Date.parse(startAt.value) < Date.parse(endAt.value)
-})
+const minDate = ref(null)
+const maxDate = ref(null)
+
+const minEndDate = ref(null);
+
+const now = new Date();
+const max = new Date(now);
+max.setFullYear(now.getFullYear() + 1);
+minDate.value = now.toISOString().substring(0, 16);
+maxDate.value = max.toISOString().substring(0, 16);
+
+watch(startAt, (newStartAt) => {
+  const newDate = new Date(newStartAt);
+  newDate.setDate(newDate.getDate() + 1);
+  minEndDate.value = newDate.toISOString().substring(0, 16);
+});
 
 const resetForm = () => {
   pinID.value = null
@@ -78,26 +105,34 @@ const handleSubmit = async () => {
   let msgToSign
   let signature
   msgToSign = "Create featured pin"
-  signature = await window.ethereum.request({
-    method: "personal_sign",
-    params: [
-      msgToSign,
-      walletStore.address
-    ]
-  })
-  await callAdminServer(
-    `${adminServerUrl}/featured`, {
-    action: "create",
-    data: {
-     siteID,
-      pinID: pinID.value,
-      startAt: (new Date(startAt.value)).toISOString(),
-      endAt: (new Date(endAt.value)).toISOString()
-    },
-    msg: msgToSign,
-    signature,
-    address: walletStore.address
-  })
-  resetForm()
+  try {
+    isLoading.value = true
+    signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    await callAdminServer(
+      `${adminServerUrl}/featured`, {
+      action: "create",
+      data: {
+        siteID,
+        pinID: pinID.value,
+        startAt: (new Date(startAt.value)).toISOString(),
+        endAt: (new Date(endAt.value)).toISOString()
+      },
+      msg: msgToSign,
+      signature,
+      address: walletStore.address
+    })
+    isSuccess.value = true
+    resetForm()
+  } catch (error) {
+    isError.value = true
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>

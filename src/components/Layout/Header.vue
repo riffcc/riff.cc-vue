@@ -1,117 +1,132 @@
 <template>
-  <header
-    class="bg-background-secondary h-20 flex items-center px-6 lg:px-16 xl:px-36 py-5 justify-between text-slate-50 relative">
-    <img src="/logo.png" class="w-10 h-10" alt="">
-    <div v-if="isGreatherThanSmall" class="flex gap-10 flex-1 lg:pl-32u justify-center">
-      <!-- 
-      <button @click="() => $router.push('/movie')">
-        Movie
-      </button>
-      <button @click="() => $router.push('/tv-shows')">
-        Tv Shows
-      </button>
-      <button @click="() => $router.push('/music')">
-        Music
-      </button>
-      <button @click="() => $router.push('/audio-books')">
-        Audio Books
-      </button>
-      <button @click="() => $router.push('/contact')">
-        Contact
-      </button> -->
-      <button @click="() => $router.push('/')">
-        Home
-      </button>
-      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/upload')">
-        Upload
-      </button>
-      <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
-        @click="() => $router.push('/profile')">
-        My Pins
-      </button>
-      <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
-        @click="() => $router.push('/admin')">
-        Admin Website
-      </button>
+  <v-app-bar class="px-md-16 bg-background-darken-2">
+    <v-toolbar-title>
+      <v-img cover max-width="48px" aspect-ratio="1" :src="`https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+    </v-toolbar-title>
+    <div class="d-none d-md-flex">
+      <v-btn text="Home" @click="() => redirect('/')" class="text-none" ripple="false" />
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" text="Tv Shows" class="text-none" ripple="false" />
+        </template>
+        <v-list>
+          <v-list-item v-for="item in 4" :key="item" title="Category"></v-list-item>
+        </v-list>
+      </v-menu>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" text="Movies" class="text-none" ripple="false" />
+        </template>
+        <v-list>
+          <v-list-item v-for="item in 4" :key="item" title="Category"></v-list-item>
+        </v-list>
+      </v-menu>
+      <v-btn text="Music" @click="() => redirect('/music')" class="text-none" ripple="false" />
+      <v-divider vertical></v-divider>
+
+      <v-btn text="Upload" @click="() => redirect('/upload')" class="text-none" ripple="false" />
+      <v-btn text="My Pins" v-if="walletStore.accountId" @click="() => redirect('/profile')" class="text-none"
+        ripple="false" />
+      <v-btn text="Admin Site" v-if="walletStore.isAdmin" @click="() => redirect('/admin')" class="text-none"
+        ripple="false" />
     </div>
-    <button v-else @click="toggleMenu">
-      <v-icon name="hi-menu" class="h-7 w-8 text-slate-50" />
-    </button>
-    <div v-if="showMenu"
-      class="fixed inset-x-0 top-14 mx-auto z-10 bg-gray-900 border border-slate-700 rounded-xl w-40 grid py-4">
-      <button :class="{ 'text-cyan-200': $route.path === '/' }" @click="() => redirect('/')">
-        Home
-      </button>
-      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => redirect('/upload')">
-        Upload
-      </button>
-      <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
-        @click="() => redirect('/profile')">
-        My Pins
-      </button>
-      <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
-        @click="() => redirect('/admin')">
-        Admin Website
-      </button>
+    <div class="d-block d-md-none">
+
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" icon>
+            <v-icon icon="fas fa-bars" />
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item title="Home" @click="() => redirect('/')" class="text-none" ripple="false" />
+          <v-list-item title="Upload" @click="() => redirect('/upload')" class="text-none" ripple="false" />
+          <v-list-item title="My Pins" v-if="walletStore.accountId" @click="() => redirect('/profile')" class="text-none"
+            ripple="false" />
+          <v-list-item title="Admin Site" v-if="walletStore.isAdmin" @click="() => redirect('/admin')" class="text-none"
+            ripple="false" />
+        </v-list>
+      </v-menu>
     </div>
-    <div class="flex items-center gap-2">
-      <div v-if="walletStore.formattedAddress" class="flex items-center gap-4">
-        <v-icon name="md-search" class="w-5 h-5 text-white" />
-        <v-icon name="md-notificationsnone-outlined" class="w-5 h-5 text-white" />
-        <button @click="() => $router.push('/profile')">
-          <img src="/avatar.png" alt="" class="h-11 w-11">
-        </button>
-        <!-- <p class="text-slate-50 font-medium hover:cursor-pointer" @click="walletStore.showAccount">
-          {{ walletStore.formattedAddress }}
-        </p>
-        <button @click="settingsStore.open">
-          <v-icon name="hi-cog" class="h-5 w-5 text-slate-200 mt-0.5" />
-        </button> -->
-      </div>
-      <Connect v-else />
-    </div>
-  </header>
+    <v-spacer></v-spacer>
+    <template v-if="walletStore.formattedAddress" slot:prepend>
+      <v-btn icon>
+        <v-icon icon="fas fa-magnifying-glass" size="x-small" />
+      </v-btn>
+      <v-btn icon>
+        <v-icon icon="fas fa-bell" size="x-small" />
+      </v-btn>
+      <v-app-bar-nav-icon @click.stop="showMenu = !showMenu" class="ml-4">
+        <v-avatar v-if="walletStore.cidAvatar" :image="`https://${ipfsGateway}/ipfs/${walletStore.cidAvatar}`"></v-avatar>
+        <v-icon v-else icon="fas fa-circle-user" size="x-large" class="mb-1"></v-icon>
+      </v-app-bar-nav-icon>
+    </template>
+    <template v-else slot:prepend>
+      <Connect />
+    </template>
+  </v-app-bar>
+  <v-navigation-drawer v-model="showMenu" temporary location="right" color="background-lighten-1" class="h-50">
+    <template v-slot:prepend>
+      <v-list-item lines="two" :title="walletStore.formattedAddress" subtitle="Logged in"></v-list-item>
+    </template>
+    <v-divider></v-divider>
+    <v-list density="compact" nav>
+      <v-list-item prepend title="Settings" value="settings" @click="() => redirect('/profile/settings')"></v-list-item>
+      <v-list-item prepend title="Logout" value="logout"></v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script setup>
 import { inject, ref, watch } from "vue";
 import { useApolloClient } from '@vue/apollo-composable'
-import { useWalletStore } from "../../stores/wallet"
-import { useSettingsStore } from '../../stores/settings';
-
-import auth3IDConnect from '../../utils/auth3IDConnect'
-import createCeramicClient from "../../utils/createCeramicClient"
-import Connect from "../Layout/Connect.vue"
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useRouter } from "vue-router";
-import callAdminServer from "../../utils/callAdminServer"
-import { GET_ETH_ACCOUNT } from "../../config/constants";
-const settingsStore = useSettingsStore();
 
+import Connect from "../Layout/Connect.vue"
+
+import { GET_ETH_ACCOUNT, defaultUserSettings } from "../../config/constants";
+import { useWalletStore } from "@stores/wallet"
+import { useSettingsStore } from "@stores/settings"
+
+import { auth3IDConnect, createCeramicClient, callAdminServer } from '@utils'
+
+const router = useRouter()
+
+const routes = [
+  { value: "/", label: "Home" },
+  { value: "/upload", label: "Upload" },
+  { value: "/profile", label: "My Pins" },
+  { value: "/admin", label: "Admin Site" },
+]
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const isGreatherThanSmall = breakpoints.greater("md");
 
-watch(isGreatherThanSmall, () => {
-  showMenu.value = false
-})
+const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
+const siteID = import.meta.env.VITE_WEBSITE_ID
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
 
-const router = useRouter()
 
 const showMenu = ref(false)
-const toggleMenu = () => showMenu.value = !showMenu.value
+
+const walletStore = useWalletStore();
+const settingsStore = useSettingsStore();
+
+
+const initialCeramicClient = inject("ceramic");
+const updateApolloClient = inject("updateApolloClient");
+const { resolveClient } = useApolloClient();
 
 const redirect = (route) => {
   router.push(route)
   showMenu.value = false
 }
 
-const siteID = import.meta.env.VITE_WEBSITE_ID
-const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
-const walletStore = useWalletStore();
-const initialCeramicClient = inject("ceramic");
-const updateApolloClient = inject("updateApolloClient");
-const { resolveClient } = useApolloClient();
+watch(isGreatherThanSmall, () => {
+  showMenu.value = false
+})
+
 
 watch(() => walletStore.address, async (address) => {
   console.log('from watchAddress', address)
@@ -137,6 +152,9 @@ watch(() => walletStore.address, async (address) => {
           where: {
             address: {
               equalTo: address
+            },
+            siteID: {
+              equalTo: siteID
             }
           }
         }
@@ -153,6 +171,8 @@ watch(() => walletStore.address, async (address) => {
       walletStore.accountId = node.id;
       walletStore.isAdmin = node.isAdmin
       walletStore.isSuperAdmin = node.isSuperAdmin
+      walletStore.cidAvatar = node.settings?.cidAvatar
+
 
     } else {
       const msgToSign = "Create new account"

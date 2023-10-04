@@ -1,47 +1,34 @@
 <template>
-  <main class="h-screen py-10 px-2 text-white">
-    <div class="w-[21rem] sm:w-[25rem] border border-slate-600 px-4 sm:px-6 pt-8 pb-12 m-auto relative">
-      <p class="text-lg font-medium mb-4 text-center">Pin a new item</p>
-      <div class='grid h-fit '>
-        <UploadForm :handleFileChange="handleFileChange" />
-        <button v-if="walletStore.accountId"
-          class="bg-primary px-4 py-2 disabled:cursor-default disabled:text-slate-400 disabled:bg-slate-600"
-          @click="handleOnSubmit"
-          :disabled="!isAllowedToSubmit"
-          >
-          <Spinner v-if="uploadStore.isLoading" :class="'h-5 w-5 text-slate-200 animate-spin m-auto'" />
-          <p v-else class="font-medium">Submit</p>
-        </button>
-        <Connect v-else />
-        <Badge v-if="uploadStore.isSuccess" :class="'h-14 bg-green-200 rounded-lg flex mt-6'"
-          :message="'Piece created succesfully!'" />
-        <Badge v-if="uploadStore.isError" :class="'h-14 bg-red-200 rounded-lg flex mt-6'"
-          :message="'Has ocurred an error :('" />
-      </div>
-    </div>
-  </main>
+  <v-container>
+    <v-sheet color="transparent" min-height="100vh" class="d-flex align-start pt-10">
+      <v-sheet width="420px" class="px-8 pb-16 pt-10 mx-auto">
+        <p class="text-h6 text-center mb-5">Pin a new item</p>
+        <UploadForm :handleFileChange="handleFileChange" :handleOnSubmit="handleOnSubmit" />
+      </v-sheet>
+    </v-sheet>
+    <v-snackbar color="success" v-model="uploadStore.isSuccess" timeout="3000">
+      <p class="text-center">{{ `Piece created succesfully!` }}</p>
+    </v-snackbar>
+    <v-snackbar color="error" v-model="uploadStore.isError" timeout="3000">
+      <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { useUploadStore } from '../stores/upload';
-import { useWalletStore } from '../stores/wallet';
+import { useApolloClient, useQuery } from '@vue/apollo-composable';
+import { UploadForm } from '@components';
+import { useUploadStore } from '@stores/upload';
+import { useWalletStore } from '@stores/wallet';
 import {
   CREATE_PIECE,
   GET_CATEGORIES,
   CREATE_ARTIST,
   GET_ARTIST
-} from '../config/constants';
-import callAdminServer from '../utils/callAdminServer'
-import Connect from '../components/Layout/Connect.vue';
-import Spinner from '../components/Layout/Spinner.vue';
-import Badge from '../components/Layout/Badge.vue';
-import { checkArtist } from '../utils/checkArtist'
+} from '@config/constants';
+import { callAdminServer, getCategoryId, uploadToIPFS } from '@utils'
 
-import { useApolloClient, useQuery } from '@vue/apollo-composable';
-import getCategoryID from '../utils/getCategoryId';
-import uploadToIPFS from '../utils/uploadToIPFS'
-import UploadForm from '../components/Upload/UploadForm.vue';
 const { resolveClient } = useApolloClient()
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();
@@ -59,9 +46,9 @@ const siteID = import.meta.env.VITE_WEBSITE_ID;
 
 useQuery(GET_CATEGORIES, { id: siteID, pageSize: 1000 })
 
-const handleFileChange = (e) => {
+const handleFileChange = (files) => {
   uploadStore.inputHasFiles = false
-  if (e.target.files.length > 0) {
+  if (files.length > 0) {
     uploadStore.inputHasFiles = true
     uploadStore.contentCid = null
     files.value = e.target.files
@@ -69,8 +56,9 @@ const handleFileChange = (e) => {
 };
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 
-const handleOnSubmit = async () => {
-
+const handleOnSubmit = async (event) => {
+  const result = await event
+  if (!result.valid) return
   const client = resolveClient();
   try {
     uploadStore.isLoading = true;
@@ -141,8 +129,8 @@ const handleOnSubmit = async () => {
       }
     });
 
-    const categoryID = getCategoryID(client, uploadStore.category);
-    
+    const categoryID = getCategoryId(client, uploadStore.category);
+
     const resultcallAdminServer = await callAdminServer(
       `${adminServerUrl}/pin`,
       {
@@ -162,18 +150,17 @@ const handleOnSubmit = async () => {
         address: walletStore.address
       }
     );
-    uploadStore.isLoading = false;
     uploadStore.isSuccess = true;
     uploadStore.reset();
     files.value = []
     console.log('resultcallAdminServer', resultcallAdminServer);
-    setTimeout(() => uploadStore.isSuccess = false, 4000);
 
   } catch (error) {
     console.log('error on createPin', error);
-    uploadStore.isLoading = false;
     uploadStore.isError = true;
-    setTimeout(() => uploadStore.isError = false, 4000);
+  } finally {
+    uploadStore.isLoading = false;
+
   }
 }
 onMounted(() => {

@@ -1,77 +1,108 @@
 <template>
-  <main class="min-h-screen py-2 sm:py-4 px-8 sm:px-12 md:px-24 xl:px-72 text-white">
-    <div v-if="!walletStore.address"
-      class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20">
-      <p>Please connect your wallet</p>
-      <Connect />
-    </div>
-    <div v-else-if="!walletStore.isAdmin"
-      class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20">
-      <p>Unauthorized</p>
-      <v-icon name="hi-x-circle" class="h-12 w-12 text-red-400" />
-    </div>
-    <div v-else-if="walletStore.accountId">
-      <div class="flex justify-evenly py-4">
-        <button 
-          v-for="item in tabs" 
-          :class="activeTab === item ? 'py-1 flex-1 px-4 bg-primary' : 'border border-slate-700 py-1 flex-1 px-4'"
-          @click="() => handleSelectTab(item)"
-        >
-        {{ item }}
-        </button>
-      </div>
-      <div v-if="activeTab === 'content'" class="grid h-full py-10">
-        <h1 class='font-bold text-lg sm:text-xl'>Content</h1>
-        <div class="grid mt-4 border-t border-slate-600 py-4 relative">
-          <p class="font-semibold ml-4 text-md sm:text-lg text-center">Approved</p>
-          <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceTable v-if="pins.approved.length > 0" :pins="pins.approved" />
-            <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-          </div>
-          <p class="font-semibold ml-4 text-md sm:text-lg text-center">Pending</p>
-          <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceTable v-if="pins.pending.length > 0" :pins="pins.pending" />
-            <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-          </div>
-          <p class="font-semibold ml-4 text-md sm:text-lg text-center">Rejected</p>
-          <div class='border border-slate-600 min-h-[20rem] flex my-4'>
-            <PieceTable v-if="pins.rejected.length > 0" :pins="pins.rejected" />
-            <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-          </div>
+  <v-container class="py-14">
+    <v-sheet min-height="75vh">
+      <v-sheet v-if="!walletStore.address" width="320px" height="160px" class="pa-10 d-flex flex-column mx-auto">
+        <p class="text-center mb-auto">Please connect your wallet</p>
+        <div>
+          <Connect block />
         </div>
-      </div>
-      <div v-else-if="activeTab === 'subscriptions'" class="grid h-full py-10">
-        <h1 class='font-bold text-lg sm:text-xl flex-none'>Subscriptions</h1>
-        <div class='grid mt-4 border-t border-slate-600 py-10'>
-          <SubscriptionSearch />
-          <Spinner v-if="subscriptionsLoading" class-name="w-5 h-5 mx-auto" />
-          <SubscriptionItem v-else-if="subscriptionsResult?.subscriptionIndex?.edges?.length > 0"
-            v-for="subscription in subscriptionsResult?.subscriptionIndex?.edges" :key="subscription.node.id"
-            :subscription="subscription.node.subscribedSite" />
-          <p v-else class='m-auto'>No subscriptions found.</p>
-        </div>
-      </div>
-      <div v-else-if="activeTab === 'featured'" class="grid h-full py-10">
-        <h1 class='font-bold text-lg sm:text-xl flex-none'>Featured</h1>
-        <div class='grid mt-4 border-t border-slate-600 py-10'>
-          <NewFeatured />
-        </div>
-      </div>
-      <div v-else-if="activeTab === 'admins' && walletStore.isSuperAdmin" class="grid h-full py-10">
-        <h1 class='font-bold text-lg sm:text-xl'>Admins</h1>
-        <div class="flex flex-col lg:flex-row justify-center items-center mt-4 border-t border-slate-600 py-10">
-          <NewAdmin @refetchUserAdmins="refetch" />
-          <div class='w-80 sm:w-[25rem] mx-auto'>
-            <ul v-if="adminEdgesResult?.ethAccountIndex?.edges && adminEdgesResult?.ethAccountIndex.edges.length > 0">
+      </v-sheet>
+      <v-sheet v-else-if="!walletStore.isAdmin" width="320px" height="160px" class="pa-10 d-flex mx-auto">
+        <v-alert type="error" title="Unauthorized" class="ma-auto"></v-alert>
+      </v-sheet>
+      <div v-else style="min-height: inherit;" class="d-flex flex-column">
+        <v-tabs v-model="tab" center-active fixed-tabs>
+          <v-tab value="content">Content</v-tab>
+          <v-tab value="admins">Admins</v-tab>
+          <v-tab value="featured">Featured</v-tab>
+          <v-tab value="subscriptions">Subscriptions</v-tab>
+          <v-tab value="site">Site</v-tab>
+
+        </v-tabs>
+        <v-window v-model="tab" class="flex-1-0">
+          <v-window-item value="content" class="py-10 px-4 px-sm-12 px-md-16">
+            <PinTable :pins="pins.approved" title="Approved" />
+            <PinTable :pins="pins.pending" title="Pending" />
+            <PinTable :pins="pins.rejected" title="Rejected" />
+          </v-window-item>
+          <v-window-item value="admins" class="py-10 px-4 px-sm-12 px-md-16">
+            <NewAdmin @refetchUserAdmins="refetch" />
+            <v-list v-if="adminEdgesResult?.ethAccountIndex?.edges && adminEdgesResult?.ethAccountIndex.edges.length > 0"
+              class="ma-auto" max-width="500px">
               <AdminItem @refetchUserAdmins="refetch" v-for="admin in adminEdgesResult?.ethAccountIndex?.edges"
                 :key="admin.node.id" :admin="admin.node" />
-            </ul>
+            </v-list>
             <p v-else class='m-auto text-sm text-center'>No extra admins found.</p>
-          </div>
-        </div>
+          </v-window-item>
+          <v-window-item value="featured" class="py-10 px-4 px-sm-12 px-md-16">
+            <NewFeatured />
+          </v-window-item>
+          <v-window-item value="subscriptions" class="py-10 px-4 px-sm-12 px-md-16">
+            <SubscriptionSearch />
+            <v-sheet max-height="75%" class="overflow-y-auto">
+              <v-sheet width="450px" class="my-2 mx-auto" v-if="subscriptionsResult?.subscriptionIndex?.edges?.length > 0"
+                v-for="subscription in subscriptionsResult?.subscriptionIndex?.edges" :key="subscription.node.id">
+                <SubscriptionItem :subscription="subscription.node.subscribedSite" />
+              </v-sheet>
+              <p v-else class='m-auto'>No subscriptions found.</p>
+            </v-sheet>
+          </v-window-item>
+          <v-window-item value="site" class="py-10 px-4 px-sm-12 px-md-16">
+            <v-sheet max-height="75%" class="d-flex">
+              <v-container>
+                <v-row>
+                  <v-col>
+                    <v-sheet class="h-100 pa-2">
+                      <v-sheet position="relative">
+                        <v-file-input v-model="file" accept="image/*" label="Site Image" prepend-icon="">
+                          <template v-slot:prepend-inner>
+                            <v-sheet border class="mr-2">
+                              <v-img v-if="settingsStore?.siteImage" width="120px" height="120px" cover
+                                :src="fileBlobUrl ? fileBlobUrl : `https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+                            </v-sheet>
+                          </template>
+                        </v-file-input>
+                      </v-sheet>
+                      <v-text-field label="Site Name" v-model="settingsStore.siteName"></v-text-field>
+                      <v-textarea variant="solo-filled" label="Site Description"
+                        v-model="settingsStore.siteDescription"></v-textarea>
+                    </v-sheet>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <div v-if="settingsStore.colors" v-for="([key, value]) in Object.entries(settingsStore.colors)"
+                      class="d-flex align-center">
+                      <v-sheet class="ma-1" :color="value">
+                        <v-menu no-click-animation :close-on-content-click="false">
+                          <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" height="24px" variant="text">
+                            </v-btn>
+                          </template>
+                          <v-color-picker position="static" v-model="settingsStore.colors[key]"
+                            class="bg-background-lighten-1" mode="hex" color="white"></v-color-picker>
+
+                        </v-menu>
+                      </v-sheet>
+                      <p class="ml-4 text-subtitle-1">{{ key }}</p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-btn :loading="isLoading" @click="handleSave" text="save" size="large" color="primary" rounded="0"
+                  class="float-right mt-4"></v-btn>
+                <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+                  <p class="text-center">{{ `Saved successfully!` }}</p>
+                </v-snackbar>
+                <v-snackbar color="error" v-model="isError" timeout="3000">
+                  <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+                </v-snackbar>
+              </v-container>
+
+            </v-sheet>
+          </v-window-item>
+        </v-window>
       </div>
-    </div>
-  </main>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script setup>
@@ -81,35 +112,30 @@ import {
   GET_SUBSCRIPTIONS,
   GET_ETH_ACCOUNT,
   GET_CATEGORIES
-} from "../config/constants";
-import { computed, provide, ref, watch } from "vue";
-import { useWalletStore } from "../stores/wallet";
-import Connect from "../components/Layout/Connect.vue"
-import NewFeatured from "../components/Admin/NewFeatured.vue"
-import NewAdmin from "../components/Admin/NewAdmin.vue"
-import AdminItem from "../components/Admin/AdminItem.vue";
-import Spinner from "../components/Layout/Spinner.vue";
-import PieceTable from "../components/PieceTable.vue";
-import SubscriptionSearch from "../components/Admin/SubscriptionSearch.vue";
-import SubscriptionItem from "../components/Admin/SubscriptionItem.vue";
-
-
+} from "@config/constants";
+import { computed, inject, provide, ref, watch } from "vue";
+import { useWalletStore } from "@stores/wallet";
+import {
+  Connect,
+  SubscriptionSearch,
+  SubscriptionItem,
+  NewFeatured,
+  NewAdmin,
+  PinTable,
+  AdminItem
+} from "@components"
+import { useSettingsStore } from "@stores/settings";
+import { parseColors, callAdminServer, uploadToIPFS } from "@utils"
+const settingsStore = useSettingsStore()
 const walletStore = useWalletStore()
 const siteID = import.meta.env.VITE_WEBSITE_ID;
-const activeTab = ref('content')
-
-const tabs = [
-  "content",
-  "admins",
-  "featured",
-  "subscriptions"
-]
-
-const handleSelectTab = (tab) => {
-  activeTab.value = tab
-}
- 
+const tab = ref(null)
+const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
+const file = ref(null)
+const fileBlobUrl = ref(null)
 useQuery(GET_CATEGORIES, { id: siteID })
+
 
 const {
   result: adminEdgesResult,
@@ -200,5 +226,64 @@ const pins = computed(() => {
     rejected
   }
 })
+const isError = ref(false)
+const isLoading = ref(false)
+const isSuccess = ref(false)
 
+watch(file, (v) => {
+  if (!v[0]) {
+    fileBlobUrl.value = null
+    return
+  }
+  fileBlobUrl.value = URL.createObjectURL(v[0])
+})
+
+const refetchSite = inject('refetchSite')
+const handleSave = async () => {
+  let msgToSign
+  let signature
+  msgToSign = "Update theme"
+
+
+
+  const colors = parseColors(settingsStore.colors, true)
+
+  try {
+    isLoading.value = true
+    signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    let newSiteImageCID
+
+    if (file.value?.[0]) {
+      newSiteImageCID = await uploadToIPFS(file.value)
+    }
+    await callAdminServer(
+      `${adminServerUrl}/site`, {
+      action: "update",
+      siteId: siteID,
+      data: {
+        name: settingsStore.siteName,
+        description: settingsStore.siteDescription,
+        image: newSiteImageCID ?? settingsStore.siteImage,
+        colors
+      },
+      msg: msgToSign,
+      signature,
+      address: walletStore.address
+    })
+    isSuccess.value = true
+    const result = await refetchSite()
+    console.log('result of refetchSite', result)
+  } catch (error) {
+    console.log('error', error)
+    isError.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>

@@ -18,8 +18,8 @@
 
 <script setup>
 import CloseButton from './Layout/CloseButton.vue';
-import { useSettingsStore } from '../stores/settings';
-import { useWalletStore } from '../stores/wallet';
+import { useSettingsStore } from '../store/settings';
+import { useWalletStore } from '../store/wallet';
 import callAdminServer from "../utils/callAdminServer"
 import { useQuery } from '@vue/apollo-composable';
 import { GET_ACCOUNT_SETTINGS } from '../config/constants'

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <!-- <div class="w-full">
     <PinCard :pinResult="pinResult" :handlePlay="handlePlay" />
     <div v-if="isVideo" class="w-full h-full md:p-4">
       <VideoPlayer v-if="videoSource" :videoSource="videoSource" />
@@ -11,20 +11,20 @@
     </div>
       <AudioPlayer v-if="selectedAudio" :selectedAudio="selectedAudio" :onCloseCallback="onCloseCallback"
         :handleNext="handleNext" :handlePrevious="handlePrevious" />
-  </div>
+  </div> -->
 </template>
 
 <script setup>
 
-import AudioPlayer from '../AudioPlayer.vue';
-import VideoPlayer from '../VideoPlayer.vue';
-import PinCard from './PinCard.vue'
-import PinPlaylist from './PinPlaylist.vue'
-import RelatedAlbums from './RelatedAlbums.vue';
+// import AudioPlayer from '../AudioPlayer.vue';
+// import VideoPlayer from '../VideoPlayer.vue';
+// import PinCard from './PinCard.vue'
+// import PinPlaylist from './PinPlaylist.vue'
+// import RelatedAlbums from './RelatedAlbums.vue';
 
 import { onMounted, ref } from 'vue';
-import { useWalletStore } from '../../stores/wallet';
-import { useSettingsStore } from '../../stores/settings';
+import { useWalletStore } from '../../store/wallet';
+import { useSettingsStore } from '../../store/settings';
 import getCIDContent from '../../utils/getCIDContent';
 // import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 

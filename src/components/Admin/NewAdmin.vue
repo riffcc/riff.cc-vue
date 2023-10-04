@@ -1,33 +1,26 @@
 <template>
-  <div class="grid w-80 sm:w-[25rem] h-48 mx-auto">
-    <p class="font-medium mx-auto">New admin</p>
-    <div class="py-4 relative mb-2">
-      <p class="text-sm mb-1 ml-1">Address:</p>
-      <input placeholder="0xa5Cf4DDFe4BfDbE712bD2f54EAadaCebb809fAED" type="text"
-        class="form-input bg-background-secondary w-full h-9 px-1.5" v-model="newAdminAddress" />
-      <p v-if="newAdminAddress && !isValidAddress" class="text-xs text-red-500 absolute -bottom-1">Not a valid address.
-      </p>
-    </div>
-    <div class="flex items-center gap-3">
-      <p class="text-sm ml-1">Super:</p>
-      <input type="checkbox" v-model="adminSuper" />
-    </div>
-    <div class="flex justify-end">
-      <button @click="handleOnSubmit"
-        class="py-1.5 px-6 rounded-lg w-fit bg-cyan-400 disabled:text-slate-300 disabled:bg-cyan-700"
-        :disabled="!newAdminAddress || !isValidAddress">
-        Add
-      </button>
-    </div>
-  </div>
+  <v-sheet width="450px" class="ma-auto d-flex flex-column mb-6">
+    <v-text-field label="Admin ETH Address" validate-on="input" v-model="newAdminAddress"
+      :rules="[rules.required, rules.isValidAddress]"></v-text-field>
+    <v-checkbox v-model="adminSuper" label="Super Admin"></v-checkbox>
+    <v-btn color="primary" class="w-50 mx-auto mt-4" :loading="isLoading" :disabled="!newAdminAddress || rules.isValidAddress(newAdminAddress) !== true"
+      @click="handleSubmit" text="Create">
+    </v-btn>
+    <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+    <p class="text-center">{{ `Succesfully!` }}</p>
+    </v-snackbar>
+    <v-snackbar color="error" v-model="isError" timeout="3000">
+    <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+    </v-snackbar>
+  </v-sheet>
 </template>
 
 <script setup>
-import { useApolloClient } from '@vue/apollo-composable';
 import { computed, ref, watch } from 'vue';
-import { GET_ETH_ACCOUNT, defaultUserSettings } from '../../config/constants'
-import { useWalletStore } from '../../stores/wallet';
-import callAdminServer from '../../utils/callAdminServer';
+import { useApolloClient } from '@vue/apollo-composable';
+import { GET_ETH_ACCOUNT, defaultUserSettings } from '@config/constants'
+import { useWalletStore } from '@stores/wallet';
+import {callAdminServer} from '@utils';
 
 const walletStore = useWalletStore()
 const siteID = import.meta.env.VITE_WEBSITE_ID
@@ -37,16 +30,18 @@ const newAdminAddress = ref(null)
 const adminSuper = ref(false)
 const { resolveClient } = useApolloClient()
 
-const isValidAddress = computed(() => {
-  return newAdminAddress.value.startsWith("0x") && newAdminAddress.value.length === 42;
-})
-
+const rules = {
+  required: value => !!value || 'Required',
+  isValidAddress: value => value?.length === 42 && value?.startsWith('0x') || 'Invalid ETH Address'
+}
 const emit = defineEmits()
-
-const handleOnSubmit = async () => {
+const isLoading = ref(false)
+const isError = ref(false)
+const handleSubmit = async () => {
   const client = resolveClient()
   console.log('newAdminAddress.value', newAdminAddress.value)
   try {
+    isLoading.value = true
     const result = await client.query({
       query: GET_ETH_ACCOUNT,
       variables: {
@@ -86,6 +81,8 @@ const handleOnSubmit = async () => {
           signature,
           address: walletStore.address,
         });
+
+      isSuccess.value = true
     } else {
       const msgToSign = "Create new admin"
       const signature = await window.ethereum.request({
@@ -114,10 +111,14 @@ const handleOnSubmit = async () => {
           address: walletStore.address,
         });
     }
-    newAdminAddress.value = null
     emit("refetchUserAdmins")
   } catch (error) {
+    isError.value = true
     console.log('error on handleOnsubmit in NewAdmin', error)
+  } finally {
+    isLoading.value = false
+    newAdminAddress.value = null
+    adminSuper.value = false
   }
 
 }

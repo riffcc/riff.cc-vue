@@ -1,144 +1,89 @@
 <template>
-  <label class="text-sm mb-1 ml-1">Name:</label>
-  <input name="name" type="text" class="form-input bg-background-secondary mb-4"
-    v-model="uploadStore.name" />
-  <label class="text-sm mb-1 ml-1">CID content:</label>
-  <div>
-    <p class="text-xs text-center mb-2">upload your files:</p>
-    <div class="w-full mb-2 flex">
-      <input type="file" ref="inputRef" @change="handleFileChange" multiple class="hidden" accept="image/*,audio/*,video/*" />
-      <button class="bg-primary mx-auto flex-1 active:bg-purple-800 py-1" @click="() => inputRef.click()">
-        <v-icon name="hi-folder-add" class="w-6 h-6"/>
-      </button>
-      <div class="flex-1 border border-slate-600 flex">
-        <p class="m-auto text-xs">{{ inputRef?.files?.length ?? 'No' }} files selected</p>
-        </div>
-    </div>
-    <p class="text-xs text-center mb-2">or type a valid CID content:</p>
-    <input name="cid" type="text" :disabled="uploadStore.inputHasFiles"
-      class="form-input w-full bg-background-secondary mb-2" v-model="uploadStore.contentCid" />
-    <p v-if="uploadStore.contentCid && !uploadStore.isValidCID"
-      class="text-xs text-red-400 text-center w-full">
-      Please enter a valid CIDv0 or CIDv1 ID.
-    </p>
-  </div>
-  <label class="text-sm mb-1 ml-1">CID thumbnail:</label>
-  <div>
-    <input name="cid" type="text"
-      class="form-input w-full bg-background-secondary mb-2" v-model="uploadStore.details.thumbnailCid" />
-    <p class="text-xs text-red-400 text-center w-full"
-      v-if="uploadStore.details.thumbnailCid && !uploadStore.thumbnailIsValidCID">
-      Please enter a valid CIDv0 or CIDv1 ID.
-    </p>
-  </div>
-  <label class="text-sm mb-1 ml-1">Category:</label>
-  <select class="form-select bg-background-secondary mb-5" v-model="uploadStore.category">
-    <option disabled hidden value="null">Select a category</option>
-    <option v-for="category in pinCategories" :key="category" :value="category" class="">
-      {{ category }}
-    </option>
-  </select>
-  <button class="px-3 py-2 border border-slate-400 mb-4 disabled:text-slate-400" @click="openAdvanced"
-    :disabled="!(uploadStore.category === 'Music' || uploadStore.category === 'Movies')">
-    Advanced
-  </button>
-  <div v-if="advancedIsOpen" class="absolute inset-0 z-10 flex h-full">
-    <div class="bg-background w-[25rem] h-full relative">
-      <button class="absolute right-6 top-4 text-slate-50 font-bold" @click="closeAdvanced">x</button>
-      <div class="pt-12 pb-8 px-4 flex flex-col justify-between h-full">
-        <p class="text-sm mb-2 text-center">Please fill out any extra information about the content that might be useful.
-        </p>
-        <div v-if="uploadStore.category === 'Music'" class="grid py-4 h-4/6 overflow-y-auto">
-          <Label :title="'Tags:'" :info-icon="true"
-            :content="'Any tags you feel are appropriate for the media - such as rock, country, or pop.'" />
-          <input placeholder="Values separatted with ','" name="tags" type="text"
-            class="form-input bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.tags" />
-          <Label :title="'MusicBrainz ID:'" :info-icon="true"
-            :content="'If the content has an entry on MusicBrainz, enter it here to pre-fill the rest of this form.'" />
-          <input placeholder="" name="music-brainz-id" type="text"
-            class="form-input bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.musicBrainzID" />
-          <Label :title="'Artist name(s):'" />
-          <input placeholder="Values separatted with ','" name="artist-names" type="text"
-            class="form-input bg-background-secondary mb-4 mr-1" v-model="uploadStore.artist" />
-          <Label :title="'Album title:'" />
-          <input placeholder="" name="album-title" type="text" class="form-input bg-background-secondary mb-4 mr-1"
-            v-model="uploadStore.details.albumTitle" />
-          <Label :title="'Initial release year:'" />
-          <input placeholder="" name="initial-release-year" type="text"
-            class="form-input bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.initialReleaseYear" />
-          <Label :title="'Release type:'" />
-          <select class="form-select bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.releaseType">
-            <option disabled hidden value="undefined">Select a option</option>
-            <option v-for="releaseType in releaseTypesOptions" :key="releaseType" :value="releaseType">
-              {{ releaseType }}
-            </option>
-          </select>
-          <Label :title="'Format:'" />
-          <select class="form-select bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.format">
-            <option disabled hidden value="undefined">Select a option</option>
-            <option v-for="format in formatOptions" :key="format" :value="format">
-              {{ format }}
-            </option>
-          </select>
-          <Label :title="'Bitrate:'" />
-          <input placeholder="" name="bitrate" type="text" class="form-input bg-background-secondary mb-4 mr-1"
-            v-model="uploadStore.details.bitrate" />
-          <Label :title="'Media:'" />
-          <select class="form-select bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.media">
-            <option disabled hidden value="undefined">Select a option</option>
-            <option v-for="media in mediaOptions" :key="media" :value="media">
-              {{ media }}
-            </option>
-          </select>
-          <Label :title="'Release description:'" />
-          <input placeholder="" name="release-description" type="text"
-            class="form-input bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.releaseDescription" />
-        </div>
-        <div v-if="uploadStore.category === 'Movies'" class="grid py-4 h-4/6 overflow-y-auto">
-          <Label :title="'Poster:'" />
-          <input placeholder="" name="poster" type="text" class="form-input bg-background-secondary mb-4 mr-1"
-            v-model="uploadStore.details.poster" />
-          <Label :title="'TMDB ID:'" />
-          <input placeholder="" name="tmbd-id" type="text" class="form-input bg-background-secondary mb-4 mr-1"
-            v-model="uploadStore.details.TMDBID" />
-          <Label :title="'IMDB ID:'" />
-          <input placeholder="" name="imbd-id" type="text" class="form-input bg-background-secondary mb-4 mr-1"
-            v-model="uploadStore.details.IMDBID" />
-          <Label :title="'Type:'" />
-          <select class="form-select bg-background-secondary mb-4 mr-1" v-model="uploadStore.details.type">
-            <option disabled hidden value="undefined">Select a option</option>
-            <option v-for="movieType in movieTypeOptions" :key="movieType" :value="movieType">
-              {{ movieType }}
-            </option>
-          </select>
-        </div>
-        <button @click="closeAdvanced" class="bg-primary px-4 py-2 w-full mt-2">
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
+  <v-form validate-on="submit lazy" @submit.prevent="handleOnSubmit">
+    <v-text-field v-model="uploadStore.name" label="Name" :rules="[rules.required]"></v-text-field>
+    <v-file-input label="Files" multiple @update:modelValue="handleFileChange"
+      accept="image/*,audio/*,video/*"></v-file-input>
+    <p class="text-subtitle-2 text-center mb-2">or type a valid CID content:</p>
+    <v-text-field v-model="uploadStore.contentCid" label="CID Content" :rules="[rules.isValidContent]"
+      :disabled="uploadStore.inputHasFiles"></v-text-field>
+    <v-text-field v-model="uploadStore.thumnbailCid" label="CID Thumbnail"
+      :rules="[rules.required, rules.isValidCid]"></v-text-field>
+    <v-select :items="pinCategories" v-model="uploadStore.category" :rules="[rules.required]" label="Category"></v-select>
+    <v-btn rounded="0" @click="openAdvanced" text="Advanced" variant="outlined" class="mb-4" block :disabled="advancedDisabled"></v-btn>
+    <v-btn rounded="0" v-if="walletStore.formattedAddress" :loading="uploadStore.isLoading" color="primary" type="submit" block  text="Submit"></v-btn>
+    <Connect block="true" v-else />
+
+  </v-form>
+  <v-dialog v-model="showAdvanced" width="auto">
+    <v-sheet width="400px" max-height="620px" class="pa-8 ma-auto">
+      <p class="text-subtitle mb-2 text-center">Please fill out any extra information about the content that might be
+        useful.
+      </p>
+      <template v-if="uploadStore.category === 'Music'">
+        <v-text-field label="Tags" placeholder="Values sepatared by comma" v-model="uploadStore.details.tags">
+          <template v-slot:append-inner>
+            <IconTooltip icon="fas fa-circle-question"
+              content="Any tags you feel are appropriate for the media - such as rock, country, or pop." />
+          </template>
+        </v-text-field>
+        <v-text-field label="MusicBrainz ID" v-model="uploadStore.details.musicBrainzID">
+          <template v-slot:append-inner>
+            <IconTooltip icon="fas fa-circle-question"
+              content="If the content has an entry on MusicBrainz, enter it here to pre-fill the rest of this form." />
+          </template>
+        </v-text-field>
+        <v-text-field label="Artist name(s)" placeholder="Values sepatared by comma"
+          v-model="uploadStore.artits"></v-text-field>
+        <v-text-field label="Album title" v-model="uploadStore.details.albumTitle"></v-text-field>
+        <v-text-field label="Initial release year" v-model="uploadStore.details.initialReleaseYear"></v-text-field>
+        <v-select :items="releaseTypesOptions" v-model="uploadStore.details.releaseType" label="Release type"></v-select>
+        <v-select :items="formatOptions" v-model="uploadStore.details.format" label="Format"></v-select>
+        <v-text-field label="Bitrate" v-model="uploadStore.details.bitrate"></v-text-field>
+        <v-select :items="mediaOptions" v-model="uploadStore.details.media" label="Media"></v-select>
+        <v-text-field label="Release description" v-model="uploadStore.details.releaseDescription"></v-text-field>
+      </template>
+      <template v-if="uploadStore.category === 'Videos'">
+        <v-text-field label="Poster" v-model="uploadStore.details.poster"></v-text-field>
+        <v-text-field label="TMDB ID" v-model="uploadStore.details.TMDBID"></v-text-field>
+        <v-text-field label="IMDB ID" v-model="uploadStore.details.IMDBID"></v-text-field>
+        <v-select :items="movieTypeOptions" v-model="uploadStore.details.type" label="Media"></v-select>
+      </template>
+      <v-btn @click="closeAdvanced" rounded="0" text="Save" color="primary" block></v-btn>
+    </v-sheet>
+  </v-dialog>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import {
   pinCategories,
   releaseTypesOptions,
   formatOptions,
   mediaOptions,
   movieTypeOptions,
-} from '../../config/constants';
-import Label from '../Layout/Label.vue';
-import { useUploadStore } from '../../stores/upload';
+} from '@config/constants';
+import { useUploadStore } from '@stores/upload';
+import { useWalletStore } from '@stores/wallet';
+import { IconTooltip, Connect } from '@components'
+import { checkCID } from '@utils'
 defineProps({
-  handleFileChange: Function
+  handleFileChange: Function,
+  handleOnSubmit: Function
+
+})
+const walletStore = useWalletStore()
+const uploadStore = useUploadStore()
+const advancedDisabled = computed(() => {
+  return !(uploadStore.category === "Music" || uploadStore.category === "Videos")
 })
 
-const inputRef = ref(null)
-const uploadStore = useUploadStore()
+const rules = {
+  required: value => !!value || 'Required field.',
+  isValidContent: value => uploadStore.inputHasFiles ? true : checkCID(value) || 'Please enter a valid CID or upload your files',
+  isValidCid: value => checkCID(value) || 'Please enter a valid CID.',
+}
 
-const advancedIsOpen = ref(false)
-const openAdvanced = () => advancedIsOpen.value = true;
-const closeAdvanced = () => advancedIsOpen.value = false;
+const showAdvanced = ref(false)
+const openAdvanced = () => showAdvanced.value = true;
+const closeAdvanced = () => showAdvanced.value = false;
 </script>

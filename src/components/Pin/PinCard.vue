@@ -38,7 +38,7 @@
           v-if="pinResult.node.category.name === 'Music' && pinResult.node.artist.name && pinResult.node.piece.details?.initialReleaseYear">
           Album {{ pinResult.node.artist.name }} {{ pinResult.node.piece.details?.initialReleaseYear }}</p>
         <div class="flex gap-4 h-11 mx-auto md:mx-0 items-center">
-          <button class="bg-primary py-2 px-3 lg:px-5 flex items-center gap-2 w-40 justify-center" @click="() => {
+          <button class="bg-[settingsStore.primary] py-2 px-3 lg:px-5 flex items-center gap-2 w-40 justify-center" @click="() => {
             handlePlay(0)
           }">
             <v-icon name="md-playarrow-round" class="h-6 w-6 " />

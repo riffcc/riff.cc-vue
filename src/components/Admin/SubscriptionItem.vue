@@ -1,40 +1,31 @@
 <template>
-  <div class="flex items-center gap-1 justify-center w-[21rem] sm:w-[26rem] px-2 mx-auto">
-    <div class="h-24 w-24 sm:h-28 sm:w-28 border-slate-800 border relative flex">
-      <img v-if="subscription.image" :src="`https://${ipfsGateway}/ipfs/${subscription.image}`" alt="" class="my-auto">
-      <v-icon v-else name="hi-credit-card" class="h-20 w-20 text-slate-200 m-auto" />
+  <v-card rounded="0" elevation="2" class="d-flex" height="120px" :loading="subscriptionLoading">
+    <v-sheet width="120px" height="120px" class="d-flex" :loading="subscriptionLoading">
+      <v-img v-if="subscription.image" cover :src="`https://${ipfsGateway}/ipfs/${subscription.image}`"></v-img>
+      <v-icon v-else icon="fas fa-pager" size="x-large" class="ma-auto"></v-icon>
+    </v-sheet>
+    <div class="flex-1-0 pt-2">
+      <v-card-title>{{ subscription.name }}</v-card-title>
+      <v-card-text>{{ subscription.description }}</v-card-text>
     </div>
-    <div class="border-slate-800 border h-24 sm:h-28 px-2 py-1 flex-1">
-      <div class="flex items-center justify-between w-full h-8">
-        <p class="truncate text-sm font-medium">{{ subscription.name }}</p>
-        <button v-if="!isSubscribed || isSubscribed.inactive"
-          class="border border-slate-600 px-1.5 py-0.5 bg-cyan-500 delay-400 text-xs sm:text-sm uppercase font-semibold"
-          @click="handleOnSubscribe">
-          Subscribe
-        </button>
-        <button v-else
-          class="border border-slate-600 px-1.5 py-0.5 bg-red-500 delay-400 text-xs sm:text-sm uppercase font-semibold"
-          @click="handleOnUnsubscribe">
-          Unsubscribe
-        </button>
-      </div>
-      <div class="overflow-y-auto h-16 w-full md:w-60 pt-1">
-        <p class="text-xs text-slate-400">{{ subscription.description }}</p>
-      </div>
-    </div>
-  </div>
+    <v-card-actions class="" >
+      <v-btn v-if="!isSubscribed || isSubscribed.inactive" text="Subscribe" color="info" size="small" @click="handleOnSubscribe" :disabled="subscriptionLoading"></v-btn>
+      <v-btn v-else text="Unsubscribe" color="error" size="small" @click="handleOnUnsubscribe" :disabled="subscriptionLoading"></v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 
 <script setup>
-import { useApolloClient, useQuery } from '@vue/apollo-composable';
-import { GET_SUBSCRIPTIONS } from '../../config/constants';
-import { computed, inject } from 'vue';
-import callAdminServer from '../../utils/callAdminServer';
-import { useWalletStore } from '../../stores/wallet';
+import { computed, inject, ref } from 'vue';
+import { useQuery } from '@vue/apollo-composable';
+import { GET_SUBSCRIPTIONS } from '@config/constants';
+import { callAdminServer } from '@utils';
+import { useWalletStore } from '@stores/wallet';
 
 const props = defineProps({
-  subscription: Object
+  subscription: Object,
+  closeSearchResult: Function
 })
 const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const siteID = import.meta.env.VITE_WEBSITE_ID
@@ -54,7 +45,7 @@ const {
         equalTo: siteID
       },
       subscribedID: {
-        equalTo: props.subscription.id
+        equalTo: props.subscription?.id
       }
     }
   }
@@ -66,10 +57,12 @@ const isSubscribed = computed(() => {
   if (!subscriptionNode) return null
   return subscriptionNode
 })
+const subscriptionLoading = ref(false)
 
 const handleOnSubscribe = async () => {
 
   try {
+    subscriptionLoading.value = true
     const msgToSign = "Create new subscription"
     const signature = await window.ethereum.request({
       method: "personal_sign",
@@ -112,11 +105,15 @@ const handleOnSubscribe = async () => {
     refetchSubscriptions()
   } catch (error) {
     console.log('error on handleSubscribe', error)
+  } finally {    
+    props.closeSearchResult?.()
+    subscriptionLoading.value = false
   }
 }
 
 const handleOnUnsubscribe = async () => {
   try {
+    subscriptionLoading.value = true
     const msgToSign = "Delete subscription"
     const signature = await window.ethereum.request({
       method: "personal_sign",
@@ -142,6 +139,9 @@ const handleOnUnsubscribe = async () => {
     refetchSubscriptions()
   } catch (error) {
     console.log('error on handleUnsubscribe', error)
+  } finally {    
+    props.closeSearchResult?.()
+    subscriptionLoading.value = false
   }
 }
 

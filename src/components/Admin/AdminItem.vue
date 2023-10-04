@@ -1,17 +1,22 @@
 <template>
-  <li class="flex items-center justify-between gap-1 h-7">
-    <p v-if="admin.isSuperAdmin" class="text-xs">🇸</p>
-    <v-icon v-else name="hi-user" class="h-4 w-4" />
-    <p class="font-medium text-xs sm:text-sm">{{ admin.address }}</p>
-    <button @click="handleDelete" class="flex">
-      <v-icon name="hi-trash" class="h-4 w-4 text-red-400 hover:cursor-pointer my-auto" />
-    </button>
-  </li>
+  <v-list-item>
+    <template v-slot:prepend>
+      <v-icon :icon="admin.isSuperAdmin ? 'fas fa-s' : 'fas fa-user'" size="x-small"></v-icon>
+    </template>
+    <template v-slot:title>
+        <p class="text-subtitle-1">{{ admin.address }}</p>
+      </template>
+    <template v-slot:append>
+      <v-btn icon @click="handleDelete">
+        <v-icon icon="fas fa-trash" size="x-small" color="error"></v-icon>
+      </v-btn>
+    </template>
+  </v-list-item>
 </template>
 
 <script setup>
-import { useWalletStore } from '../../stores/wallet';
-import callAdminServer from '../../utils/callAdminServer';
+import { useWalletStore } from '@stores/wallet';
+import { callAdminServer } from '@utils';
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
 
 const walletStore = useWalletStore()

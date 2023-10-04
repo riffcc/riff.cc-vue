@@ -1,68 +1,121 @@
 <template>
-  <footer class="bg-background-secondary min-h-[21rem] relative text-white">
-    <div class="flex flex-col md:flex-row h-full mx-4 md:mx-8 lg:mx-14 xl:mx-22 2xl:mx-32 py-10 items-center ">
-      <div class="max-w-[20rem] flex flex-col justify-between gap-4 text-center md:text-left">
-        <img src="/logo.png" alt="" class="rounded-sm w-[90px] h-[90px] mx-auto md:mx-0">
-        <ul class="list-disc list-inside text-sm marker:text-primary">
-          <li>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magni, illo?</li>
-        </ul>
-        <div class="flex items-center gap-5 text-white mb-4 mx-auto md:mx-0">
-          <v-icon name="fa-facebook" class="w-6 h-6" />
-          <v-icon name="fa-instagram" class="w-6 h-6" />
-          <v-icon name="fa-skype" class="w-6 h-6" />
-          <v-icon name="fa-twitter" class="w-6 h-6" />
-        </div>
-      </div>
-      <section class="flex-1 grid md:grid-cols-2 xl:grid-cols-4 gap-8 py-8 text-center md:text-left">
-        <div>
-          <h2 class="text-2xl font-regular mb-4 md:mb-7">Explore</h2>
-          <ul class="list-disc list-inside text-sm marker:text-primary">  
-            <li>Home</li>
-            <li>Movies</li>
-            <li>Tw Shows</li>
-            <li>Music</li>
-            <li>Audiosbooks</li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="text-2xl font-regular mb-4 md:mb-7">Company</h2>
-          <ul class="list-disc list-inside text-sm marker:text-primary">
-            <li>Terms Of Use</li>
-            <li>Contact Us</li>
-            <li>Out Team</li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="text-2xl font-regular mb-4 md:mb-7">Help</h2>
-          <ul class="list-disc list-inside text-sm marker:text-primary">
-            <li>Privacy Policy</li>
-            <li>Help Center</li>
-            <li>Subscribe</li>
-            <li>Faq</li>
-          </ul>
-        </div>
-        <div class="max-w-xs">
-          <h2 class="text-2xl font-regular mb-4 md:mb-7">Download App</h2>
-          <ul class="list-disc list-inside text-sm marker:text-primary">
-            <li>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magni, illo?</li>
-          </ul>
-          <div class="grid grid-cols-2 gap-2 mt-4">
-            <img src="/app-store.png" alt="" class="rounded-sm scale-75 sm:scale-90 xl:scale-100 mx-auto">
-            <img src="/play-store.png" alt="" class="rounded-sm scale-75 sm:scale-90 xl:scale-100 mx-auto">
-          </div>
-        </div>
-      </section>
-    </div>
-    <div class="h-16 bg-primary w-full flex items-center justify-center">
-      <p class="text-sm">Copyright 2023 Company All Rights Reserved.</p>
-    </div>
-    <button class="absolute bottom-20 right-6" @click="scrollToTop">
-      <v-icon name="md-keyboardarrowup" class="w-7 h-7 bg-primary p-1" />
-    </button>
-  </footer>
+  <v-footer class="bg-background-darken-2" position="relative">
+    <v-container class="fill-height" fluid>
+      <v-row class="px-2 px-sm-6 px-md-16">
+        <v-col cols="12" md="3">
+          <v-sheet height="320px" class="d-flex flex-column justify-space-around py-10">
+            <v-img height="90px" inline width="90px" :src="`https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+            <v-list-item :subtitle="settingsStore.siteDescription" class="pa-0">
+              <template v-slot:prepend>
+                <div class="pr-2">
+                  <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
+                </div>
+              </template>
+            </v-list-item>
+            <div class="w-50 d-flex justify-space-around">
+              <v-icon icon="fab fa-facebook-f" size="x-small"></v-icon>
+              <v-icon icon="fab fa-instagram" size="x-small"></v-icon>
+              <v-icon icon="fab fa-skype" size="x-small"></v-icon>
+              <v-icon icon="fab fa-twitter" size="x-small"></v-icon>
+
+            </div>
+          </v-sheet>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-sheet height="320px" class="d-flex pt-16">
+            <div class="flex-1-0">
+              <p class="text-h5 mb-4">Explore</p>
+              <v-list>
+                <v-list-item v-for="item in listItems.explore" :subtitle="item" class="pa-0" min-height="25px">
+                  <template v-slot:prepend>
+                    <div class="pr-2 d-flex pb-1">
+                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
+                    </div>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </div>
+            <div class="flex-1-0">
+              <p class="text-h5 mb-4">Company</p>
+              <v-list>
+                <v-list-item v-for="item in listItems.company" :subtitle="item" class="pa-0" min-height="25px">
+                  <template v-slot:prepend>
+                    <div class="pr-2 d-flex pb-1">
+                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
+                    </div>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </div>
+            <div class="flex-1-0">
+              <p class="text-h5 mb-4">Help</p>
+              <v-list>
+                <v-list-item v-for="item in listItems.help" :subtitle="item" class="pa-0" min-height="25px">
+                  <template v-slot:prepend>
+                    <div class="pr-2 d-flex pb-1">
+                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
+                    </div>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </div>
+          </v-sheet>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-sheet height="320px" class="pt-16">
+            <p class="text-h5 mb-4">Download App</p>
+            <v-list-item subtitle="lorem ispusa asdmasd msmd lsdk ls askwe" class="px-0 mb-4" min-height="25px">
+              <template v-slot:prepend>
+                <div class="pr-2 d-flex pb-1">
+                  <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
+                </div>
+              </template>
+            </v-list-item>
+            <div class="d-flex">
+              <v-img width="120px" inline class="mr-2" src="/app-store.png"></v-img>
+              <v-img width="120px" inline src="/play-store.png"></v-img>
+            </div>
+          </v-sheet>
+        </v-col>
+
+
+      </v-row>
+    </v-container>
+    <v-btn @click="scrollToTop" position="absolute" icon color="primary" rounded="0" location="bottom right"
+      class="mb-2 mr-4">
+      <v-icon icon="fas fa-chevron-up" />
+    </v-btn>
+  </v-footer>
+  <v-sheet color="primary" height="64px" class="d-flex align-center justify-center">
+    <p class="text-subtitle-2">Copyright 2023 Company All Rights Reserved.</p>
+  </v-sheet>
 </template>
 
 <script setup>
+import { useSettingsStore } from "@stores/settings"
+const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
+
+const settingsStore = useSettingsStore()
+const listItems = {
+  explore: [
+    'Home',
+    'Movie',
+    'Tv Shows',
+    'Music',
+    'AudioBooks'
+  ],
+  company: [
+    'Terms Of Use',
+    'Contact Us',
+    'Our Team'
+  ],
+  help: [
+    'Privacy Policy',
+    'Help Center',
+    'Subscribe',
+    'Faq'
+  ]
+}
 
 const scrollToTop = () => {
   window.scrollTo({

@@ -1,57 +1,56 @@
 <template>
-  <div class="h-32 backdrop-blur-sm bg-white/30 w-screen fixed bottom-0 inset-x-0 flex z-20">
-    <!-- <button @click="onClosePlayer" class="absolute -top-2 right-2 bg-gray-900 rounded-full w-fit h-fit">
-      <v-icon name="hi-x-circle" class="h-7 w-7 text-slate-50" />
-    </button> -->
-    <div v-if="selectedAudio" id="audio-player" class="m-auto w-full md:px-8 lg:px-10 md:max-w-4xl">
-      <audio ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay" @pause="onPause"
-        @loadeddata="onLoad" @ended="handleNext"></audio>
-      <div v-if="!isLoading" class="flex items-center justify-between gap-6">
-        <img src="/artist.png" alt="" class="rounded-full w-28 h-28">
-        <div class="flex items-center gap-2">
-          <button @click="handlePrevious">
-            <v-icon name="ri-skip-back-fill" class="h-7 w-7 text-white" />
-          </button>
-          <button @click="togglePlay">
-            <v-icon v-if="isPlaying" name="md-pausecirclefilled" class="h-8 w-8 text-white" />
-            <v-icon v-else name="md-playcirclefilled" class="h-8 w-8 text-white" />
-          </button>
-          <button @click="handleNext">
-            <v-icon name="ri-skip-forward-fill" class="h-7 w-7 text-white" />
-          </button>
+  <v-sheet v-if="selectedAudio" position="sticky" color="white" style="opacity: 0.8;" location="bottom right"
+    height="100px">
+    <audio class="d-none" ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay"
+      @pause="onPause" @loadeddata="onLoad" @ended="handleNext"></audio>
+    <v-container class="fill-height">
+      <v-sheet color="transparent" height="100%" max-width="920px"
+        class="d-flex align-center mx-auto justify-center w-100">
+        <v-avatar size="x-large" image="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg">
+        </v-avatar>
+        <v-btn @click="handlePrevious" variant="plain" icon>
+          <v-icon size="small" icon="fas fa-backward-step"></v-icon>
+        </v-btn>
+        <v-btn @click="togglePlay" variant="plain" icon>
+          <v-icon size="large" :icon="isPlaying ? 'fas fa-circle-pause' : 'fas fa-circle-play'"></v-icon>
+        </v-btn>
+        <v-btn @click="handleNext" variant="plain" icon>
+          <v-icon size="small" icon="fas fa-forward-step"></v-icon>
+        </v-btn>
+        <div class="flex-1-0 mx-4 mt-2">
+          <v-sheet color="transparent" height="24px">
+            <v-slider trackColor="primary" trackFillColor="primary" thumbColor="primary" @update:modelValue="seekingTrack"
+              color="background" v-model="progress"></v-slider>
+          </v-sheet>
+          <p class="d-inline-flex float-left text-subtitle-2">{{ currentTime }}</p>
+          <p class="d-inline-flex float-right text-subtitle-2">{{ duration }}</p>
+
         </div>
-        <div class="flex-1 mt-5">
-          <div id="progress-bar" class=" bg-white bg-opacity-30 rounded-full cursor-pointer">
-            <div  class="h-1 flex items-center" @click="seekingTrack">
-              <div class="h-1  bg-primary bg-opacity-50 rounded-full" :style="{ width: progress + '%' }"></div>
-              <div class="rounded-full w-3 h-3 bg-primary outline outline-offset-0 outline-primary/30"></div>
-            </div>
-          </div>
-          <div class="flex justify-between text-sm mt-1.5">
-            <h4>{{ `${formatTime(audio.currentTime)}`}}</h4>
-            <h4>{{ `${formatTime(audio.duration)}` }}</h4>
-          </div>
+
+        <div class="d-flex ml-6">
+          <v-menu>
+            <template v-slot:activator="{props}">
+            <v-btn v-bind="props" class="mx-1" icon variant="outlined" size="small"><v-icon icon="fas fa-volume-high"
+                size="x-small"></v-icon></v-btn>
+            </template>
+            <v-sheet color="background" class="overflow-hidden">
+              <v-slider v-model="volume" min="0" max="1" step="0.1" hide-details density="compact" color="primary" direction="vertical" class="ma-4"></v-slider>
+            </v-sheet>
+            
+          </v-menu>
+          <v-btn  class="mx-1" icon variant="outlined" size="small"><v-icon icon="fas fa-rotate-left"
+            size="x-small"></v-icon></v-btn>
+          <v-btn class="mx-1" icon variant="outlined" size="small"><v-icon icon="fas fa-shuffle"
+              size="x-small"></v-icon></v-btn>
         </div>
-        <div class="flex gap-4 items-center ">
-          <VolumeControl @updateVolume="handleVolume" :volume="audio.volume" />
-          <div class="border-2 rounded-full border-opacity-50 h-10 w-10 flex ">
-            <v-icon name="pr-replay" class="h-4 w-4 m-auto" />
-          </div>
-          <div class="border-2 rounded-full border-opacity-50 h-10 w-10 flex ">
-            <v-icon name="io-shuffle" class="h-4 w-4 m-auto" />
-          </div>
-        </div>
-      </div>
-      <Spinner v-else class="h-7 w-7 text-primary animate-spin mx-auto" />
-    </div>
-  </div>
+      </v-sheet>
+    </v-container>
+  </v-sheet>
 </template>
 
 
 <script setup>
-import { onUnmounted, ref, watch } from 'vue';
-import VolumeControl from './VolumeControl.vue'
-import Spinner from '../Layout/Spinner.vue'
+import { onUnmounted, ref, watch, computed } from 'vue';
 
 
 const props = defineProps({
@@ -61,10 +60,9 @@ const props = defineProps({
   handlePrevious: Function
 })
 
-const seekingTrack = (e) => {
+const seekingTrack = (percent) => {
   pause();
-  const targetPercent = parseFloat((e.offsetX / e.target.parentElement.offsetWidth).toFixed(4));
-  const targetCurrenTime = audio.value.duration * targetPercent;
+  const targetCurrenTime = audio.value.duration * percent / 100;
   audio.value.currentTime = parseInt(targetCurrenTime);
 
   resume();
@@ -75,14 +73,16 @@ const audio = ref(null);
 const isPlaying = ref(false);
 const progress = ref(0);
 const isLoading = ref(true)
-
+const volume = ref(0)
 const formatTime = (ms) => {
   let [min, sec] = (ms / 60).toFixed(2).split('.')
   sec = ((sec / 100) * 60).toFixed()
   sec = sec < 10 ? `0${sec}` : sec
   return `${min}:${sec}`
 }
-
+watch(volume, (v) => {
+  audio.value.volume = v
+})
 const togglePlay = () => {
   if (isPlaying.value) {
     pause();
@@ -90,7 +90,8 @@ const togglePlay = () => {
     play();
   }
 };
-
+const currentTime = ref('00:00')
+const duration = ref('00:00')
 watch(() => props.selectedAudio, (_audio) => {
   if (!_audio) {
     return
@@ -130,7 +131,10 @@ const play = () => {
 const updateProgress = () => {
   if (audio.value) {
     const currentProgress = (audio.value.currentTime / audio.value.duration) * 100;
-    progress.value = currentProgress.toFixed(2);
+    currentTime.value = formatTime(audio.value.currentTime ?? 0)
+    duration.value = formatTime(audio.value.duration ?? 0)
+
+    progress.value = currentProgress;
     if (isPlaying.value) {
       requestAnimationFrame(updateProgress);
     }
