@@ -9,14 +9,14 @@ const chains = [mainnet]
 const projectId = "d3ef2ee08419cd12b2036f7a77c21da8"
 
 export const useWalletStore = defineStore('walletStore', () => {
-  
+
   const { provider } = configureChains(chains, [w3mProvider({ projectId })])
   const wagmiClient = createClient({
     autoConnect: false,
-    connectors: w3mConnectors({ 
-      projectId, 
-      version: 1, 
-      chains 
+    connectors: w3mConnectors({
+      projectId,
+      version: 1,
+      chains
     }),
     provider
   })
@@ -28,8 +28,7 @@ export const useWalletStore = defineStore('walletStore', () => {
   const isAdmin = ref(false)
   const isSuperAdmin = ref(false)
   const error = ref(null)
-  
-wagmiClient.subscribe(e => console.log('subcribe wagmiclient', e))
+  const cidAvatar = ref(null)
 
   ethereumClient.watchAccount((account) => {
     if (!account.address && !address.value) {
@@ -41,12 +40,12 @@ wagmiClient.subscribe(e => console.log('subcribe wagmiclient', e))
     }
     address.value = account.address
   })
-  
+
   const connectWallet = () => web3modal.openModal({ route: 'ConnectWallet' })
   const showAccount = () => web3modal.openModal({ route: 'Account' })
 
   const formattedAddress = computed(() => {
-    if(!address.value) {
+    if (!address.value) {
       return null
     }
     return `${address.value.substring(0, 4)}...${address.value.substring(address.value.length - 4)}`
@@ -60,6 +59,7 @@ wagmiClient.subscribe(e => console.log('subcribe wagmiclient', e))
     isAdmin,
     isSuperAdmin,
     error,
-    wagmiClient
+    wagmiClient,
+    cidAvatar
   }
 })
