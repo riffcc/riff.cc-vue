@@ -2,50 +2,17 @@ import gql from "graphql-tag"
 
 // Fragments
 
-export const UserFragment = gql`
-  fragment SiteUser on EthAccount {
+export const userFragment = gql`
+  fragment UserFragment on EthAccount {
     id
     address
-    ensName
+    siteID
+    isAdmin
+    isSuperAdmin
     settings {
       autoplay
+      cidAvatar
     }
-    pins(first: $pageSize) {
-      edges {
-        node {
-          id
-        }
-      }
-    }
-    pinsCount
-    pinLikes(first: $pageSize) {
-      edges {
-        node {
-          id
-          pin {
-            id
-          }
-          owner {
-            address
-          }
-        }
-      }
-    }
-    pinLikesCount
-    pinDislikes(first: $pageSize) {
-      edges {
-        node {
-          id
-          pin {
-            id
-          }
-          owner {
-            address
-          }
-        }
-      }
-    }
-    pinDislikesCount
     createdAt
     updatedAt
   }
@@ -57,12 +24,35 @@ export const CategoryFragment = gql`
     name
   }
 `
+export const siteColorsFragment = gql`fragment SiteColorsFragment on SiteColors {
+  background
+  background_lighten_1
+    background_lighten_2
+  background_darken_1
+    background_darken_2
+  primary
+  primary_lighten_1
+  primary_darken_1
+  secondary
+  secondary_lighten_1
+  secondary_darken_1
+  surface
+  error
+  info
+  success
+  warning
+}`
 export const siteShortFragment = gql`fragment SiteShortFragment on Site {
   id
   name
   description
   image
-}`
+  colors {
+    ...SiteColorsFragment
+  }
+}
+${siteColorsFragment}
+`
 
 export const subscriptionFragment = gql`fragment SubscriptionFragment on Subscription {
   id
@@ -140,17 +130,14 @@ export const pageInfoFragment = gql`
 
 // Queries
 
-export const GET_WEBSITE = gql`
-  query SiteData($id: ID!) {
+export const GET_SITE = gql`query SiteQuery($id: ID!) {
     node(id: $id) {
       ... on Site {
-        id
-        name
-        image
-        description
+        ...SiteShortFragment
       }
     }
   }
+  ${siteShortFragment}
 `;
 export const GET_ACCOUNT_SETTINGS = gql`
   query EthAccountSettings($id: ID!) {
@@ -196,6 +183,7 @@ export const GET_FEATUREDS = gql`query FeaturedIndexQuery($items: Int!, $filters
 }
 ${pinFragment}
 `;
+
 export const GET_CATEGORIES = gql`
   query GetCategories($id: ID!) {
     node(id: $id) {
@@ -260,16 +248,12 @@ export const GET_ETH_ACCOUNT = gql`query EthAccountQuery($filters: EthAccountFil
     ethAccountIndex(first: $items, filters: $filters) {
       edges {
         node {
-          id
-          address
-          isAdmin
-          isSuperAdmin
-          createdAt
-          updatedAt
+          ...UserFragment
         }
       }
     }
   }
+  ${userFragment}
 `;
 export const GET_ARTIST = gql`query GetArtistsWithFilter($filters: ArtistFiltersInput, $items: Int!) {
   artistIndex(filters: $filters, first: $items) {
@@ -292,6 +276,7 @@ export const GET_ARTIST = gql`query GetArtistsWithFilter($filters: ArtistFilters
 `;
 
 // Mutations
+
 
 export const CREATE_PIECE = gql`
   mutation CreatePiece($input: CreatePieceInput!) {
@@ -448,5 +433,44 @@ export const movieTypeOptions = [
 ]
 
 export const defaultUserSettings = {
-  autoplay: true
+  autoplay: true,
+  cidAvatar: undefined
+}
+
+export const defaultThemeVariables = {
+  "border-color": "#A020F0",
+  "border-opacity": 0.5,
+  "high-emphasis-opacity": 0.87,
+  "medium-emphasis-opacity": 0.6,
+  "disabled-opacity": 0.38,
+  "idle-opacity": 0.04,
+  "hover-opacity": 0.04,
+  "focus-opacity": 0.12,
+  "selected-opacity": 0.08,
+  "activated-opacity": 0.12,
+  "pressed-opacity": 0.12,
+  "dragged-opacity": 0.08,
+  "theme-kbd": "#212529",
+  "theme-on-kbd": "#FFFFFF",
+  "theme-code": "#F5F5F5",
+  "theme-on-code": "#000000"
+}
+
+export const defaultThemeColors = {
+  "background": "#221F1F",
+  "background-lighten-1": "#141414",
+  "background-lighten-2": "#363B65",
+  "background-darken-1": "#191919",
+  "background-darken-2": "#191919",
+  "primary": "#A020F0",
+  "primary-lighten-1": "#BA52FB",
+  "primary-darken-1": "#7918B5",
+  "secondary": "#D027C1",
+  "secondary-lighten-1": "#F24BE3",
+  "secondary-darken-1": "#AD18A0",
+  "surface": "#299BDD",
+  "error": "#F44336",
+  "info": "#2986CC",
+  "success": "#51BF32",
+  "warning": "#F1C232"
 }
