@@ -380,6 +380,7 @@ type Site implements Node {
   id: ID!
   name: String!
   image: String
+  colors: Colors
   createdAt: DateTime!
   updatedAt: DateTime!
   description: String
@@ -500,6 +501,25 @@ type Site implements Node {
   ): Int!
 }
 
+type Colors {
+  info: String
+  error: String
+  primary: String
+  success: String
+  surface: String
+  warning: String
+  secondary: String
+  background: String
+  primary_darken_1: String
+  primary_lighten_1: String
+  secondary_darken_1: String
+  background_darken_1: String
+  background_darken_2: String
+  secondary_lighten_1: String
+  background_lighten_1: String
+  background_lighten_2: String
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -586,10 +606,13 @@ type Category implements Node {
 
     """Returns only documents created by the provided account"""
     account: ID
-  ): DislikeConnection!
+    filters: PinFiltersInput
+    sorting: PinSortingInput
+  ): PinConnection!
   dislikesCount(
     """Counts only documents created by the provided account"""
     account: ID
+    filters: PinFiltersInput
   ): Int!
 }
 
@@ -665,10 +688,13 @@ type Pin implements Node {
 
     """Returns only documents created by the provided account"""
     account: ID
-  ): DislikeConnection!
+    filters: PinFiltersInput
+    sorting: PinSortingInput
+  ): PinConnection!
   dislikesCount(
     """Counts only documents created by the provided account"""
     account: ID
+    filters: PinFiltersInput
   ): Int!
 }
 
@@ -740,15 +766,19 @@ type EthAccount implements Node {
 
     """Returns only documents created by the provided account"""
     account: ID
-  ): DislikeConnection!
+    filters: PinFiltersInput
+    sorting: PinSortingInput
+  ): PinConnection!
   dislikesCount(
     """Counts only documents created by the provided account"""
     account: ID
+    filters: PinFiltersInput
   ): Int!
 }
 
 type EthAccountSettings {
   autoplay: Boolean!
+  cidAvatar: String
 }
 
 input PinFiltersInput {
@@ -819,34 +849,6 @@ type LikeEdge {
 }
 
 type Like implements Node {
-  id: ID!
-  pinID: CeramicStreamID!
-  ownerID: CeramicStreamID!
-  categoryID: CeramicStreamID!
-  pin: Pin
-  owner: EthAccount
-  category: Category
-}
-
-"""A connection to a list of items."""
-type DislikeConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [DislikeEdge]
-}
-
-"""An edge in a connection."""
-type DislikeEdge {
-  """The item at the end of the edge"""
-  node: Dislike
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type Dislike implements Node {
   id: ID!
   pinID: CeramicStreamID!
   ownerID: CeramicStreamID!
@@ -1142,6 +1144,34 @@ input PieceSortingInput {
   createdAt: SortOrder
 }
 
+"""A connection to a list of items."""
+type DislikeConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [DislikeEdge]
+}
+
+"""An edge in a connection."""
+type DislikeEdge {
+  """The item at the end of the edge"""
+  node: Dislike
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Dislike implements Node {
+  id: ID!
+  pinID: CeramicStreamID!
+  ownerID: CeramicStreamID!
+  categoryID: CeramicStreamID!
+  pin: Pin
+  owner: EthAccount
+  category: Category
+}
+
 type Mutation {
   createSite(input: CreateSiteInput!): CreateSitePayload
   updateSite(input: UpdateSiteInput!): UpdateSitePayload
@@ -1186,9 +1216,29 @@ input CreateSiteInput {
 input SiteInput {
   name: String!
   image: String
+  colors: ColorsInput
   createdAt: DateTime!
   updatedAt: DateTime!
   description: String
+}
+
+input ColorsInput {
+  info: String
+  error: String
+  primary: String
+  success: String
+  surface: String
+  warning: String
+  secondary: String
+  background: String
+  primary_darken_1: String
+  primary_lighten_1: String
+  secondary_darken_1: String
+  background_darken_1: String
+  background_darken_2: String
+  secondary_lighten_1: String
+  background_lighten_1: String
+  background_lighten_2: String
 }
 
 type UpdateSitePayload {
@@ -1214,6 +1264,7 @@ input UpdateSiteInput {
 input PartialSiteInput {
   name: String
   image: String
+  colors: ColorsInput
   createdAt: DateTime
   updatedAt: DateTime
   description: String
@@ -1262,6 +1313,7 @@ input EthAccountInput {
 
 input EthAccountSettingsInput {
   autoplay: Boolean!
+  cidAvatar: String
 }
 
 type UpdateEthAccountPayload {
