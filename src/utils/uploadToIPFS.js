@@ -1,5 +1,5 @@
 import { NFTStorage } from 'nft.storage';
-const NFT_STORAGE_KEY = import.meta.env.VITE_NFT_STORAGE_KEY
+import { NFT_STORAGE_KEY } from '../config/constants'
 
 export default async function uploadToIPFS(files) {
   const client = new NFTStorage({ token: NFT_STORAGE_KEY})

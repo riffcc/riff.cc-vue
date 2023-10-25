@@ -1,15 +1,17 @@
 import axios from 'axios';
-const API_URL = import.meta.env.VITE_INFURA_API_URL
-const API_KEY = import.meta.env.VITE_INFURA_API_KEY
-const API_KEY_SECRET = import.meta.env.VITE_INFURA_API_KEY_SECRET
+import {
+  INFURA_API_URL,
+  INFURA_API_KEY,
+  INFURA_API_KEY_SECRET
+} from '../config/constants'
 
 
 export default async function getCIDContent(cid) {
-  if (!API_KEY || !API_KEY_SECRET) throw new Error("INFURA_API_KEY or INFURA_API_KEY_SECRET env vars undefined")
-  const credentials = `${API_KEY}:${API_KEY_SECRET}`;
-  
+  if (!INFURA_API_KEY || !INFURA_API_KEY_SECRET) throw new Error("INFURA_API_KEY or INFURA_API_KEY_SECRET env vars undefined")
+  const credentials = `${INFURA_API_KEY}:${INFURA_API_KEY_SECRET}`;
+
   const response = await axios.post(
-    `https://${API_URL}/api/v0/dag/get?arg=${cid}`,
+    `https://${INFURA_API_URL}/api/v0/dag/get?arg=${cid}`,
     undefined,
     {
       headers: {
@@ -19,7 +21,7 @@ export default async function getCIDContent(cid) {
   const data = response.data["Data"]
   console.log('data', data)
   if (data && data["/"].bytes === "CAE") {
-    return response.data["Links"].map(link => ({ cid: link["Hash"]["/"], name: link["Name"].replace(/^\d+\s*(.*?)\.\w+$/, '$1')}))
+    return response.data["Links"].map(link => ({ cid: link["Hash"]["/"], name: link["Name"].replace(/^\d+\s*(.*?)\.\w+$/, '$1') }))
   } else {
     throw new Error("Format not supported")
   }
