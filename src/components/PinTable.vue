@@ -8,7 +8,7 @@
           <td>
             <v-sheet width="42px" height="42px" class="d-flex">
               <v-image v-if="pin.node.piece.details.thumbnailCid" cover
-                :src="`https://${ipfsGateway}/ipfs/${pin.node.piece.details.thumbnailCid}`"></v-image>
+                :src="`https://${IPFS_GATEWAY}/ipfs/${pin.node.piece.details.thumbnailCid}`"></v-image>
               <v-icon icon="fas fa-image" size="x-large" class="ma-auto"></v-icon>
             </v-sheet>
           </td>
@@ -33,6 +33,5 @@ defineProps({
   title: String,
   pins: Array
 })
-
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
+import { IPFS_GATEWAY } from '@/config/constants'
 </script>
