@@ -4,7 +4,8 @@
       <v-row class="px-2 px-sm-6 px-md-16">
         <v-col cols="12" md="3">
           <v-sheet height="320px" class="d-flex flex-column justify-space-around py-10">
-            <v-img height="90px" inline width="90px" :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+            <v-img height="90px" inline width="90px"
+              :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
             <v-list-item :subtitle="settingsStore.siteDescription" class="pa-0"></v-list-item>
             <div class="w-50 d-flex justify-space-around">
               <v-icon icon="fab fa-facebook-f" size="x-small"></v-icon>
@@ -16,69 +17,23 @@
           </v-sheet>
         </v-col>
         <v-col cols="12" md="6">
-          <v-sheet height="320px" class="d-flex pt-16">
-            <div class="flex-1-0">
-              <p class="text-h5 mb-4">Explore</p>
-              <v-list>
-                <v-list-item v-for="item in listItems.explore" :subtitle="item" class="pa-0" min-height="25px">
-                  <template v-slot:prepend>
-                    <div class="pr-2 d-flex pb-1">
-                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-list>
-            </div>
-            <div class="flex-1-0">
-              <p class="text-h5 mb-4">Company</p>
-              <v-list>
-                <v-list-item v-for="item in listItems.company" :subtitle="item" class="pa-0" min-height="25px">
-                  <template v-slot:prepend>
-                    <div class="pr-2 d-flex pb-1">
-                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-list>
-            </div>
-            <div class="flex-1-0">
-              <p class="text-h5 mb-4">Help</p>
-              <v-list>
-                <v-list-item v-for="item in listItems.help" :subtitle="item" class="pa-0" min-height="25px">
-                  <template v-slot:prepend>
-                    <div class="pr-2 d-flex pb-1">
-                      <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-list>
-            </div>
-          </v-sheet>
-        </v-col>
-        <v-col cols="12" md="3">
           <v-sheet height="320px" class="pt-16">
-            <p class="text-h5 mb-4">Download App</p>
-            <v-list-item subtitle="lorem ispusa asdmasd msmd lsdk ls askwe" class="px-0 mb-4" min-height="25px">
-              <template v-slot:prepend>
-                <div class="pr-2 d-flex pb-1">
-                  <v-icon icon="fas fa-circle" size="8px" color="primary"></v-icon>
-                </div>
-              </template>
-            </v-list-item>
-            <div class="d-flex">
-              <v-img width="120px" inline class="mr-2" src="/app-store.png"></v-img>
-              <v-img width="120px" inline src="/play-store.png"></v-img>
-            </div>
+            <v-list class="mx-auto" max-width="200px">
+              <v-list-title>
+                <p class="text-h5 font-weight-bold mb-2">About</p>
+              </v-list-title>
+              <v-list-item v-for="item in listItems.about" :subtitle="item" @click="$route.push(`/${item}`)" class="pa-0" min-height="25px">
+                <template v-slot:prepend>
+                  <div class="pr-2 d-flex pb-1">
+                    <v-icon icon="fas fa-circle" size="7px" color="primary"></v-icon>
+                  </div>
+                </template>
+              </v-list-item>
+            </v-list>
           </v-sheet>
         </v-col>
-
-
       </v-row>
     </v-container>
-    <v-btn @click="scrollToTop" position="absolute" icon color="primary" rounded="0" location="bottom right"
-      class="mb-2 mr-4">
-      <v-icon icon="fas fa-chevron-up" />
-    </v-btn>
   </v-footer>
   <v-sheet color="primary" height="64px" class="d-flex align-center justify-center">
     <p class="text-subtitle-2">Copyright 2023 Company All Rights Reserved.</p>
@@ -92,23 +47,10 @@ import { IPFS_GATEWAY } from '@/config/constants'
 
 const settingsStore = useSettingsStore()
 const listItems = {
-  explore: [
-    'Home',
-    'Movie',
-    'Tv',
-    'Music',
-    'AudioBooks'
-  ],
-  company: [
-    'Terms Of Use',
-    'Contact Us',
-    'Our Team'
-  ],
-  help: [
+  about: [
     'Privacy Policy',
-    'Help Center',
-    'Subscribe',
-    'Faq'
+    'About the Riff.CC Project',
+    'Contact Us'
   ]
 }
 
