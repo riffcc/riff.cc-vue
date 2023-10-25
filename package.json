@@ -15,7 +15,7 @@
     "@ceramicnetwork/http-client": "^2.32.0",
     "@composedb/client": "^0.5.1",
     "@vue/apollo-composable": "^4.0.0-beta.11",
-    "@vueuse/core": "^10.1.2",
+    "@vueuse/core": "^10.5.0",
     "@wagmi/core": "^0.10.9",
     "@web3modal/ethereum": "^2.3.0",
     "@web3modal/html": "^2.3.0",
