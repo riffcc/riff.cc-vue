@@ -1,176 +1,289 @@
 <template>
-  <main class="bg-gray-900 min-h-screen py-6 sm:py-10 px-4 sm:px-10 text-white">
-    <div v-if="walletStore.address && walletStore.accountId && walletStore.isAdmin" class="grid h-full gap-3">
-      <div class="flex flex-col gap-3">
-        <h1 class='font-bold text-lg sm:text-xl border-b border-slate-500 pb-2'>Content</h1>
-        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Approved</p>
-        <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-          <PieceList v-if="pieces.approved.length > 0" :list="pieces.approved" table />
-          <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
+  <v-container class="py-14">
+    <v-sheet min-height="75vh">
+      <v-sheet v-if="!walletStore.address" width="320px" height="160px" class="pa-10 d-flex flex-column mx-auto">
+        <p class="text-center mb-auto">Please connect your wallet</p>
+        <div>
+          <Connect block />
         </div>
-        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Pending</p>
-        <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-          <PieceList v-if="pieces.pending.length > 0" :list="pieces.pending" table />
-          <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-        </div>
-        <p class="font-semibold ml-4 text-md sm:text-lg text-center">Rejected</p>
-        <div class='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-          <PieceList v-if="pieces.rejected.length > 0" :list="pieces.rejected" table />
-          <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-        </div>
-      </div>
-      <div class='flex flex-col w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-lg sm:text-xl flex-none mb-2'>Subscriptions</h1>
-        <div class='grid border-t border-slate-500 py-4 min-h-[20rem]'>
-          <SubscriptionSearch :subscriptionList="subscriptionList" />
-          <SubscriptionList 
-            v-if="subscriptionList.length > 0"
-            :subscriptionList="subscriptionList" 
-          />
-          <p v-else class='m-auto'>No subscriptions found.</p>
-        </div>
-      </div>
-      <div class='flex flex-col w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-lg sm:text-xl flex-none mb-2'>Featured</h1>
-        <div class='grid border-t border-slate-500 py-4 min-h-[20rem]'>
-          <NewFeatured />
-        </div>
-      </div>
-      <div v-if="walletStore.adminIsSuper" class='grid w-full mt-10 border-t-2 border-slate-500 py-2'>
-        <h1 class='font-bold text-lg sm:text-xl mb-2'>Admins</h1>
-        <div class="flex flex-col lg:flex-row justify-center items-center py-10 border-t border-slate-500  min-h-[20rem] gap-10">
-          <NewAdmin :refetchAdmins="refetchAdmins" />
-          <div class='w-80 sm:w-[25rem] mx-auto'>
-            <AdminList v-if="adminList && adminList.length > 0" :list="adminList" />
+      </v-sheet>
+      <v-sheet v-else-if="!walletStore.isAdmin" width="320px" height="160px" class="pa-10 d-flex mx-auto">
+        <v-alert type="error" title="Unauthorized" class="ma-auto"></v-alert>
+      </v-sheet>
+      <div v-else style="min-height: inherit;" class="d-flex flex-column">
+        <v-tabs v-model="tab" center-active fixed-tabs>
+          <v-tab slider-color="primary" value="content">Content</v-tab>
+          <v-tab slider-color="primary" value="admins">Admins</v-tab>
+          <v-tab slider-color="primary" value="featured">Featured</v-tab>
+          <v-tab slider-color="primary" value="subscriptions">Subscriptions</v-tab>
+          <v-tab slider-color="primary" value="site">Site</v-tab>
+
+        </v-tabs>
+        <v-window v-model="tab" class="flex-1-0">
+          <v-window-item value="content" class="py-10 px-4 px-sm-12 px-md-16">
+            <PinTable :pins="pins.approved" title="Approved" />
+            <PinTable :pins="pins.pending" title="Pending" />
+            <PinTable :pins="pins.rejected" title="Rejected" />
+          </v-window-item>
+          <v-window-item value="admins" class="py-10 px-4 px-sm-12 px-md-16">
+            <NewAdmin @refetchUserAdmins="refetch" />
+            <v-list v-if="adminEdgesResult?.ethAccountIndex?.edges && adminEdgesResult?.ethAccountIndex.edges.length > 0"
+              class="ma-auto" max-width="500px">
+              <AdminItem @refetchUserAdmins="refetch" v-for="admin in adminEdgesResult?.ethAccountIndex?.edges"
+                :key="admin.node.id" :admin="admin.node" />
+            </v-list>
             <p v-else class='m-auto text-sm text-center'>No extra admins found.</p>
-          </div>
-        </div>
+          </v-window-item>
+          <v-window-item value="featured" class="py-10 px-4 px-sm-12 px-md-16">
+            <NewFeatured />
+          </v-window-item>
+          <v-window-item value="subscriptions" class="py-10 px-4 px-sm-12 px-md-16">
+            <SubscriptionSearch />
+            <v-sheet max-height="75%" class="overflow-y-auto">
+              <v-sheet width="450px" class="my-2 mx-auto" v-if="subscriptionsResult?.subscriptionIndex?.edges?.length > 0"
+                v-for="subscription in subscriptionsResult?.subscriptionIndex?.edges" :key="subscription.node.id">
+                <SubscriptionItem :subscription="subscription.node.subscribedSite" />
+              </v-sheet>
+              <p v-else class='m-auto'>No subscriptions found.</p>
+            </v-sheet>
+          </v-window-item>
+          <v-window-item value="site" class="py-10 px-4 px-sm-12 px-md-16">
+            <v-sheet max-height="75%" class="d-flex">
+              <v-container>
+                <v-row>
+                  <v-col>
+                    <v-sheet class="h-100 pa-2">
+                      <v-sheet position="relative">
+                        <v-file-input v-model="file" accept="image/*" label="Site Image" prepend-icon="">
+                          <template v-slot:prepend-inner>
+                            <v-sheet border class="mr-2">
+                              <v-img v-if="settingsStore?.siteImage" width="120px" height="120px" cover
+                                :src="fileBlobUrl ? fileBlobUrl : `https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+                            </v-sheet>
+                          </template>
+                        </v-file-input>
+                      </v-sheet>
+                      <v-text-field label="Site Name" v-model="settingsStore.siteName"></v-text-field>
+                      <v-textarea variant="solo-filled" label="Site Description"
+                        v-model="settingsStore.siteDescription"></v-textarea>
+                    </v-sheet>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <div v-if="settingsStore.colors" v-for="([key, value]) in Object.entries(settingsStore.colors)"
+                      class="d-flex align-center">
+                      <v-sheet class="ma-1" :color="value">
+                        <v-menu no-click-animation :close-on-content-click="false">
+                          <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" height="24px" variant="text">
+                            </v-btn>
+                          </template>
+                          <v-color-picker position="static" v-model="settingsStore.colors[key]"
+                            class="bg-background-lighten-1" mode="hex" color="white"></v-color-picker>
+
+                        </v-menu>
+                      </v-sheet>
+                      <p class="ml-4 text-subtitle-1">{{ key }}</p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-btn :loading="isLoading" @click="handleSave" text="save" size="large" color="primary" rounded="0"
+                  class="float-right mt-4"></v-btn>
+                <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+                  <p class="text-center">{{ `Saved successfully!` }}</p>
+                </v-snackbar>
+                <v-snackbar color="error" v-model="isError" timeout="3000">
+                  <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+                </v-snackbar>
+              </v-container>
+
+            </v-sheet>
+          </v-window-item>
+        </v-window>
       </div>
-    </div>
-    <div 
-      v-else-if="!walletStore.address"
-      class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20"
-    >
-      <p>Please connect your wallet</p>
-      <Connect />
-    </div>
-    <div 
-      v-else-if="!walletStore.isAdmin"
-      class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20"
-    >
-    <p>Unauthorized</p>
-    <v-icon name="hi-x-circle" class="h-12 w-12 text-red-400" />
-  </div>
-  </main>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script setup>
 import { useQuery } from "@vue/apollo-composable"
-import { 
-  GET_PINS, 
-  GET_SUBSCRIPTION_INDEX, 
-  GET_ADMINS, 
-  GET_SUBSCRIPTIONS, 
-  websiteDataQueryParams, 
-GET_CATEGORIES
-} from "../utils/constants";
-import { computed, provide } from "vue";
-import { useWalletStore } from "../stores/wallet";
-import PieceList from "../components/PieceList.vue"
-import Connect from "../components/Layout/Connect.vue"
-import SubscriptionSearch from "../components/SubscriptionSearch.vue"
-import SubscriptionList from "../components/SubscriptionList.vue"
-import NewFeatured from "../components/NewFeatured.vue"
-import NewAdmin from "../components/NewAdmin.vue"
-import AdminList from "../components/AdminList.vue"
-
-
+import {
+  GET_PINS,
+  GET_SUBSCRIPTIONS,
+  GET_ETH_ACCOUNT,
+  GET_CATEGORIES,
+  IPFS_GATEWAY
+} from "@/config/constants";
+import { computed, inject, provide, ref, watch } from "vue";
+import { useWalletStore } from "@stores/wallet";
+import {
+  Connect,
+  SubscriptionSearch,
+  SubscriptionItem,
+  NewFeatured,
+  NewAdmin,
+  PinTable,
+  AdminItem
+} from "@components"
+import { useSettingsStore } from "@stores/settings";
+import { parseColors, callAdminServer, uploadToIPFS } from "@utils"
+const settingsStore = useSettingsStore()
 const walletStore = useWalletStore()
-const id = import.meta.env.VITE_WEBSITE_ID;
+const siteID = import.meta.env.VITE_WEBSITE_ID;
+const tab = ref(null)
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
+const file = ref(null)
+const fileBlobUrl = ref(null)
+useQuery(GET_CATEGORIES, { id: siteID })
+
+
+const {
+  result: adminEdgesResult,
+  loading: adminEdgesLoading,
+  error: adminEdgesError,
+  refetch
+} = useQuery(GET_ETH_ACCOUNT, {
+  items: 1000,
+  filters: {
+    where: {
+      siteID: {
+        equalTo: siteID
+      },
+      isAdmin: {
+        equalTo: true
+      },
+      address: {
+        notEqualTo: walletStore.address
+      }
+    }
+  }
+}, {
+  fetchPolicy: 'network-only'
+});
+
 const {
   result: pinsResult,
-  loading: pinsLoading,
-  error: pinsError,
-  fetchMore: fetchMorePins,
+  loading: pinEdgesLoading,
+  error: pinEdgesError,
   refetch: refetchPins
 } = useQuery(GET_PINS, {
-  id,
-  pageSize: websiteDataQueryParams.pageSizeMedium
+  items: 1000,
+  filters: {
+    where: {
+      siteID: {
+        equalTo: siteID
+      },
+      deleted: {
+        equalTo: false
+      }
+    }
+  }
 }, {
-  fetchPolicy: "network-only"
+  fetchPolicy: 'network-only'
 });
 
 const {
-  result: adminsResult,
-  loading: adminsLoading,
-  error: adminsError,
-  refetch: refetchAdmins
-} = useQuery(GET_ADMINS, {
-  id,
-  pageSize: websiteDataQueryParams.pageSizeMax
-});
-
-useQuery(GET_CATEGORIES, { id, pageSize: 50 })
-
-
-const {
-  result: subscriptionIndexResult,
-  loading: subscriptionIndexLoading,
-  error: subscriptionIndexError,
-  fetchMore: fetchMoreSubscriptionIndex,
-} = useQuery(GET_SUBSCRIPTION_INDEX, {
-  pageSize: websiteDataQueryParams.pageSizeMedium
-});
-
-const {
-  result: subscriptionResult,
-  loading: subscriptionLoading,
-  error: subscriptionError,
-  fetchMore: fetchMoreSubscription,
+  result: subscriptionsResult,
+  loading: subscriptionsLoading,
+  error: subscriptionsError,
+  fetchMore: fetchMoreSubscriptions,
   refetch: refetchSubscriptions
 } = useQuery(GET_SUBSCRIPTIONS, {
-  id,
-  pageSize: websiteDataQueryParams.pageSizeMedium
+  items: 20,
+  filters: {
+    where: {
+      siteID: {
+        equalTo: siteID
+      },
+      inactive: {
+        equalTo: false
+      }
+    }
+  }
+}, {
+  fetchPolicy: 'network-only'
 });
 provide('refetchPins', refetchPins)
 provide('refetchSubscriptions', refetchSubscriptions)
 
-const pieces = computed(() => {
-  if (!walletStore.address || !walletStore.accountId || !pinsResult || !(pinsResult.value.node.pins.edges.length > 0)) {
+const pins = computed(() => {
+  if (!pinsResult.value?.pinIndex?.edges?.length > 0) {
+    console.log('arre')
     return {
       approved: [],
       pending: [],
       rejected: []
     }
   }
-  const list = pinsResult.value.node.pins.edges
-  const approved = list && list.filter(pin => (!pin.node.deleted && pin.node.approved && !pin.node.rejected))
-  const pending = list && list.filter(pin => (!pin.node.deleted && !pin.node.approved && !pin.node.rejected))
-  const rejected = list && list.filter(pin => (!pin.node.deleted && !pin.node.approved && pin.node.rejected))
+  const list = pinsResult.value.pinIndex.edges
+  const approved = list.filter(pin => (pin.node.approved))
+  const pending = list.filter(pin => (!pin.node.approved && !pin.node.rejected && !pin.node.deleted))
+  const rejected = list.filter(pin => (pin.node.rejected))
+
   return {
     approved,
     pending,
     rejected
   }
 })
+const isError = ref(false)
+const isLoading = ref(false)
+const isSuccess = ref(false)
 
-const adminList = computed(() => {
-  if (!adminsResult.value) {
-    return []
+watch(file, (v) => {
+  if (!v[0]) {
+    fileBlobUrl.value = null
+    return
   }
-  const list = adminsResult.value.node.admins.edges
-  const activeAdminsList = list.filter((edge) => !edge.node.inactive)
-  return activeAdminsList.length > 0 ? activeAdminsList.filter((edge) => edge.node.id !== walletStore.adminId) : []
+  fileBlobUrl.value = URL.createObjectURL(v[0])
 })
 
-const subscriptionList = computed(() => {
-  const list = subscriptionResult.value.node.subscriptions.edges
-  return list.length > 0 ? list.filter(subscription => !subscription.node.inactive) : []
-})
+const refetchSite = inject('refetchSite')
+const handleSave = async () => {
+  let msgToSign
+  let signature
+  msgToSign = "Update theme"
 
-// const subscriberList = computed(() => {
-//   const list = subscriptionIndexResult.value.subscriptionIndex.edges
-//   return list.length > 0 ? list.filter((edge) => edge.node.subscribedID === id) : []
-// })
 
+
+  const colors = parseColors(settingsStore.colors, true)
+
+  try {
+    isLoading.value = true
+    signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    let newSiteImageCID
+
+    if (file.value?.[0]) {
+      newSiteImageCID = await uploadToIPFS(file.value)
+    }
+    await callAdminServer(
+      `${adminServerUrl}/site`, {
+      action: "update",
+      siteId: siteID,
+      data: {
+        name: settingsStore.siteName,
+        description: settingsStore.siteDescription,
+        image: newSiteImageCID ?? settingsStore.siteImage,
+        colors
+      },
+      msg: msgToSign,
+      signature,
+      address: walletStore.address
+    })
+    isSuccess.value = true
+    const result = await refetchSite()
+    console.log('result of refetchSite', result)
+  } catch (error) {
+    console.log('error', error)
+    isError.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>

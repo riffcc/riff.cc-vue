@@ -1,98 +1,130 @@
 <template>
-  <header class="bg-slate-800 h-14 flex items-center px-6 justify-between text-slate-50 relative">
-    <p class="w-1/6 text-2xl font-bold text-white">Riff.CC</p>
-    <div v-if="isGreatherThanSmall" class="flex gap-4">
-      <button :class="{ 'text-cyan-200': $route.path === '/' }" @click="() => $router.push('/')">
-        Home
-      </button>
-      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => $router.push('/upload')">
-        Upload
-      </button>
-      <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
-        @click="() => $router.push('/profile')">
-        My Pins
-      </button>
-      <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
-        @click="() => $router.push('/admin')">
-        Admin Website
-      </button>
+  <v-app-bar class="px-md-16 bg-background-darken-2">
+    <v-toolbar-title>
+      <router-link to="/">
+        <v-img cover max-width="48px" aspect-ratio="1"
+          :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+      </router-link>
+    </v-toolbar-title>
+    <div class="d-none d-md-flex">
+      <v-btn text="Home" @click="() => redirect('/')"
+        :class="router.currentRoute.value.path === '/' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
+      <v-btn text="Tv" @click="() => redirect('/tv')"
+          :class="router.currentRoute.value.path === '/tv' ? 'text-primary-lighten-1 text-none' : 'text-none'"/>
+      <v-btn text="Movies" @click="() => redirect('/movies')"
+          :class="router.currentRoute.value.path === '/movies' ? 'text-primary-lighten-1 text-none' : 'text-none'"/>
+
+      <v-btn text="Music" @click="() => redirect('/music')"
+        :class="router.currentRoute.value.path === '/music' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
+      <v-divider vertical></v-divider>
+
+      <v-btn text="Upload" @click="() => redirect('/upload')"
+        :class="router.currentRoute.value.path === '/upload' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
+      <v-btn text="My Pins" v-if="walletStore.accountId" @click="() => redirect('/profile')"
+        :class="router.currentRoute.value.path === '/profile' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
+      <v-btn text="Admin Site" v-if="walletStore.isAdmin" @click="() => redirect('/admin')"
+        :class="router.currentRoute.value.path === '/admin' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
     </div>
-    <button v-else @click="toggleMenu">
-      <v-icon name="hi-menu" class="h-7 w-8 text-slate-50" />
-    </button>
-    <div v-if="showMenu"
-      class="fixed inset-x-0 top-14 mx-auto z-10 bg-gray-900 border border-slate-700 rounded-xl w-40 grid py-4">
-      <button :class="{ 'text-cyan-200': $route.path === '/' }" @click="() => redirect('/')">
-        Home
-      </button>
-      <button :class="{ 'text-cyan-200': $route.path === '/upload' }" @click="() => redirect('/upload')">
-        Upload
-      </button>
-      <button v-if="walletStore.accountId" class="router-link" :class="{ 'text-cyan-200': $route.path === '/profile' }"
-        @click="() => redirect('/profile')">
-        My Pins
-      </button>
-      <button v-if="walletStore.isAdmin" class="router-link" :class="{ 'text-cyan-200': $route.path === '/admin' }"
-        @click="() => redirect('/admin')">
-        Admin Website
-      </button>
+    <div class="d-block d-md-none">
+
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" icon>
+            <v-icon icon="fas fa-bars" />
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item title="Home" @click="() => redirect('/')" class="text-none" />
+          <v-list-item title="Upload" @click="() => redirect('/upload')" class="text-none" />
+          <v-list-item title="My Pins" v-if="walletStore.accountId" @click="() => redirect('/profile')"
+            class="text-none" />
+          <v-list-item title="Admin Site" v-if="walletStore.isAdmin" @click="() => redirect('/admin')"
+            class="text-none" />
+        </v-list>
+      </v-menu>
     </div>
-    <div class="w-1/6 grow-0 shrink-0 flex justify-end">
-      <div v-if="walletStore.formattedAddress" class="flex item-center gap-2">
-        <p class="text-slate-50 font-medium hover:cursor-pointer" @click="walletStore.showAccount">
-          {{ walletStore.formattedAddress }}
-        </p>
-        <button @click="settingsStore.open">
-          <v-icon name="hi-cog" class="h-5 w-5 text-slate-200 mt-0.5" />
-        </button>
-      </div>
-      <Connect v-else />
-    </div>
-  </header>
+    <v-spacer></v-spacer>
+    <template v-if="walletStore.formattedAddress" slot:prepend>
+      <v-btn icon>
+        <v-icon icon="fas fa-magnifying-glass" size="x-small" />
+      </v-btn>
+      <v-btn icon>
+        <v-icon icon="fas fa-bell" size="x-small" />
+      </v-btn>
+      <v-app-bar-nav-icon @click.stop="showMenu = !showMenu" class="ml-4">
+        <v-avatar v-if="walletStore.cidAvatar"
+          :image="`https://${IPFS_GATEWAY}/ipfs/${walletStore.cidAvatar}`"></v-avatar>
+        <v-icon v-else icon="fas fa-circle-user" size="x-large" class="mb-1"></v-icon>
+      </v-app-bar-nav-icon>
+    </template>
+    <template v-else slot:prepend>
+      <Connect />
+    </template>
+  </v-app-bar>
+  <v-navigation-drawer v-model="showMenu" temporary location="right" color="background-lighten-1" class="h-50">
+    <template v-slot:prepend>
+      <v-list-item lines="two" :title="walletStore.formattedAddress" subtitle="Logged in"></v-list-item>
+    </template>
+    <v-divider></v-divider>
+    <v-list density="compact" nav>
+      <v-list-item prepend title="Settings" value="settings" @click="() => redirect('/profile/settings')"></v-list-item>
+      <v-list-item prepend title="Logout" value="logout"></v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script setup>
 import { inject, ref, watch } from "vue";
 import { useApolloClient } from '@vue/apollo-composable'
-import { useWalletStore } from "../../stores/wallet"
-import { useSettingsStore } from '../../stores/settings';
-
-import auth3IDConnect from '../../utils/auth3IDConnect'
-import { checkAddressInAdmins, checkAccount } from '../../utils/checkAccount'
-import { GET_USERS, GET_ADMINS, CREATE_ETH_ACCOUNT } from '../../utils/constants'
-import createCeramicClient from "../../utils/createCeramicClient"
-import Connect from "../Layout/Connect.vue"
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useRouter } from "vue-router";
-import callAdminServer from "../../utils/callAdminServer"
+
+import Connect from "../Layout/Connect.vue"
+
+import { GET_ETH_ACCOUNT, defaultUserSettings, IPFS_GATEWAY } from "../../config/constants";
+import { useWalletStore } from "@stores/wallet"
+import { useSettingsStore } from "@stores/settings"
+
+import { auth3IDConnect, createCeramicClient, callAdminServer } from '@utils'
+
+const router = useRouter()
+console.log(router.currentRoute)
+const routes = [
+  { value: "/", label: "Home" },
+  { value: "/upload", label: "Upload" },
+  { value: "/profile", label: "My Pins" },
+  { value: "/admin", label: "Admin Site" },
+]
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isGreatherThanSmall = breakpoints.greater("md");
+
+const siteID = import.meta.env.VITE_WEBSITE_ID
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
+
+
+const showMenu = ref(false)
+
+const walletStore = useWalletStore();
 const settingsStore = useSettingsStore();
 
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isGreatherThanSmall = breakpoints.greater("sm");
-
-watch(isGreatherThanSmall, () => {
-  showMenu.value = false
-})
-
-const router = useRouter()
-
-const showMenu = ref(false)
-const toggleMenu = () => showMenu.value = !showMenu.value
+const initialCeramicClient = inject("ceramic");
+const updateApolloClient = inject("updateApolloClient");
+const { resolveClient } = useApolloClient();
 
 const redirect = (route) => {
   router.push(route)
   showMenu.value = false
 }
 
-const id = import.meta.env.VITE_WEBSITE_ID
-const { resolveClient } = useApolloClient();
-const walletStore = useWalletStore();
-const initialCeramicClient = inject("ceramic");
-const updateApolloClient = inject("updateApolloClient");
-const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
+watch(isGreatherThanSmall, () => {
+  showMenu.value = false
+})
+
 
 watch(() => walletStore.address, async (address) => {
+  console.log('from watchAddress', address)
   if (!address) {
     walletStore.accountId = null
     walletStore.isAdmin = false
@@ -102,51 +134,47 @@ watch(() => walletStore.address, async (address) => {
   }
   const { ceramic } = await auth3IDConnect(address, initialCeramicClient);
   console.log('ceramic is authenticated?', ceramic.did?.authenticated);
+
   if (ceramic.did?.authenticated) {
     updateApolloClient(ceramic);
     walletStore.threeIdAuthenticated = true;
-
     const client = resolveClient()
+    const result = await client.query({
+      query: GET_ETH_ACCOUNT,
+      variables: {
+        items: 100,
+        filters: {
+          where: {
+            address: {
+              equalTo: address
+            },
+            siteID: {
+              equalTo: siteID
+            }
+          }
+        }
+      },
+      fetchPolicy: 'network-only'
+    })
 
-    const getUsers = async (variables) => {
-      return await client.query({
-        query: GET_USERS,
-        variables: {
-          id,
-          pageSize: 1000,
-          ...variables
-        },
-        fetchPolicy: 'no-cache'
-      })
-    }
 
-    const getAdmins = async () => {
-      return await client.query({
-        query: GET_ADMINS,
-        variables: {
-          id,
-          pageSize: 1000
-        },
-        fetchPolicy: 'no-cache'
-      })
-    }
+    console.log('result', result)
 
-    const resultGetUsers = await getUsers()
-    const accountId = await checkAccount(getUsers, address, resultGetUsers.data.node.users)
-    if (accountId) {
-      walletStore.accountId = accountId;
-      const resultGetAdmins = await getAdmins()
-      const resultCheckAdmin = checkAddressInAdmins(address, resultGetAdmins.data.node.admins.edges)
-      if (resultCheckAdmin.exist) {
-        walletStore.isAdmin = true
-        walletStore.adminId = resultCheckAdmin.id
-        walletStore.adminIsSuper = resultCheckAdmin.super
-      }
+    const node = result.data.ethAccountIndex.edges[0]?.node
+
+    if (node) {
+      walletStore.accountId = node.id;
+      walletStore.isAdmin = node.isAdmin
+      walletStore.isSuperAdmin = node.isSuperAdmin
+      walletStore.cidAvatar = node.settings?.cidAvatar
+
+
     } else {
+      const msgToSign = "Create new account"
       const signature = await window.ethereum.request({
         method: "personal_sign",
         params: [
-          "create new account",
+          msgToSign,
           walletStore.address
         ]
       })
@@ -157,49 +185,27 @@ watch(() => walletStore.address, async (address) => {
           action: 'create',
           data: {
             address,
-            websiteID: id,
-            metadata: {
-              updatedAt: Date.now().toString(),
-              createdAt: Date.now().toString()
-            },
+            siteID,
+            isAdmin: false,
+            isSuperAdmin: false,
+            createdAt: (new Date).toISOString(),
+            updatedAt: (new Date).toISOString(),
+            settings: defaultUserSettings
           },
-          msg: 'create new account',
+          msg: msgToSign,
           signature,
           address,
-
         });
 
       walletStore.accountId = result.accountID;
+
     }
+
   } else {
-
-    const signature = await window.ethereum.request({
-      method: "personal_sign",
-      params: [
-        "create new account",
-        walletStore.address
-      ]
-    })
-    console.log(signature)
-    const result = await callAdminServer(
-      `${adminServerUrl}/account`,
-      {
-        action: 'create',
-        data: {
-          address,
-          websiteID: id,
-          metadata: {
-            updatedAt: Date.now().toString(),
-            createdAt: Date.now().toString()
-          },
-        },
-        msg: 'create new account',
-        signature,
-        address,
-
-      });
-
-    walletStore.accountId = result.accountID;
+    walletStore.error = "error on connect wallet"
+    setTimeout(() => {
+      walletStore.error = null
+    }, 3000);
   }
 
 })

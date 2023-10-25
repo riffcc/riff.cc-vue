@@ -13,7 +13,6 @@ export default async function auth3IDConnect(userAddress, ceramic) {
   const authProvider = new EthereumAuthProvider(window.ethereum, userAddress);
   
   await threeID.connect(authProvider);
-  
   const did = new DID({
     provider: threeID.getDidProvider(),
     resolver: { ...get3IDResolver(ceramic), ...getKeyResolver() },

@@ -1,17 +1,13 @@
 <template>
-  <button 
-    class="bg-cyan-500 px-4 py-2 rounded font-medium"
-    @click="walletStore.connectWallet"
-  >
-    Connect
-  </button>
+  <v-btn @click="walletStore.connectWallet" text="Connect wallet" :block="block" class="text-none bg-primary"/>
 </template>
 
 <script setup>
-import { useWalletStore } from "../../stores/wallet"
+import { useWalletStore } from "../../store/wallet"
+
+defineProps({
+  block: Boolean
+})
 const walletStore = useWalletStore()
 
 </script>
-
-<style scoped>
-</style>

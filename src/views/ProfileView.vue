@@ -1,68 +1,104 @@
 <template>
-  <main class="bg-gray-900 min-h-screen py-6 sm:py-10 px-4 sm:px-10 text-white">
-    <div v-if="walletStore.address && walletStore.accountId" class="grid h-full gap-3">
-      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Approved</p>
-      <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-        <PieceList v-if="pieces.approved.length > 0" :list="pieces.approved" table />
-        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
+  <v-container class="py-14">
+    <v-sheet min-height="75vh">
+      <v-sheet v-if="!walletStore.address" width="320px" height="160px" class="pa-10 d-flex flex-column mx-auto">
+        <p class="text-center mb-auto">Please connect your wallet</p>
+        <div>
+          <Connect block />
+        </div>
+      </v-sheet>
+      <div style="min-height: inherit;" class="d-flex flex-column">
+        <v-tabs v-model="tab" center-active fixed-tabs>
+          <v-tab slider-color="primary" value="content">Content</v-tab>
+        </v-tabs>
+        <v-window v-model="tab" class="flex-1-0">
+          <v-window-item value="content" class="py-10 px-4 px-sm-12 px-md-16">
+            <PinTable :pins="pins.approved" title="Approved" />
+            <PinTable :pins="pins.pending" title="Pending" />
+            <PinTable :pins="pins.rejected" title="Rejected" />
+          </v-window-item>
+        </v-window>
       </div>
-      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Pending</p>
-      <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-        <PieceList v-if="pieces.pending.length > 0" :list="pieces.pending" table />
-        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-      </div>
-      <p class="font-semibold ml-4 text-md sm:text-lg flex-none">Rejected</p>
-      <div className='border rounded-xl border-slate-400 min-h-[20rem] flex'>
-        <PieceList v-if="pieces.rejected.length > 0" :list="pieces.rejected" table />
-        <p v-else class="m-auto text-sm text-slate-200">No items found.</p>
-      </div>
-    </div>
-    <div v-else class="w-64 h-40 border border-slate-400 rounded-lg m-auto flex flex-col items-center justify-evenly mt-20">
-      <p>Please connect your wallet</p>
-      <Connect />
-    </div>
-  </main>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script setup>
 import { useQuery } from "@vue/apollo-composable"
-import { GET_PINS, websiteDataQueryParams } from "../utils/constants";
-import { computed } from "vue";
-import { useWalletStore } from "../stores/wallet";
-import PieceList from "../components/PieceList.vue"
-import Connect from "../components/Layout/Connect.vue"
-
+import {
+  GET_PINS,
+  GET_CATEGORIES,
+  IPFS_GATEWAY
+} from "@/config/constants";
+import { computed, inject, provide, ref, watch } from "vue";
+import { useWalletStore } from "@stores/wallet";
+import {
+  Connect,
+  PinTable,
+} from "@components"
+import { useSettingsStore } from "@stores/settings";
+const settingsStore = useSettingsStore()
 const walletStore = useWalletStore()
-const id = import.meta.env.VITE_WEBSITE_ID;
+const siteID = import.meta.env.VITE_WEBSITE_ID;
+const tab = ref(null)
+const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
+const file = ref(null)
+const fileBlobUrl = ref(null)
+useQuery(GET_CATEGORIES, { id: siteID })
+
+
 const {
   result: pinsResult,
-  loading: pinsLoading,
-  error: pinsError,
-  fetchMore: fetchMorePins
+  loading: pinEdgesLoading,
+  error: pinEdgesError,
+  refetch: refetchPins
 } = useQuery(GET_PINS, {
-  id,
-  pageSize: websiteDataQueryParams.pageSizeMedium
+  items: 1000,
+  filters: {
+    where: {
+      siteID: {
+        equalTo: siteID
+      },
+      deleted: {
+        equalTo: false
+      }
+    }
+  }
 }, {
-  fetchPolicy: "network-only"
+  fetchPolicy: 'network-only'
 });
 
-const pieces = computed (() => {
-  if (!walletStore.address || !walletStore.accountId || !pinsResult.value || !(pinsResult.value.node.pins.edges.length > 0)) {
+const pins = computed(() => {
+  if (!pinsResult.value?.pinIndex?.edges?.length > 0) {
+    console.log('arre')
     return {
       approved: [],
       pending: [],
       rejected: []
     }
   }
-  const list = pinsResult.value.node.pins.edges.filter(pin => pin.node.owner.address === walletStore.address)
-  const approved = list && list.filter(pin => (!pin.node.deleted && pin.node.approved && !pin.node.rejected))
-  const pending = list && list.filter(pin => (!pin.node.deleted && !pin.node.approved && !pin.node.rejected))
-  const rejected = list && list.filter(pin => (!pin.node.deleted && !pin.node.approved && pin.node.rejected))
+  const list = pinsResult.value.pinIndex.edges
+  const approved = list.filter(pin => (pin.node.approved))
+  const pending = list.filter(pin => (!pin.node.approved && !pin.node.rejected && !pin.node.deleted))
+  const rejected = list.filter(pin => (pin.node.rejected))
+
   return {
     approved,
     pending,
     rejected
   }
 })
+const isError = ref(false)
+const isLoading = ref(false)
+const isSuccess = ref(false)
 
+watch(file, (v) => {
+  if (!v[0]) {
+    fileBlobUrl.value = null
+    return
+  }
+  fileBlobUrl.value = URL.createObjectURL(v[0])
+})
+
+const refetchSite = inject('refetchSite')
 </script>

@@ -1,150 +1,82 @@
 <template>
-  <main class="bg-gray-900 min-h-screen pt-4 md:pt-10 px-2 md:px-6 pb-20 text-white">
-    <div class='grid'>
-      <div class='mx-auto w-full lg:w-5/6 min-h-screen '>
-        <button class="ml-2 mb-2" @click="() => $router.push('/')">
-          <p class='text-slate-200 hover:underline text-sm md:text-md'>
-            Back to Home
-          </p>
-        </button>
-        <div class='border rounded-xl border-slate-500 min-h-[20rem]'>
-          <div class='p-4 sm:p-8 space-y-4'>
-            <div v-if="pinResultLoading" class='w-full flex py-4'>
-              <Spinner class='m-auto h-8 w-8 animate-spin' />
-            </div>
-            <div v-else-if="pinResultError" class='w-full flex py-4'>
-              <p class='m-auto text-red-400'>Error to fetch pin</p>
-            </div>
-            <div v-else-if="(!pinResult && !pinResultLoading) || (pinResult && !pinResult.node.approved)" class='w-full flex py-4'>
-              <p class='m-auto'>Pin not found.</p>
-            </div>
-            <div id="piece-card" v-else class='bg-slate-800 mx-auto rounded-lg sm:flex p-4'>
-              <div id="piece-thumbnail" class="rounded-xl p-2 h-36 w-44 md:h-44 md:w-52 border border-slate-600 mx-auto">
-                <a
-                  v-if="pinResult.node.piece.details?.imageThumbnailCID"
-                  :href="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.imageThumbnailCID}`" target='_blank'
-                >
-                  <img class="h-full w-full" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.details?.imageThumbnailCID}`" alt="">
-                </a>
-                <div v-else class="h-full flex">
-                  <v-icon name="pr-image" class="h-20 w-20 m-auto text-slate-300" />
-                </div>
+  <v-container>
+    <v-sheet min-height="75vh" class="px-sm-6">
+      <v-container class="fill-height">
+        <v-row align="center" justify="center" justify-md="start">
+          <v-col cols="12" md="4" class="">
+            <v-sheet class="d-flex mx-auto" max-width="240px">
+              <v-img src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg" min-width="240px" cover
+                aspect-ratio="1"></v-img>
+            </v-sheet>
+          </v-col>
+          <v-col md="7" lg="6" class="">
+            <v-sheet color="transparent" class="my-10 d-flex flex-column align-center align-md-start" max-height="240px">
+              <p class="text-h5 text-lg-h4 mb-3"> This Month’s Record Breaking Albums !</p>
+              <p class="text-subtitle-2 text-medium-emphasis mb-3" style="line-height: 1.1em;">Dream your moments,
+                Until
+                I Met You, Gimme Some Courage, Dark Alley, One More Of A Stranger, Endless Things, The Heartbeat
+                Stops,
+                Walking Promises, Desired Games and many more..
+              </p>
+              <p class="text-subtitle-2 text-medium-emphasis" style="line-height: 1em;"> Album Adam McHeffey 2009</p>
+              <p class="text-subtitle-2 text-medium-emphasis">12 songs 43 Minutes</p>
+              <div class="d-flex mt-6 align-center">
+                <v-btn color="primary" rounded="0" prepend-icon="fas fa-play" class="text-none mr-4"
+                  text="Play Now"></v-btn>
+                <v-btn color="transparent" border rounded="0" prepend-icon="fas fa-square-plus" class="text-none"
+                  text="Add to Library"></v-btn>
+                <v-btn icon>
+                  <v-icon icon="fas fa-ellipsis-vertical"></v-icon>
+                </v-btn>
               </div>
-              <div id="piece-card" class='p-2 w-full flex flex-col'>
-                <div id="card-thumbs" class='flex w-36 mx-auto sm:place-self-end sm:mx-0 h-6 items-center justify-evenly'>
-                  <div class='flex gap-2 items-center'>
-                    <button @click="handleOnLike" :disabled="!walletStore.accountId || alreadyLiked">
-                      <v-icon
-                        name="hi-thumb-up"
-                        :class="alreadyLiked ? 'h-5 w-5 shadow-sm shadow-slate-900 text-slate-400' : 'h-5 w-5'"
-                      />
-                    </button>
-                    <p class='text-sm select-none'>{{pinResult.node.likesCount}}</p>
-                  </div>
-                  <div class='flex gap-2 items-center'>
-                    <button @click="handleOnDislike" :disabled="!walletStore.accountId || alreadyDisliked">
-                      <v-icon
-                        name="hi-thumb-down"
-                        :class="alreadyDisliked ? 'h-5 w-5 shadow-sm shadow-slate-900 text-slate-400' : 'h-5 w-5'"
-                      />
-                    </button>
-                    <p class='text-sm select-none'>{{pinResult.node.dislikesCount}}</p>
-                  </div>
-                </div>
-                <div id="card-content" class="h-full px-4">
-                  <p class="font-bold text-lg text-center sm:text-left lg:text-xl truncate text-ellipsis my-2">{{pinResult.node.piece.name}}</p>
-                  <div class="font-medium truncate text-ellipsis text-sm md: text-md flex flex-col items-center sm:items-start">
-                    <p><span class="font-normal mr-1">Category:</span> {{ pinResult.node.category.name }}</p>
-                    <div v-if="pinResult.node.category.name === 'Music'" class="">
-                      <p v-if="pinResult.node.artist.name"><span class="font-normal mr-1">Artist:</span>{{ pinResult.node.artist.name }}</p>
-                      <p v-if="pinResult.node.piece.details?.initialReleaseYear"><span class="font-normal mr-1">Release Year:</span>{{ pinResult.node.piece.details?.initialReleaseYear }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-if="isVideo" class="w-full h-full md:p-4">
-              <!-- <video class="rounded-xl w-full" :src="`https://${ipfsGateway}/ipfs/${pinResult.node.piece.CID}`" controls></video> -->
-              <VideoPlayer v-if="videoSource" :videoSource="videoSource" />
-            </div>
-            <div v-else-if="musicAlbum.is" class="px-18">
-              <ul
-              v-for="file, i in musicAlbum.files"
-              :key="file.cid"
-              >
-                <li class="border border-slate-700 mb-1 px-4 py-1 flex justify-between">
-                  <p>{{ file.name }}</p>
-                  <button @click="() => {
-                    musicAlbum.index = i
-                    handleOnSelectAndPlay(i)
-                  }">
-                    <v-icon name="hi-play" class="h-5 w-5 text-slate-200" />
-                  </button>
-                </li>
-              </ul>
-              <RelatedAlbums 
-                v-if="pinResult.node.artist.name !== 'Unknown'" 
-                :artist="pinResult.node.artist" 
-                :streamID="streamID" 
-                :onCloseCallback="onCloseCallback"
-              />
-              <AudioPlayer
-                v-if="selectedAudio"
-                :selectedAudio="selectedAudio"
-                :onCloseCallback="onCloseCallback"
-                :handleNext="handleNext"
-                :handlePrevious="handlePrevious"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+            </v-sheet>
+          </v-col>
+        </v-row>
+      </v-container>
+      <Playlist :handlePlay="handlePlay" :musicAlbum="musicAlbum" />
+    </v-sheet>
+
+  </v-container>
+  <AudioPlayer v-if="selectedAudio" :selectedAudio="selectedAudio" :onCloseCallback="onCloseCallback"
+    :handleNext="handleNext" :handlePrevious="handlePrevious" />
 </template>
 
 <script setup>
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useApolloClient, useLazyQuery, useMutation, useQuery } from '@vue/apollo-composable';
-import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE, GET_USER_LIKES_AND_DISLIKES } from '../utils/constants';
-import getCIDContent from '../utils/getCIDContent'
-import Spinner from '../components/Layout/Spinner.vue';
-import AudioPlayer from '../components/AudioPlayer.vue';
+import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE, IPFS_GATEWAY } from '@/config/constants';
+import { getCIDContent } from '@utils';
 
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { useWalletStore } from '../stores/wallet';
-import { useSettingsStore } from '../stores/settings';
+import { useWalletStore } from '@stores/wallet';
+import { useSettingsStore } from '@stores/settings';
 
-import RelatedAlbums from '../components/RelatedAlbums.vue';
-import { useRoute, useRouter,  } from 'vue-router';
-import VideoPlayer from '../components/VideoPlayer.vue';
+import { Playlist, AudioPlayer } from '@components';
+
 const props = defineProps({
   streamID: {
     required: true,
     type: String
   }
 })
+const showAudioPlayer = ref(true)
+
+
 const route = useRoute()
+
 watch(() => route.params, (params) => {
-  console.log('from watch', params);
-  musicAlbum.value.files = undefined
-  musicAlbum.value.index = 0
-  musicAlbum.value.selected = undefined
-  musicAlbum.value.is = false
-  refetchPin({ id: params.streamID, pageSize: 1000})
+  refetchPin({ id: params.streamID, pageSize: 1000 })
 })
+
 const walletStore = useWalletStore()
-const settingsStore = useSettingsStore()
 
-
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const {
-  load: loadPin,
   result: pinResult,
   error: pinResultError,
   loading: pinResultLoading,
   refetch: refetchPin,
   onResult
-} = useLazyQuery(GET_PIN, {
+} = useQuery(GET_PIN, {
   id: props.streamID,
   pageSize: 1000,
 }, {
@@ -155,54 +87,19 @@ const alreadyLiked = ref(false)
 const alreadyDisliked = ref(false)
 
 const { client } = useApolloClient()
-const isVideo = ref(false)
-const musicAlbum = ref({
-  is: false,
-  files: null,
-  selected: null,
-  index: null
-})
-const selectedAudio = ref(null)
-const videoSource = ref(null)
-onMounted(() => {
-  loadPin(undefined, undefined, {fetchPolicy: "network-only"})
-})
 
-onResult(async ({data}) => {
-  console.log('from onResult', data);
-  if (!data.node) {
-    return
-  }
-    if (data.node.category.name === "Movies" || data.node.category.name === "Videos") {
-    isVideo.value = true
-    videoSource.value = {
-      name: data.node.piece.name,
-      cid: data.node.piece.CID
-    }
-  } else if (data.node.category.name === "Music") {
-    const files = await getCIDContent(ipfsGateway, data.node.piece.CID)
-    console.log(files);
-    musicAlbum.value.is = true
-    musicAlbum.value.files = files
-    musicAlbum.value.index = 0
-    if(walletStore.accountId && settingsStore.autoplay) {
-      handleOnSelectAndPlay(musicAlbum.value.index)
-    }
-  }
 
-})
-
-const getUserLikesAndDislikes = async (variables) => {
-  return await client.query({
-    query: GET_USER_LIKES_AND_DISLIKES,
-    variables: {
-      id: walletStore.accountId,
-      pageSize: 1000,
-      ...variables
-    },
-    fetchPolicy: 'no-cache'
-  })
-}
+// const getUserLikesAndDislikes = async (variables) => {
+//   return await client.query({
+//     query: GET_USER_LIKES_AND_DISLIKES,
+//     variables: {
+//       id: walletStore.accountId,
+//       pageSize: 1000,
+//       ...variables
+//     },
+//     fetchPolicy: 'no-cache'
+//   })
+// }
 
 const { mutate: createPinLike } = useMutation(CREATE_PIN_LIKE);
 const { mutate: createPinDislike } = useMutation(CREATE_PIN_DISLIKE);
@@ -214,18 +111,18 @@ watch(() => [walletStore.accountId, pinResult.value], async ([accountId]) => {
     return
   }
 
-  const result = await getUserLikesAndDislikes()
-  for (const like of result.data.node.pinLikes.edges) {
-    if (like.node.pinID === props.streamID) {
-      alreadyLiked.value = true;
-    }
-  }
+  // const result = await getUserLikesAndDislikes()
+  // for (const like of result.data.node.pinLikes.edges) {
+  //   if (like.node.pinID === props.streamID) {
+  //     alreadyLiked.value = true;
+  //   }
+  // }
 
-  for (const dislike of result.data.node.pinDislikes.edges) {
-    if (dislike.node.pinID === props.streamID) {
-      alreadyDisliked.value = true;
-    }
-  }
+  // for (const dislike of result.data.node.pinDislikes.edges) {
+  //   if (dislike.node.pinID === props.streamID) {
+  //     alreadyDisliked.value = true;
+  //   }
+  // }
 })
 
 const handleOnLike = async () => {
@@ -240,6 +137,7 @@ const handleOnLike = async () => {
   })
   await refetchPin()
 }
+
 const handleOnDislike = async () => {
   await createPinDislike({
     input: {
@@ -253,6 +151,64 @@ const handleOnDislike = async () => {
   await refetchPin()
 }
 
+onResult((v) => {
+  console.log('v from onresult', v)
+  musicAlbum.value.files = undefined
+  musicAlbum.value.index = 0
+  musicAlbum.value.selected = undefined
+  musicAlbum.value.is = false
+
+
+  if (!v.data.node) {
+    return
+  }
+  if (v.data.node.category.name === "Movies" || v.data.node.category.name === "Videos") {
+    isVideo.value = true
+    videoSource.value = {
+      name: v.data.node.piece.name,
+      cid: v.data.node.piece.contentCid
+    }
+  } else if (v.data.node.category.name === "Music") {
+    getCIDContent(v.data.node.piece.contentCid)
+      .then(files => {
+        console.log('files from then', files)
+        musicAlbum.value.is = true
+        musicAlbum.value.files = files
+        musicAlbum.value.index = 0
+        if (walletStore.accountId && settingsStore.autoplay) {
+          console.log('autoplay!')
+          // handleOnSelectAndPlay(musicAlbum.value.index)
+        }
+      })
+
+  }
+
+})
+
+const isVideo = ref(false)
+const musicAlbum = ref({
+  is: false,
+  files: null,
+  selected: null,
+  index: null
+})
+
+
+const selectedAudio = ref(null)
+const videoSource = ref(null)
+
+const handleOnSelectAndPlay = (index) => {
+  selectedAudio.value = { name: musicAlbum.value.files[index].name, cid: musicAlbum.value.files[index].cid }
+}
+
+const settingsStore = useSettingsStore()
+
+// onMounted(() => {
+
+
+// })
+
+
 const handlePrevious = () => {
   musicAlbum.value.index = musicAlbum.value.index - 1
   if (musicAlbum.value.index < 0) {
@@ -263,7 +219,6 @@ const handlePrevious = () => {
 }
 
 const handleNext = () => {
-  console.log('from handleNext');
   musicAlbum.value.index = musicAlbum.value.index + 1
   if ((musicAlbum.value.files.length - 1) < musicAlbum.value.index) {
     musicAlbum.value.index = 0
@@ -271,9 +226,9 @@ const handleNext = () => {
   handleOnSelectAndPlay(musicAlbum.value.index)
 }
 
-// Audio logic
-const handleOnSelectAndPlay = (index) => {
-  selectedAudio.value = { name: musicAlbum.value.files[index].name, cid: musicAlbum.value.files[index].cid }
+const handlePlay = (i) => {
+  musicAlbum.value.index = i
+  handleOnSelectAndPlay(i)
 }
 
 const onCloseCallback = () => {
@@ -281,5 +236,4 @@ const onCloseCallback = () => {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

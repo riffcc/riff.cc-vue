@@ -1,86 +1,102 @@
 <template>
-  <main class="bg-gray-900 h-screen py-10 px-2 text-white">
-    <div class="w-[21rem] sm:w-[25rem] border border-slate-400 px-4 sm:px-6 pt-8 pb-12 m-auto rounded-lg relative">
-      <p class="text-lg font-medium mb-4 text-center">Pin a new item</p>
-      <div class='grid h-96'>
-        <UploadForm />
-        <button v-if="walletStore.accountId"
-          class="bg-cyan-500 px-4 py-2 rounded  disabled:cursor-default disabled:text-slate-400 disabled:bg-cyan-900"
-          @click="onSubmit" :disabled="!isAllowedToSubmit || uploadStore.isLoading">
-          <Spinner v-if="uploadStore.isLoading" :class="'h-5 w-5 text-slate-200 animate-spin m-auto'" />
-          <p v-else class="font-medium">Submit</p>
-        </button>
-        <Connect v-else />
-        <Badge v-if="uploadStore.isSuccess" :class="'h-14 bg-green-200 rounded-lg flex mt-6'"
-          :message="'Piece created succesfully!'" />
-        <Badge v-if="uploadStore.isError" :class="'h-14 bg-red-200 rounded-lg flex mt-6'"
-          :message="'Has ocurred an error :('" />
-      </div>
-    </div>
-  </main>
+  <v-container>
+    <v-sheet color="transparent" min-height="100vh" class="d-flex align-start pt-10">
+      <v-sheet width="420px" class="px-8 pb-16 pt-10 mx-auto">
+        <p class="text-h6 text-center mb-5">Pin a new item</p>
+        <UploadForm :handleFileChange="handleFileChange" :handleOnSubmit="handleOnSubmit" />
+      </v-sheet>
+    </v-sheet>
+    <v-snackbar color="success" v-model="uploadStore.isSuccess" timeout="3000">
+      <p class="text-center">{{ `Piece created succesfully!` }}</p>
+    </v-snackbar>
+    <v-snackbar color="error" v-model="uploadStore.isError" timeout="3000">
+      <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
-import { useUploadStore } from '../stores/upload';
-import { useWalletStore } from '../stores/wallet';
+import { computed, onMounted, ref } from 'vue';
+import { useApolloClient, useQuery } from '@vue/apollo-composable';
+import { UploadForm } from '@components';
+import { useUploadStore } from '@stores/upload';
+import { useWalletStore } from '@stores/wallet';
 import {
   CREATE_PIECE,
   GET_CATEGORIES,
-  GET_ARTISTS,
-  CREATE_ARTIST
-} from '../utils/constants';
-import callAdminServer from '../utils/callAdminServer'
-import Connect from '../components/Layout/Connect.vue';
-import Spinner from '../components/Layout/Spinner.vue';
-import Badge from '../components/Layout/Badge.vue';
-import UploadForm from '../components/UploadForm.vue';
-import { checkArtist } from '../utils/checkArtist'
+  CREATE_ARTIST,
+  GET_ARTIST
+} from '@config/constants';
+import { callAdminServer, getCategoryId, uploadToIPFS } from '@utils'
 
-import { useApolloClient, useQuery } from '@vue/apollo-composable';
-import getCategoryID from '../utils/getCategoryId';
-
+const { resolveClient } = useApolloClient()
 const uploadStore = useUploadStore();
 const walletStore = useWalletStore();
+
+const files = ref(undefined)
 
 const isAllowedToSubmit = computed(() => {
   return !!(
     uploadStore.name &&
-    uploadStore.CID &&
-    uploadStore.category &&
-    uploadStore.details.imageThumbnailCID &&
-    uploadStore.isValidCID &&
-    !uploadStore.checkingContent &&
-    uploadStore.contentIsValid
+    (uploadStore.contentCid || files.value?.length > 0) &&
+    uploadStore.category
   )
 });
-const websiteID = import.meta.env.VITE_WEBSITE_ID;
+const siteID = import.meta.env.VITE_WEBSITE_ID;
+
+useQuery(GET_CATEGORIES, { id: siteID, pageSize: 1000 })
+
+const handleFileChange = (files) => {
+  uploadStore.inputHasFiles = false
+  if (files.length > 0) {
+    uploadStore.inputHasFiles = true
+    uploadStore.contentCid = null
+    files.value = e.target.files
+  }
+};
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 
-useQuery(GET_CATEGORIES, { id: websiteID, pageSize: 1000 })
-
-const { resolveClient } = useApolloClient();
-
-const onSubmit = async () => {
+const handleOnSubmit = async (event) => {
+  const result = await event
+  if (!result.valid) return
   const client = resolveClient();
   try {
     uploadStore.isLoading = true;
-    let artistID
-    // search artist, if exists return de artistId
-    const getArtists = async (variables) => {
-      return await client.query({
-        query: GET_ARTISTS,
-        variables: {
-          pageSize: 1000,
-          ...variables
-        },
-        fetchPolicy: 'no-cache'
-      })
+
+    const msgToSign = "Upload pin"
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    if (uploadStore.inputHasFiles) {
+      console.log('uploading content to IPFS')
+      console.log('files', files)
+      const newCid = await uploadToIPFS(files.value)
+      console.log('newCid', newCid)
+      uploadStore.contentCid = newCid
     }
-    const resultGetArtists = await getArtists()
-    console.log('searching if artist exist');
-    artistID = await checkArtist(getArtists, !!uploadStore.artist ? uploadStore.artist : "Unknown", resultGetArtists.data.artistIndex)
-    console.log(artistID);
+
+    const result = await client.query({
+      query: GET_ARTIST,
+      variables: {
+        items: 10,
+        filters: {
+          where: {
+            name: {
+              equalTo: uploadStore.artist
+            }
+          }
+        }
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    const artist = result.data.artistIndex.edges[0]?.node
+    let artistID = artist?.id
+    console.log('artist', artist)
     // if no exists, create the artist and return de id
     if (!artistID) {
       console.log('creating a new artist');
@@ -104,44 +120,47 @@ const onSubmit = async () => {
         input: {
           content: {
             name: uploadStore.name,
-            CID: uploadStore.CID,
+            contentCid: uploadStore.contentCid,
             details: uploadStore.details ?? undefined,
-            metadata: {
-              createdAt: Date.now().toString(),
-              updatedAt: Date.now().toString()
-            }
+            createdAt: (new Date).toISOString(),
+            updatedAt: (new Date).toISOString()
           }
         }
       }
     });
 
-    const categoryID = getCategoryID(client, uploadStore.category);
+    const categoryID = getCategoryId(client, uploadStore.category);
+
     const resultcallAdminServer = await callAdminServer(
       `${adminServerUrl}/pin`,
       {
         data: {
           ownerID: walletStore.accountId,
-          websiteID,
+          siteID,
           categoryID,
           artistID,
           pieceID: resultCreatePiece.data.createPiece.document.id,
           approved: false,
-          rejected: false
+          rejected: false,
+          deleted: false
         },
-        action: 'create'
+        action: 'create',
+        msg: msgToSign,
+        signature,
+        address: walletStore.address
       }
     );
-    uploadStore.isLoading = false;
     uploadStore.isSuccess = true;
     uploadStore.reset();
+    files.value = []
     console.log('resultcallAdminServer', resultcallAdminServer);
-    setTimeout(() => uploadStore.isSuccess = false, 4000);
 
   } catch (error) {
     console.log('error on createPin', error);
-    uploadStore.isLoading = false;
     uploadStore.isError = true;
-    setTimeout(() => uploadStore.isError = false, 4000);
+  } finally {
+    uploadStore.isLoading = false;
+
   }
 }
 onMounted(() => {

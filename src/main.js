@@ -2,68 +2,19 @@ import { createApp, provide, h, reactive } from 'vue'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, from } from '@apollo/client/core'
 import { onError } from '@apollo/client/link/error'
-import { createPinia } from 'pinia';
-import './styles.css';
 import App from './App.vue';
-import router from './router';
 import createCeramicClient from './utils/createCeramicClient';
 import createComposeClient from './utils/createComposeClient';
-import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { 
-  HiCheckCircle,
-  HiXCircle,
-  HiTrash,
-  HiPencilAlt,
-  HiClock,
-  HiQuestionMarkCircle,
-  HiEye,
-  HiX,
-  HiCreditCard,
-  HiUser,
-  HiThumbUp,
-  HiThumbDown,
-  PrImage,
-  HiPlay,
-  HiPause,
-  HiMenu,
-  HiDotsVertical,
-  HiVolumeOff,
-  HiVolumeUp,
-  HiCog,
-  HiFastForward,
-  HiRewind,
-  MdFullscreen,
-  HiArrowCircleLeft
- } from "oh-vue-icons/icons";
+import { registerPlugins } from '@/plugins'
 
 const cache = new InMemoryCache({
   typePolicies: {
-    // EthAccount: {
-    //   keyFields: ['address'],
-    // },
     Category: {
       keyFields: ['name'],
     },
-    Admin: {
-      keyFields: ['admin', ['address']],
-    },
-    // Query: {
-    //   queryType: true,
-    //   fields: {
-    //     node: {
-    //       merge: true,
-    //     },
-    //   },
-    // },
     Subscription: {
       keyFields: ['subscribedID'],
-    },
-    // PinLike: {
-    //   keyFields: ['owner', ['address'], 'pin', ['id']],
-    // },
-    // PinDislike: {
-    //   keyFields: ['owner', ['address'], 'pin', ['id']],
-    // }
+    }
   }
 })
 
@@ -106,9 +57,9 @@ const app = createApp({
       cache,
       uri: import.meta.env.VITE_NODE_URL,
     })
-    
+
     const updateApolloClient = (newCeramic) => {
-      
+
       const newComposeClient = createComposeClient(newCeramic)
       const newApolloClient = new ApolloClient({
         link: from([errorLink, new ApolloLink((operation) => {
@@ -128,7 +79,7 @@ const app = createApp({
         uri: import.meta.env.VITE_NODE_URL,
       })
 
-      
+
       apolloClient.value = newApolloClient
     }
     provide(DefaultApolloClient, apolloClient.value)
@@ -139,35 +90,6 @@ const app = createApp({
   },
   render: () => h(App)
 })
-addIcons(
-  HiCheckCircle,
-  HiXCircle,
-  HiTrash,
-  HiPencilAlt,
-  HiClock,
-  HiQuestionMarkCircle,
-  HiEye,
-  HiX,
-  HiCreditCard,
-  HiUser,
-  HiThumbUp,
-  HiThumbDown,
-  PrImage,
-  HiPlay,
-  HiPause,
-  HiMenu,
-  HiDotsVertical,
-  HiVolumeOff,
-  HiVolumeUp,
-  HiCog,
-  HiRewind,
-  HiFastForward,
-  MdFullscreen,
-  HiArrowCircleLeft
-);
-
-app.component("v-icon", OhVueIcon);
-app.use(createPinia())
-app.use(router)
+registerPlugins(app)
 
 app.mount('#app')
