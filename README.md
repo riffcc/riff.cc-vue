@@ -14,11 +14,16 @@ yarn install
 ```
 
 * Rename .env.local.example to env.local and fill variables
+
+We strongly recommend using our node and the new admin server.
+
+- `VITE_NODE_URL`=https://ftwc.xyz/ceramic
+- `VITE_ADMIN_SERVER`=https://ftwc.xyz/api
+
 ```bash
 VITE_NODE_URL=<YOUR_NODE_URL> # If you run a own local node <http://localhost:7007> , or an external node <http://<SERVER_PUBLIC_IP>:7007>
 VITE_ADMIN_SERVER=<YOUR_ADMIN_SERVER_URL> # Run admin server in riffcc/eramic-node repository via yarn run admin:server
 VITE_WEBSITE_ID=<TEST_WEBSITE_ID> # Generated in riffcc/eramic-node repository via yarn run generate:website
-VITE_IPFS_GATEWAY=<YOUR__IPFS_GATEWAY> # Ex. my-gateway.ipfs.io
 ```
 
 Run the application
