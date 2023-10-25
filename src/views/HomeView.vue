@@ -41,11 +41,11 @@
               </v-col>
               <v-col cols="12" md="2">
 
-                <v-sheet color="transparent" class="my-10">
-                  <v-btn class="text-none" prepend-icon="far fa-circle-play" size="x-large" variant="text"
-                    text="Watch Trailer"></v-btn>
-
-                </v-sheet>
+                <v-btn variant="plain" class="text-none text-h6" :ripple="false" size="x-large">
+                  <template v-slot:prepend>
+                    <v-icon icon="far fa-circle-play" class="mb-1" size="small"></v-icon>
+                  </template>
+                  Watch Trailer</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -117,16 +117,15 @@
         <v-row v-for="(row, i) in staticData['latest-movies']" :key="i" align="center" justify="center">
           <v-col v-for="(col, k) in row" :key="k">
             <v-sheet color="transparent" class="pa-1" position="relative">
-              <v-img :src="col.img" width="240px" class="mx-auto" cover
-                :aspect-ratio="3 / 3.5"></v-img>
+              <v-img :src="col.img" width="240px" class="mx-auto" cover :aspect-ratio="3 / 3.5"></v-img>
               <v-btn position="absolute" size="x-large" location="center" icon variant="solo"><v-icon icon="fas fa-play"
                   size="x-large" color="primary"></v-icon></v-btn>
             </v-sheet>
             <p class="text-body-2 text-center" tag="p">
-              {{  col.title }}
+              {{ col.title }}
             </p>
             <p class="text-caption text-center text-medium-emphasis">
-              {{ col.subtitle}}
+              {{ col.subtitle }}
             </p>
           </v-col>
 
