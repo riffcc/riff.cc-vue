@@ -64,26 +64,32 @@
         </v-container>
         <v-row justify="center">
           <v-col v-for="col in staticData['tv-popular-shows']" :key="col">
-            <v-sheet height="160px" max-width="260px" color="background" position="relative">
-              <v-img :src="col.img" height="100%" cover gradient="to bottom, rgba(0,0,0,.4), rgba(0,0,0,.41)"></v-img>
-              <v-sheet color="transparent" position="absolute" location="inset"
-                class="px-4 d-flex align-center justify-between">
-                <div class="flex-1-0">
-                  <p class="text-subtitle-1">{{ col.title }}</p>
-                  <p class="text-subtitle-2">{{ col.subtitle }}</p>
-                  <v-btn color="primary" rounded="0" prepend-icon="fas fa-play" size="small" class="mt-3 text-none"
-                    text="Play Now"></v-btn>
-                </div>
-                <div class="d-flex flex-column w-auto">
-                  <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-share-nodes"
-                      size="small"></v-icon></v-btn>
-                  <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-heart"
-                      size="small"></v-icon></v-btn>
-                  <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-plus"
-                      size="small"></v-icon></v-btn>
-                </div>
-              </v-sheet>
-            </v-sheet>
+            <v-hover v-slot="{ props, isHovering }">
+              <v-card v-bind="props"  position="relative">
+                <v-img :src="col.img" height="100%" cover gradient="to bottom, rgba(0,0,0,.4), rgba(0,0,0,.41)">
+                  <v-card-item>
+                    <v-sheet class="d-flex bg-transparent">
+                      <div>
+                        <p class="text-subtitle-1">{{ col.title }}</p>
+                        <p class="text-subtitle-2">{{ col.subtitle }}</p>
+                      </div>
+                      <v-sheet position="absolute" location="right" v-if="isHovering" class="d-flex mr-2 flex-column w-auto bg-transparent">
+                        <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-share-nodes"
+                            size="small"></v-icon></v-btn>
+                        <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-heart"
+                            size="small"></v-icon></v-btn>
+                        <v-btn size="x-small" class="my-1" color="white" icon><v-icon icon="fas fa-plus"
+                            size="small"></v-icon></v-btn>
+                      </v-sheet>
+                    </v-sheet>
+                  </v-card-item>
+                  <v-card-actions>
+                    <v-btn color="primary" variant="flat" rounded="0" prepend-icon="fas fa-play" size="small"
+                      class="mt-3 mb-1 text-none" text="Play Now"></v-btn>
+                  </v-card-actions>
+                </v-img>
+              </v-card>
+            </v-hover>
 
           </v-col>
 
