@@ -5,22 +5,9 @@
     </v-toolbar-title>
     <div class="d-none d-md-flex">
       <v-btn text="Home" @click="() => redirect('/')" :class="router.currentRoute.value.path === '/' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" text="Tv Shows" class="text-none" />
-        </template>
-        <v-list>
-          <v-list-item v-for="item in 4" :key="item" title="Category"></v-list-item>
-        </v-list>
-      </v-menu>
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" text="Movies" class="text-none" />
-        </template>
-        <v-list>
-          <v-list-item v-for="item in 4" :key="item" title="Category"></v-list-item>
-        </v-list>
-      </v-menu>
+                <v-btn v-bind="props" text="Tv" class="text-none" />
+            <v-btn v-bind="props" text="Movies" class="text-none" />
+
       <v-btn text="Music" @click="() => redirect('/music')" :class="router.currentRoute.value.path === '/music' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
       <v-divider vertical></v-divider>
 
