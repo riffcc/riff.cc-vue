@@ -1,8 +1,10 @@
 <template>
   <v-app-bar class="px-md-16 bg-background-darken-2">
     <v-toolbar-title>
-      <v-img cover max-width="48px" aspect-ratio="1"
-        :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+      <router-link to="/">
+        <v-img cover max-width="48px" aspect-ratio="1"
+          :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+      </router-link>
     </v-toolbar-title>
     <div class="d-none d-md-flex">
       <v-btn text="Home" @click="() => redirect('/')"
