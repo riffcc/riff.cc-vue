@@ -23,9 +23,11 @@
 // import RelatedAlbums from './RelatedAlbums.vue';
 
 import { onMounted, ref } from 'vue';
-import { useWalletStore } from '../../store/wallet';
-import { useSettingsStore } from '../../store/settings';
-import getCIDContent from '../../utils/getCIDContent';
+import { useWalletStore } from '@/store/wallet';
+import { useSettingsStore } from '@/store/settings';
+import getCIDContent from '@/utils/getCIDContent';
+import { IPFS_GATEWAY } from '@/config/constants'
+
 // import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
 const props = defineProps({
@@ -60,7 +62,6 @@ const handleOnSelectAndPlay = (index) => {
 
 const walletStore = useWalletStore()
 const settingsStore = useSettingsStore()
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 
 onMounted(() => {
 
@@ -80,7 +81,7 @@ onMounted(() => {
       cid: props.pinResult.node.piece.contentCid
     }
   } else if (props.pinResult.node.category.name === "Music") {
-    getCIDContent(ipfsGateway, props.pinResult.node.piece.contentCid)
+    getCIDContent(IPFS_GATEWAY, props.pinResult.node.piece.contentCid)
       .then(files => {
         musicAlbum.value.is = true
         musicAlbum.value.files = files

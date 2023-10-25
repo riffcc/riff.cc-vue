@@ -45,7 +45,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApolloClient, useLazyQuery, useMutation, useQuery } from '@vue/apollo-composable';
-import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE } from '@config/constants';
+import { GET_PIN, CREATE_PIN_LIKE, CREATE_PIN_DISLIKE, IPFS_GATEWAY } from '@/config/constants';
 import { getCIDContent } from '@utils';
 
 import { useWalletStore } from '@stores/wallet';
@@ -202,7 +202,6 @@ const handleOnSelectAndPlay = (index) => {
 }
 
 const settingsStore = useSettingsStore()
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 
 // onMounted(() => {
 

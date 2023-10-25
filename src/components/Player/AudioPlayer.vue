@@ -1,7 +1,7 @@
 <template>
   <v-sheet v-if="selectedAudio" position="sticky" color="white" style="opacity: 0.8;" location="bottom right"
     height="100px">
-    <audio class="d-none" ref="audio" :src="`https://${ipfsGateway}/ipfs/${selectedAudio.cid}`" @play="onPlay"
+    <audio class="d-none" ref="audio" :src="`https://${IPFS_GATEWAY}/ipfs/${selectedAudio.cid}`" @play="onPlay"
       @pause="onPause" @loadeddata="onLoad" @ended="handleNext"></audio>
     <v-container class="fill-height">
       <v-sheet color="transparent" height="100%" max-width="920px"
@@ -51,6 +51,7 @@
 
 <script setup>
 import { onUnmounted, ref, watch, computed } from 'vue';
+import { IPFS_GATEWAY } from '@/config/constants'
 
 
 const props = defineProps({
@@ -68,7 +69,6 @@ const seekingTrack = (percent) => {
   resume();
 };
 
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 const audio = ref(null);
 const isPlaying = ref(false);
 const progress = ref(0);

@@ -7,7 +7,7 @@
       <video 
         ref="videoPlayer" 
         class="w-full" 
-        :src="`https://${ipfsGateway}/ipfs/${videoSource.cid}`" 
+        :src="`https://${IPFS_GATEWAY}/ipfs/${videoSource.cid}`" 
         :controls="false"
         @loadeddata="onLoad"
         @click="togglePlay"
@@ -47,8 +47,8 @@ const props = defineProps({
     required: true
   }
 })
+import { IPFS_GATEWAY } from '@/config/constants'
 
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY;
 const videoPlayer = ref(null);
 const isPlaying = ref(false);
 const showControls = ref(false);

@@ -1,7 +1,7 @@
 <template>
   <v-app-bar class="px-md-16 bg-background-darken-2">
     <v-toolbar-title>
-      <v-img cover max-width="48px" aspect-ratio="1" :src="`https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+      <v-img cover max-width="48px" aspect-ratio="1" :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
     </v-toolbar-title>
     <div class="d-none d-md-flex">
       <v-btn text="Home" @click="() => redirect('/')" :class="router.currentRoute.value.path === '/' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
@@ -57,7 +57,7 @@
         <v-icon icon="fas fa-bell" size="x-small" />
       </v-btn>
       <v-app-bar-nav-icon @click.stop="showMenu = !showMenu" class="ml-4">
-        <v-avatar v-if="walletStore.cidAvatar" :image="`https://${ipfsGateway}/ipfs/${walletStore.cidAvatar}`"></v-avatar>
+        <v-avatar v-if="walletStore.cidAvatar" :image="`https://${IPFS_GATEWAY}/ipfs/${walletStore.cidAvatar}`"></v-avatar>
         <v-icon v-else icon="fas fa-circle-user" size="x-large" class="mb-1"></v-icon>
       </v-app-bar-nav-icon>
     </template>
@@ -85,7 +85,7 @@ import { useRouter } from "vue-router";
 
 import Connect from "../Layout/Connect.vue"
 
-import { GET_ETH_ACCOUNT, defaultUserSettings } from "../../config/constants";
+import { GET_ETH_ACCOUNT, defaultUserSettings, IPFS_GATEWAY } from "../../config/constants";
 import { useWalletStore } from "@stores/wallet"
 import { useSettingsStore } from "@stores/settings"
 
@@ -103,7 +103,6 @@ const routes = [
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const isGreatherThanSmall = breakpoints.greater("md");
 
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const siteID = import.meta.env.VITE_WEBSITE_ID
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER
 

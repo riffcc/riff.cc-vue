@@ -1,7 +1,7 @@
 <template>
   <v-card rounded="0" elevation="2" class="d-flex" height="120px" :loading="subscriptionLoading">
     <v-sheet width="120px" height="120px" class="d-flex" :loading="subscriptionLoading">
-      <v-img v-if="subscription.image" cover :src="`https://${ipfsGateway}/ipfs/${subscription.image}`"></v-img>
+      <v-img v-if="subscription.image" cover :src="`https://${IPFS_GATEWAY}/ipfs/${subscription.image}`"></v-img>
       <v-icon v-else icon="fas fa-pager" size="x-large" class="ma-auto"></v-icon>
     </v-sheet>
     <div class="flex-1-0 pt-2">
@@ -19,7 +19,7 @@
 <script setup>
 import { computed, inject, ref } from 'vue';
 import { useQuery } from '@vue/apollo-composable';
-import { GET_SUBSCRIPTIONS } from '@config/constants';
+import { GET_SUBSCRIPTIONS, IPFS_GATEWAY } from '@config/constants';
 import { callAdminServer } from '@utils';
 import { useWalletStore } from '@stores/wallet';
 
@@ -27,7 +27,6 @@ const props = defineProps({
   subscription: Object,
   closeSearchResult: Function
 })
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const siteID = import.meta.env.VITE_WEBSITE_ID
 const adminNodeUrl = import.meta.env.VITE_ADMIN_SERVER
 

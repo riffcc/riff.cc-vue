@@ -4,7 +4,7 @@
       <v-row class="px-2 px-sm-6 px-md-16">
         <v-col cols="12" md="3">
           <v-sheet height="320px" class="d-flex flex-column justify-space-around py-10">
-            <v-img height="90px" inline width="90px" :src="`https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+            <v-img height="90px" inline width="90px" :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
             <v-list-item :subtitle="settingsStore.siteDescription" class="pa-0">
               <template v-slot:prepend>
                 <div class="pr-2">
@@ -93,7 +93,8 @@
 
 <script setup>
 import { useSettingsStore } from "@stores/settings"
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
+import { IPFS_GATEWAY } from '@/config/constants'
+
 
 const settingsStore = useSettingsStore()
 const listItems = {

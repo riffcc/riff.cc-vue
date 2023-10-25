@@ -58,7 +58,7 @@
                           <template v-slot:prepend-inner>
                             <v-sheet border class="mr-2">
                               <v-img v-if="settingsStore?.siteImage" width="120px" height="120px" cover
-                                :src="fileBlobUrl ? fileBlobUrl : `https://${ipfsGateway}/ipfs/${settingsStore.siteImage}`"></v-img>
+                                :src="fileBlobUrl ? fileBlobUrl : `https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
                             </v-sheet>
                           </template>
                         </v-file-input>
@@ -111,8 +111,9 @@ import {
   GET_PINS,
   GET_SUBSCRIPTIONS,
   GET_ETH_ACCOUNT,
-  GET_CATEGORIES
-} from "@config/constants";
+  GET_CATEGORIES,
+  IPFS_GATEWAY
+} from "@/config/constants";
 import { computed, inject, provide, ref, watch } from "vue";
 import { useWalletStore } from "@stores/wallet";
 import {
@@ -130,7 +131,6 @@ const settingsStore = useSettingsStore()
 const walletStore = useWalletStore()
 const siteID = import.meta.env.VITE_WEBSITE_ID;
 const tab = ref(null)
-const ipfsGateway = import.meta.env.VITE_IPFS_GATEWAY
 const adminServerUrl = import.meta.env.VITE_ADMIN_SERVER;
 const file = ref(null)
 const fileBlobUrl = ref(null)
