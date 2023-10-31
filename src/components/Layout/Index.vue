@@ -9,6 +9,19 @@
         <slot></slot>
       </v-main>
       <Footer />
+      <v-banner position="fixed" v-if="showGdprConsent" location="bottom" border class="bg-background-darken-2 py-10 px-10 px-md-16" text="">
+        <template v-slot:text>
+            <p class="text-h5 mb-1 font-weight-bold">We value your privacy</p>
+            <p class="text-subtitle-1 text-grey-lighten-2">We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies.
+              <router-link to="/cookie-policy" class="text-primary">Cookie Policy</router-link>
+            </p>
+          </template>
+          <template v-slot:actions>
+          <v-btn variant="flat" color="primary" @click="handleDeclineAll">Decline All</v-btn>
+        
+            <v-btn variant="flat" class="ml-2" color="primary" @click="handleAcceptAll">Accept All</v-btn>
+          </template>
+      </v-banner>
     </v-layout>
   </v-theme-provider>
   <!-- <div v-for="key in Object.keys(newTheme.colors)" class="d-flex align-center w-auto">
@@ -20,7 +33,7 @@
 
 <script setup>
 
-import { watch, provide } from 'vue';
+import { watch, provide, onMounted } from 'vue';
 import { useTheme } from 'vuetify';
 import { useQuery } from '@vue/apollo-composable';
 import {
@@ -33,7 +46,25 @@ import { Header, Footer } from '@components'
 import {parseColors} from '@utils'
 import { useSettingsStore } from "@stores/settings";
 
+const showGdprConsent = ref(false)
 
+onMounted(() => {
+  if (!localStorage.getItem('gdprConsent')) {
+    showGdprConsent.value = true
+  }
+})
+
+const handleDeclineAll = () => {
+  localStorage.setItem('gdprConsent', 'false')
+    showGdprConsent.value = false
+
+}
+
+const handleAcceptAll = () => {
+  localStorage.setItem('gdprConsent', 'true')
+  showGdprConsent.value = false
+
+}
 const siteID = import.meta.env.VITE_WEBSITE_ID
 const settingsStore = useSettingsStore()
 const {
