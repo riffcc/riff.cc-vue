@@ -3,20 +3,14 @@
     <v-toolbar-title>
       <router-link to="/">
         <v-img cover max-width="48px" aspect-ratio="1"
-          :src="`https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
+          :src="settingsStore.siteImage ? `https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}` : '/logo.png'"></v-img>
       </router-link>
     </v-toolbar-title>
     <div class="d-none d-md-flex">
-      <v-btn text="Home" @click="() => redirect('/')"
-        :class="router.currentRoute.value.path === '/' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
-      <v-btn text="Tv" @click="() => redirect('/tv')"
-          :class="router.currentRoute.value.path === '/tv' ? 'text-primary-lighten-1 text-none' : 'text-none'"/>
-      <v-btn text="Movies" @click="() => redirect('/movies')"
-          :class="router.currentRoute.value.path === '/movies' ? 'text-primary-lighten-1 text-none' : 'text-none'"/>
-
-      <v-btn text="Music" @click="() => redirect('/music')"
-        :class="router.currentRoute.value.path === '/music' ? 'text-primary-lighten-1 text-none' : 'text-none'" />
-      <v-divider vertical></v-divider>
+      <v-btn v-for="cat in  settingsStore.featuredCategories " :text="cat.name"
+        :class="router.currentRoute.value.path === cat.name.replace(' ', '-').toLowerCase() ? 'text-primary-lighten-1 text-none' : 'text-none'"
+        @click="() => redirect(`/${cat.name.replace(' ', '-').toLowerCase()}`)"></v-btn>
+      <v-divider vertical class="mx-4"></v-divider>
 
       <v-btn text="Upload" @click="() => redirect('/upload')"
         :class="router.currentRoute.value.path === '/upload' ? 'text-primary-lighten-1 text-none' : 'text-none'" />

@@ -1,32 +1,40 @@
 <template>
-  <v-sheet width="450px" class="ma-auto d-flex flex-column">
-    <v-text-field label="Pin ID" validate-on="input" v-model="pinID" :rules="[rules.required, rules.isValidID]">
-      <template v-slot:details="{ isValid }">
-        <div class="w-100" v-if="isValid.value && !pinExists">
-          <p class="text-error text-start">Pin don't exists.</p>
-        </div>
-      </template>
-    </v-text-field>
-    <v-text-field type="datetime-local" :min="minDate" :max="maxDate" label="Start at" v-model="startAt"></v-text-field>
-    <v-text-field :disabled="!startAt" type="datetime-local" :min="minEndDate" :max="maxDate" label="End at"
-      v-model="endAt"></v-text-field>
-    <v-btn color="primary" class="w-50 mx-auto mt-4" :loading="isLoading" :disabled="!pinExists || !startAt || !endAt" @click="handleSubmit" text="Create">
-    </v-btn>
-    <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+ <v-card width="450px" class="ma-auto d-flex flex-column py-4" border>
+          <v-card-title>
+            <p class="text-center">Create Featured Pin</p>
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <v-text-field label="Pin ID" validate-on="input" v-model="pinID" :rules="[rules.required, rules.isValidID]">
+              <template v-slot:details="{ isValid }">
+                <div class="w-100" v-if="isValid.value && !pinExists">
+                  <p class="text-error text-start">Pin don't exists.</p>
+                </div>
+              </template>
+            </v-text-field>
+            <v-text-field type="datetime-local" :min="minDate" :max="maxDate" label="Start at"
+              v-model="startAt"></v-text-field>
+            <v-text-field :disabled="!startAt" type="datetime-local" :min="minEndDate" :max="maxDate" label="End at"
+              v-model="endAt"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" class="w-50 mx-auto mt-4" :loading="isLoading"
+              :disabled="!pinExists || !startAt || !endAt" @click="handleSubmit" text="Create">
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+  <v-snackbar color="success" v-model="isSuccess" timeout="3000">
     <p class="text-center">{{ `Featured created succesfully!` }}</p>
-    </v-snackbar>
-    <v-snackbar color="error" v-model="isError" timeout="3000">
+  </v-snackbar>
+  <v-snackbar color="error" v-model="isError" timeout="3000">
     <p class="text-center">{{ `Has ocurred an error :(` }}</p>
-    </v-snackbar>
-  </v-sheet>
-
+  </v-snackbar>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
 import { GET_PIN } from '@config/constants'
 import { useApolloClient } from '@vue/apollo-composable';
-import {callAdminServer} from '@utils';
+import { callAdminServer } from '@utils';
 import { useWalletStore } from '@stores/wallet';
 
 
@@ -60,8 +68,6 @@ const fetchPin = async (pinId) => {
     return false;
   }
 }
-
-
 
 
 watch(pinID, async (newPinID) => {

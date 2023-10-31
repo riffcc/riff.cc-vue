@@ -35,7 +35,27 @@
             <p v-else class='m-auto text-sm text-center'>No extra admins found.</p>
           </v-window-item>
           <v-window-item value="featured" class="py-10 px-4 px-sm-12 px-md-16">
-            <NewFeatured />
+            <v-row>
+              <v-col>
+                <v-card width="450px" class="ma-auto d-flex flex-column py-4" border>
+                  <v-card-title>
+                    <p class="text-center">Featured Categories</p>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-select :model-value="settingsStore.featuredCategories"
+                      @update:model-value="(e) => settingsStore.featuredCategories = e.map(item => ({ name: item }))"
+                      item-title="name" :items="pinCategories" label="Categories" multiple chips=""></v-select>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn @click="handleSaveFeatCats" variant="flat" :loading="isLoading" color="primary"
+                      class="mx-auto">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+              <v-col>
+                <NewFeatured />
+              </v-col>
+            </v-row>
           </v-window-item>
           <v-window-item value="subscriptions" class="py-10 px-4 px-sm-12 px-md-16">
             <SubscriptionSearch />
@@ -56,7 +76,7 @@
                       <v-sheet position="relative">
                         <v-file-input v-model="file" accept="image/*" label="Site Image" prepend-icon="">
                           <template v-slot:prepend-inner>
-                            <v-sheet border class="mr-2">
+                            <v-sheet class="mr-2">
                               <v-img v-if="settingsStore?.siteImage" width="120px" height="120px" cover
                                 :src="fileBlobUrl ? fileBlobUrl : `https://${IPFS_GATEWAY}/ipfs/${settingsStore.siteImage}`"></v-img>
                             </v-sheet>
@@ -87,14 +107,9 @@
                     </div>
                   </v-col>
                 </v-row>
-                <v-btn :loading="isLoading" @click="handleSave" text="save" size="large" color="primary" rounded="0"
+                <v-btn :loading="isLoading" @click="handleSaveTheme" text="save" size="large" color="primary" rounded="0"
                   class="float-right mt-4"></v-btn>
-                <v-snackbar color="success" v-model="isSuccess" timeout="3000">
-                  <p class="text-center">{{ `Saved successfully!` }}</p>
-                </v-snackbar>
-                <v-snackbar color="error" v-model="isError" timeout="3000">
-                  <p class="text-center">{{ `Has ocurred an error :(` }}</p>
-                </v-snackbar>
+
               </v-container>
 
             </v-sheet>
@@ -103,6 +118,12 @@
       </div>
     </v-sheet>
   </v-container>
+  <v-snackbar color="success" v-model="isSuccess" timeout="3000">
+    <p class="text-center">{{ `Saved successfully!` }}</p>
+  </v-snackbar>
+  <v-snackbar color="error" v-model="isError" timeout="3000">
+    <p class="text-center">{{ `Has ocurred an error :(` }}</p>
+  </v-snackbar>
 </template>
 
 <script setup>
@@ -112,7 +133,8 @@ import {
   GET_SUBSCRIPTIONS,
   GET_ETH_ACCOUNT,
   GET_CATEGORIES,
-  IPFS_GATEWAY
+  IPFS_GATEWAY,
+  pinCategories
 } from "@/config/constants";
 import { computed, inject, provide, ref, watch } from "vue";
 import { useWalletStore } from "@stores/wallet";
@@ -239,14 +261,12 @@ watch(file, (v) => {
 })
 
 const refetchSite = inject('refetchSite')
-const handleSave = async () => {
+
+const handleSaveTheme = async () => {
   let msgToSign
   let signature
-  msgToSign = "Update theme"
-
-
-
   const colors = parseColors(settingsStore.colors, true)
+  msgToSign = "Update theme"
 
   try {
     isLoading.value = true
@@ -271,6 +291,43 @@ const handleSave = async () => {
         description: settingsStore.siteDescription,
         image: newSiteImageCID ?? settingsStore.siteImage,
         colors
+      },
+      msg: msgToSign,
+      signature,
+      address: walletStore.address
+    })
+    isSuccess.value = true
+    const result = await refetchSite()
+    console.log('result of refetchSite', result)
+  } catch (error) {
+    console.log('error', error)
+    isError.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleSaveFeatCats = async () => {
+  let msgToSign
+  let signature
+  const colors = parseColors(settingsStore.colors, true)
+  msgToSign = "Update Featured Categories"
+
+  try {
+    isLoading.value = true
+    signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [
+        msgToSign,
+        walletStore.address
+      ]
+    })
+    await callAdminServer(
+      `${adminServerUrl}/site`, {
+      action: "update",
+      siteId: siteID,
+      data: {
+        featuredCategories: settingsStore.featuredCategories
       },
       msg: msgToSign,
       signature,
