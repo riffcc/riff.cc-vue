@@ -29,7 +29,7 @@ export default defineConfig({
       },
     }),
   ],
-  define: { 'process.env': {}, 'global': 'window' },
+  define: { 'process.env': {}, 'window.global': {} },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

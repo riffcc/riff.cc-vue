@@ -50,6 +50,9 @@ export const siteShortFragment = gql`fragment SiteShortFragment on Site {
   colors {
     ...SiteColorsFragment
   }
+  featuredCategories {
+    name
+  }
 }
 ${siteColorsFragment}
 `

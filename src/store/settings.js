@@ -9,7 +9,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const siteDescription = ref(null)
   const siteImage = ref(null)
   const colors = ref(null)
-
+  const featuredCategories = ref(null)
   const open = () => show.value = true
   const hide = () => show.value = false
   const siteTile = computed(() => siteName ? siteName.value : 'My Site')
@@ -24,6 +24,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     siteName,
     siteDescription,
     siteImage,
-    colors
+    colors,
+    featuredCategories
   }
 })

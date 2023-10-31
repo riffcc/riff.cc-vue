@@ -60,6 +60,8 @@ console.log('siteResult', siteResult)
   settingsStore.siteName = value.node?.name
   settingsStore.siteDescription = value.node?.description
   settingsStore.siteImage = value.node?.image
+  settingsStore.featuredCategories = value.node?.featuredCategories
+
 
   const parsedColors = parseColors(value.node?.colors)
   settingsStore.colors = parsedColors
