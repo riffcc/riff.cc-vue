@@ -379,7 +379,7 @@ export const CREATE_PIN_DISLIKE = gql`
 // Config constants
 
 export const pinCategories = [
-  'TV Shows',
+  'TV',
   'Movies',
   'Audiobooks',
   'Games',
