@@ -21,7 +21,13 @@ export const useWalletStore = defineStore('walletStore', () => {
     provider
   })
   const ethereumClient = new EthereumClient(wagmiClient, chains)
-  const web3modal = new Web3Modal({ projectId }, ethereumClient)
+  const web3modal = new Web3Modal({ 
+     projectId,
+    themeVariables: {
+      '--w3m-z-index': 3200,
+      '--w3m-font-family': 'Josefin Sans',
+    }
+  }, ethereumClient)
 
   const address = ref(null)
   const accountId = ref(null)
