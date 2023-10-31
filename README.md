@@ -18,7 +18,7 @@ yarn install
 We strongly recommend using our node and the new admin server.
 
 - `VITE_NODE_URL`=https://ftwc.xyz/ceramic
-- `VITE_ADMIN_SERVER`=https://ftwc.xyz/api
+- `VITE_ADMIN_SERVER`=https://ftwc.xyz/api/admin
 
 ```bash
 VITE_NODE_URL=<YOUR_NODE_URL> # If you run a own local node <http://localhost:7007> , or an external node <http://<SERVER_PUBLIC_IP>:7007>
