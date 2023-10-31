@@ -28,7 +28,6 @@
     "key-did-resolver": "^3.0.0",
     "nft.storage": "^7.1.1",
     "pinia": "^2.0.32",
-    "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
     "vuetify": "3.3.19"
@@ -41,6 +40,6 @@
     "sass": "^1.60.0",
     "unplugin-fonts": "^1.0.3",
     "vite": "^4.2.0",
-    "vite-plugin-vuetify": "^1.0.0"
+    "vite-plugin-vuetify": "^1.0.2"
   }
 }
