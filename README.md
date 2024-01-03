@@ -53,12 +53,12 @@ npm install -g yarn
 1. Clone CeramicRiff's GitHub repository:
 
 ```bash
-git clone https://github.com/riffcc/ceramic-riff-web.git
+git clone https://github.com/riffcc/riff.cc-vue.git
 ```
 
 2. Move into CeramicRiff's directory and set up its installation packages:
 ```bash
-cd ceramic-riff-web
+cd riff.cc-vue
 yarn install
 ```
 
